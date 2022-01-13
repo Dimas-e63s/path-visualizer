@@ -1,0 +1,27 @@
+.row {
+  // GRID
+
+  //display: grid;
+  //justify-content: center;
+  //grid-template-columns: repeat(auto-fill, 30px);
+  //grid-template-rows: repeat(auto-fill, 30px);
+
+  display: flex;
+  flex-grow: 1;
+  height: 30px;
+  border-bottom: 1px solid black;
+  flex-direction: row;
+  pointer-events: none;
+
+  &:first-of-type {
+    border-top: 1px solid black;
+  }
+
+  .node {
+    display: flex;
+    flex: 1;
+    pointer-events: auto;
+    border-right: 1px solid black;
+    border-left: 1px solid black;
+  }
+}
