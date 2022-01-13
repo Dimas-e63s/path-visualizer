@@ -1,0 +1,26 @@
+:host {
+  // GRID
+  //border: 1px solid black;
+  //border-right: 0;
+  //&:last-of-type {
+  //  border-right: 1px solid black;
+  //}
+
+  display: flex;
+  flex: 1;
+  pointer-events: auto;
+  border-right: 1px solid black;
+  border-left: 1px solid black;
+
+}
+.node {
+  width: 100%;
+
+  &--start {
+    background-color: green;
+  }
+
+  &--finish {
+    background-color: red;
+  }
+}
