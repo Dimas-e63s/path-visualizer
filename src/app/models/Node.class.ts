@@ -3,18 +3,33 @@ interface NodeInterface {
   colIdx: number;
   isStartNode: boolean;
   isFinishNode: boolean
+  distance?: number;
 }
 export class Node {
   private readonly rowIdx: number;
   private readonly columnIdx: number;
   private isStartNode: boolean;
   private isFinishNode: boolean;
+  isVisited: boolean;
+  distance: number;
 
-  constructor({rowIdx, colIdx, isStartNode, isFinishNode}: NodeInterface) {
+  constructor({rowIdx, colIdx, isStartNode, isFinishNode, distance = Infinity}: NodeInterface) {
     this.rowIdx = rowIdx;
     this.columnIdx = colIdx;
     this.isStartNode = isStartNode;
     this.isFinishNode = isFinishNode;
+    this.isVisited = false;
+    this.distance = distance;
+  }
+
+  clone(): Node {
+    return new Node({
+      rowIdx: this.rowIdx,
+      colIdx: this.columnIdx,
+      isStartNode: this.isStartNode,
+      isFinishNode: this.isFinishNode,
+      distance: this.distance
+    });
   }
 
   setFinishNode(): void {
@@ -34,7 +49,7 @@ export class Node {
   }
 
   isVisitedNode() {
-    // return this.isVisited;
+    return this.isVisited;
   }
 
   isUnvisitedNode() {

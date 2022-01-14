@@ -16,6 +16,11 @@
 .node {
   width: 100%;
 
+  &--visited {
+    background-color: blue;
+    transition: background-color .4s;
+  }
+
   &--start {
     background-color: green;
   }

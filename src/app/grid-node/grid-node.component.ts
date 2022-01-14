@@ -16,7 +16,8 @@ export class GridNodeComponent implements OnInit {
     const BASE_CLASS = 'node';
     return {
       [`${BASE_CLASS}--start`]: this.vm?.getIsStartNode(),
-      [`${BASE_CLASS}--finish`]: this.vm?.getIsFinishNode()
+      [`${BASE_CLASS}--finish`]: this.vm?.getIsFinishNode(),
+      [`${BASE_CLASS}--visited`]: this.vm?.isVisitedNode()
     }
   }
 }
