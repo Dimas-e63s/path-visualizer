@@ -1,7 +1,21 @@
 <button (click)="runAlgo()">Run Dijkstra</button>
+<button (click)="clearBoard()">Clear Board</button>
 <div style="height: 200px;"></div>
-<section style="margin-top: 2px">
-<div class="row" *ngFor="let row of nodes; let rowIdx = index;">
-  <app-grid-node [vm]="column" *ngFor="let column of nodes[rowIdx]"></app-grid-node>
-</div>
+<section
+  (mousedown)="startEditing()"
+  (mouseup)="breakEdit()"
+  (mouseleave)="breakEdit()"
+  style="margin-top: 2px"
+>
+  <div
+    class="row"
+    *ngFor="let row of nodes; let rowIdx = index;"
+  >
+    <app-grid-node
+      [vm]="column"
+      *ngFor="let column of nodes[rowIdx]"
+      (addedWall)="onAddedWall($event)"
+      (mouseEnter)="onDraw($event)"
+    ></app-grid-node>
+  </div>
 </section>

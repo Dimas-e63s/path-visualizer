@@ -4,7 +4,7 @@ import {Node} from '../models/Node.class';
 import {GridRow, Grid} from '../models/grid.types';
 
 interface UnvisitedNodes {
-  [key: string]: Node
+  [key: string]: Node;
 }
 
 type Heap = CustomHeap<Node>;
@@ -27,9 +27,10 @@ class Dijkstra {
   }
 }
 
-export function dijkstra({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}): GridRow {
+export function dijkstra({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}): [GridRow, GridRow] {
   const visitedNodesInOrder: GridRow = [];
-  const unvisitedNodes = Utils.getAllNodes(grid);
+  const unvisitedNodes = Utils.getNodesCopy(grid);
+
   const totalRow = grid.length;
   const totalCol = grid[0].length;
 
@@ -40,7 +41,9 @@ export function dijkstra({grid, startNode, endNode}: {grid: Grid, startNode: Nod
   while (!customMinHeap.isEmpty()) {
     const closestNode = customMinHeap.extractRoot() as Node;
 
-    closestNode.isVisited = true;
+    if (closestNode.isWall()) {
+      continue;
+    }
 
     visitedNodesInOrder.push(closestNode);
     if (Utils.isEndNode(closestNode, endNode)) {
@@ -57,7 +60,13 @@ export function dijkstra({grid, startNode, endNode}: {grid: Grid, startNode: Nod
       });
   }
 
-  return visitedNodesInOrder;
+  const res = Utils.getNodesInShortestPathOrder({
+    startNode,
+    finishNode: visitedNodesInOrder[visitedNodesInOrder.length - 1],
+    grid: unvisitedNodes,
+  });
+
+  return [visitedNodesInOrder, res];
 }
 
 class Utils {
@@ -65,7 +74,7 @@ class Utils {
     return `${node.columnIdx}-${node.rowIdx}`;
   }
 
-  static getAllNodes(grid: Grid): UnvisitedNodes {
+  static getNodesCopy(grid: Grid): UnvisitedNodes {
     const nodesMap: UnvisitedNodes = {};
     for (const row of grid) {
       for (const node of row) {
@@ -80,15 +89,28 @@ class Utils {
       && currNode.getColumnIdx() === finishNode.getColumnIdx();
   }
 
-  static updateUnvisitedNeighbors({node, grid, totalCol, totalRow, minHeap}: {node: Node, grid: UnvisitedNodes, totalCol: number, totalRow: number, minHeap: Heap}): void {
+  static updateUnvisitedNeighbors({
+                                    node,
+                                    grid,
+                                    totalCol,
+                                    totalRow,
+                                    minHeap,
+                                  }: {node: Node, grid: UnvisitedNodes, totalCol: number, totalRow: number, minHeap: Heap}): void {
     const unvisitedNeighbors = Utils.getUnvisitedNeighbors({node, grid, totalCol, totalRow});
     for (const neighbor of unvisitedNeighbors) {
+      neighbor.setAsVisited();
       neighbor.distance = node.distance + 1;
+      neighbor.previousNode = {columnIdx: node.getColumnIdx(), rowIdx: node.getRowIdx()};
       minHeap.insert(neighbor);
     }
   }
 
-  static getUnvisitedNeighbors({node, grid, totalCol, totalRow}: {node: any, grid: UnvisitedNodes, totalCol: number, totalRow: number}): GridRow {
+  static getUnvisitedNeighbors({
+                                 node,
+                                 grid,
+                                 totalCol,
+                                 totalRow,
+                               }: {node: any, grid: UnvisitedNodes, totalCol: number, totalRow: number}): GridRow {
     const neighbors: GridRow = [];
     const {columnIdx: col, rowIdx: row} = node;
     if (!Dijkstra.isFirstRow(row)) {
@@ -106,16 +128,20 @@ class Utils {
       neighbors.push(grid[Utils.getNodeKey({columnIdx: col + 1, rowIdx: row})]);
     }
 
-    return neighbors.filter(neighbor => !neighbor.isVisited);
+    return neighbors.filter(neighbor => !neighbor.isVisitedNode());
+  }
+
+  static getNodesInShortestPathOrder({startNode, finishNode, grid}: {startNode: Node, finishNode: Node, grid: UnvisitedNodes}) {
+    const nodesInShortestPathOrder = [];
+    let currentNode = finishNode;
+
+    while (true) {
+      currentNode = grid[Utils.getNodeKey(currentNode.previousNode)];
+      if (currentNode.getRowIdx() === startNode.getRowIdx() && currentNode.getColumnIdx() === startNode.getColumnIdx()) {
+        break;
+      }
+      nodesInShortestPathOrder.unshift(currentNode);
+    }
+    return nodesInShortestPathOrder;
   }
 }
-
-// export function getNodesInShortestPathOrder(finishNode:any) {
-//   const nodesInShortestPathOrder = [];
-//   let currentNode = finishNode;
-//   while (currentNode !== null) {
-//     nodesInShortestPathOrder.unshift(currentNode);
-//     currentNode = currentNode.previousNode;
-//   }
-//   return nodesInShortestPathOrder;
-// }

@@ -7,7 +7,7 @@ import { GridNodeComponent } from './grid-node/grid-node.component';
 @NgModule({
   declarations: [
     AppComponent,
-    GridNodeComponent
+    GridNodeComponent,
   ],
   imports: [
     BrowserModule

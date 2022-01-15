@@ -2,33 +2,53 @@ interface NodeInterface {
   rowIdx: number;
   colIdx: number;
   isStartNode: boolean;
-  isFinishNode: boolean
+  isFinishNode: boolean;
   distance?: number;
+  weight?: number
+  previousNode?: {columnIdx: number, rowIdx: number}
+  isShortestPath?: boolean
 }
+
+enum NodeWeights {
+  WALL = Infinity,
+  EMPTY = 0
+}
+
 export class Node {
   private readonly rowIdx: number;
   private readonly columnIdx: number;
   private isStartNode: boolean;
   private isFinishNode: boolean;
-  isVisited: boolean;
+  private isVisited: boolean;
+  isShortestPath;
+  previousNode: any;
   distance: number;
+  weight: number;
 
-  constructor({rowIdx, colIdx, isStartNode, isFinishNode, distance = Infinity}: NodeInterface) {
+  // @ts-ignore
+  constructor({rowIdx, colIdx, isStartNode, isFinishNode, distance = Infinity, weight = NodeWeights.EMPTY, previousNode = {columnIdx: null, rowIdx: null}, isShortestPath = false}: NodeInterface) {
     this.rowIdx = rowIdx;
     this.columnIdx = colIdx;
     this.isStartNode = isStartNode;
     this.isFinishNode = isFinishNode;
     this.isVisited = false;
+    this.isShortestPath = isShortestPath;
     this.distance = distance;
+    this.weight = weight;
+    this.previousNode = previousNode;
   }
 
-  clone(): Node {
+  clone(args: Partial<NodeInterface> = {}): Node {
     return new Node({
       rowIdx: this.rowIdx,
       colIdx: this.columnIdx,
       isStartNode: this.isStartNode,
       isFinishNode: this.isFinishNode,
-      distance: this.distance
+      distance: this.distance,
+      weight: this.weight,
+      previousNode: this.previousNode,
+      isShortestPath: this.isShortestPath,
+      ...args
     });
   }
 
@@ -52,12 +72,18 @@ export class Node {
     return this.isVisited;
   }
 
-  isUnvisitedNode() {
-    // return !this.isVisited;
+  isWall(): boolean {
+    return this.weight === NodeWeights.WALL;
   }
 
-  getWeightOfNode() {
-    // return this.weight;
+  setAsVisited(): void {
+    this.isVisited = true;
+  }
+
+  setAsWall(): void {
+    if (!(this.isStartNode && this.isFinishNode)) {
+      this.weight = NodeWeights.WALL;
+    }
   }
 
   getIsStartNode(): boolean {
