@@ -1,3 +1,4 @@
+import {v4} from 'uuid';
 interface NodeInterface {
   rowIdx: number;
   colIdx: number;
@@ -24,9 +25,11 @@ export class Node {
   previousNode: any;
   distance: number;
   weight: number;
+  readonly id: string;
 
   // @ts-ignore
   constructor({rowIdx, colIdx, isStartNode, isFinishNode, distance = Infinity, weight = NodeWeights.EMPTY, previousNode = {columnIdx: null, rowIdx: null}, isShortestPath = false}: NodeInterface) {
+    this.id = v4();
     this.rowIdx = rowIdx;
     this.columnIdx = colIdx;
     this.isStartNode = isStartNode;

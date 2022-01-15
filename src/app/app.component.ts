@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {Node} from './models/Node.class';
 import {dijkstra} from './algorithms/dijkstra';
-import {Grid} from './models/grid.types';
+import {Grid, GridRow} from './models/grid.types';
 
 @Component({
   selector: 'app-root',
@@ -9,6 +9,8 @@ import {Grid} from './models/grid.types';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+  private startNode = {colIdx: 5, rowIdx: 10};
+  private finishNode = {colIdx: 25, rowIdx: 2};
   nodes = this.generateGrid();
   buildWalls = false;
   prevNode = {col: null, row: null};
@@ -16,8 +18,6 @@ export class AppComponent {
   prevEnd = {col: null, row: null};
   moveHead = false;
   moveEnd = false;
-  private startNode = {colIdx: 5, rowIdx: 10};
-  private finishNode = {colIdx: 15, rowIdx: 10};
 
   generateGrid(): Grid {
     const {row, col} = this.getGridSize();
@@ -124,6 +124,14 @@ export class AppComponent {
 
   clearBoard() {
     this.nodes = this.generateGrid();
+  }
+
+  trackByRow(index: number, row: GridRow) {
+    return row.length;
+  }
+
+  trackByNode(index: number, node: Node) {
+    return node.id;
   }
 
   private calculateAmountOfColumns(element: Window) {

@@ -1,4 +1,14 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, HostListener, Input, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  HostListener,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import {Node} from '../models/Node.class';
 
 @Component({
@@ -7,11 +17,15 @@ import {Node} from '../models/Node.class';
   styleUrls: ['./grid-node.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GridNodeComponent {
+export class GridNodeComponent implements OnChanges{
   @Input() vm!: Node;
   @Input() listen!: boolean;
   @Output() addedWall = new EventEmitter<{col: number, row: number}>();
   @Output() mouseEnter = new EventEmitter<{col: number, row: number}>();
+
+  constructor(private cd: ChangeDetectorRef) {
+    this.cd.detach();
+  }
 
   @HostListener('mousedown', ['$event'])
   onMouseDown(_: MouseEvent) {
@@ -22,6 +36,10 @@ export class GridNodeComponent {
   onMouseEnter(event: MouseEvent) {
     event.stopImmediatePropagation();
     this.mouseEnter.emit({row: this.vm.getRowIdx(), col: this.vm.getColumnIdx()});
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    this.cd.detectChanges();
   }
 
   classNames() {
