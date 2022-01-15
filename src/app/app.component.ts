@@ -9,8 +9,6 @@ import {Grid} from './models/grid.types';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  private startNode = {colIdx: 5, rowIdx: 10};
-  private finishNode = {colIdx: 15, rowIdx: 10};
   nodes = this.generateGrid();
   buildWalls = false;
   prevNode = {col: null, row: null};
@@ -18,8 +16,8 @@ export class AppComponent {
   prevEnd = {col: null, row: null};
   moveHead = false;
   moveEnd = false;
-
-  constructor() {}
+  private startNode = {colIdx: 5, rowIdx: 10};
+  private finishNode = {colIdx: 15, rowIdx: 10};
 
   generateGrid(): Grid {
     const {row, col} = this.getGridSize();
@@ -32,44 +30,6 @@ export class AppComponent {
     }
 
     return nodes;
-  }
-
-  private getGridSize(): {row: number, col: number} {
-    return {
-      row: this.calculateAmountOfRows(window),
-      col: this.calculateAmountOfColumns(window)
-    }
-  }
-
-  private generateGridNode({row, col}: {row: number, col: number}): Node {
-    return new Node({
-      rowIdx: row,
-      colIdx: col,
-      isStartNode: row === this.startNode.rowIdx && col === this.startNode.colIdx,
-      isFinishNode: row === this.finishNode.rowIdx && col === this.finishNode.colIdx,
-    });
-  }
-
-  private generateEmptyGrid({row, col}: {row: number, col: number}) {
-    return Array(row)
-      .fill(0)
-      .map(() => Array(col).fill(null));
-  }
-
-  calculateAmountOfRows(element: Window) {
-    return Math.floor((element.innerHeight * .8) / 30);
-  }
-
-  calculateAmountOfColumns(element: Window) {
-    return Math.floor(element.innerWidth / 30);
-  }
-
-  private getStartNode(): Node {
-    return this.nodes[this.startNode.rowIdx][this.startNode.colIdx];
-  }
-
-  private getEndNode(): Node {
-    return this.nodes[this.finishNode.rowIdx][this.finishNode.colIdx];
   }
 
   runAlgo() {
@@ -162,11 +122,49 @@ export class AppComponent {
     }
   }
 
-  private isSameNode(node: any): boolean {
-    return this.prevNode.row !== node.row || this.prevNode.col !== node.col;
-  }
-
   clearBoard() {
     this.nodes = this.generateGrid();
+  }
+
+  private calculateAmountOfColumns(element: Window) {
+    return Math.floor(element.innerWidth / 30);
+  }
+
+  private calculateAmountOfRows(element: Window) {
+    return Math.floor((element.innerHeight * .8) / 30);
+  }
+
+  private getGridSize(): {row: number, col: number} {
+    return {
+      row: this.calculateAmountOfRows(window),
+      col: this.calculateAmountOfColumns(window)
+    }
+  }
+
+  private generateGridNode({row, col}: {row: number, col: number}): Node {
+    return new Node({
+      rowIdx: row,
+      colIdx: col,
+      isStartNode: row === this.startNode.rowIdx && col === this.startNode.colIdx,
+      isFinishNode: row === this.finishNode.rowIdx && col === this.finishNode.colIdx,
+    });
+  }
+
+  private generateEmptyGrid({row, col}: {row: number, col: number}) {
+    return Array(row)
+      .fill(0)
+      .map(() => Array(col).fill(null));
+  }
+
+  private getStartNode(): Node {
+    return this.nodes[this.startNode.rowIdx][this.startNode.colIdx];
+  }
+
+  private getEndNode(): Node {
+    return this.nodes[this.finishNode.rowIdx][this.finishNode.colIdx];
+  }
+
+  private isSameNode(node: any): boolean {
+    return this.prevNode.row !== node.row || this.prevNode.col !== node.col;
   }
 }

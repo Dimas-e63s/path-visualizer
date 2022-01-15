@@ -12,8 +12,8 @@
     *ngFor="let row of nodes; let rowIdx = index;"
   >
     <app-grid-node
-      [vm]="column"
       *ngFor="let column of nodes[rowIdx]"
+      [vm]="column"
       (addedWall)="onAddedWall($event)"
       (mouseEnter)="onDraw($event)"
     ></app-grid-node>
