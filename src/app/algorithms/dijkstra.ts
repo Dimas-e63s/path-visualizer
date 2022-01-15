@@ -7,9 +7,14 @@ interface UnvisitedNodes {
   [key: string]: Node;
 }
 
+export interface GridNodeCoordinates {
+  columnIdx: number;
+  rowIdx: number;
+}
+
 type Heap = CustomHeap<Node>;
 
-class Dijkstra {
+export class Dijkstra {
   static isFirstRow(rowIdx: number): boolean {
     return rowIdx === 0;
   }
@@ -69,7 +74,7 @@ export function dijkstra({grid, startNode, endNode}: {grid: Grid, startNode: Nod
   return [visitedNodesInOrder, res];
 }
 
-class Utils {
+export class Utils {
   static getNodeKey(node: any): string {
     return `${node.columnIdx}-${node.rowIdx}`;
   }

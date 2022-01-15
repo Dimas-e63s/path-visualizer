@@ -35,31 +35,38 @@ export class AppComponent {
   runAlgo() {
     const startNode = this.getStartNode();
     const endNode = this.getEndNode();
-    const visitedNodesInOrder = dijkstra({
+    const [visitedNodesInOrder, shortestPath] = dijkstra({
       grid: this.nodes,
       startNode,
       endNode,
     });
 
-    debugger
-
-    for (let i = 0; i < visitedNodesInOrder[0].length; i++) {
-      const node = visitedNodesInOrder[0][i];
-      const copy = this.nodes[node.getRowIdx()][node.getColumnIdx()].clone();
-      copy.setAsVisited();
-      setTimeout(() => {
+    const timeout = (index: number) =>
+      setTimeout(() =>  {
+        if (index === visitedNodesInOrder.length){
+          if (shortestPath.length > 0) {
+            timeout2(0)
+          }
+          return;
+        }
+        const node = visitedNodesInOrder[index];
+        const copy = this.nodes[node.getRowIdx()][node.getColumnIdx()].clone();
+        copy.setAsVisited();
         this.nodes[node.getRowIdx()][node.getColumnIdx()] = copy;
-      }, 7 * i);
-    }
+        timeout(index + 1);
+      }, 5);
 
-    debugger
-    for (let i = 0; i < visitedNodesInOrder[1].length; i++) {
-      const node = visitedNodesInOrder[1][i];
-      const copy = this.nodes[node.getRowIdx()][node.getColumnIdx()].clone({isShortestPath: true});
-      setTimeout(() => {
-        this.nodes[node.getRowIdx()][node.getColumnIdx()] = copy;
-      }, 50 * i);
-    }
+    timeout(0);
+
+    const timeout2 = (index: number) =>
+      setTimeout(() =>  {
+        if (index === shortestPath.length){
+          return;
+        }
+        const node = shortestPath[index].clone({isShortestPath: true});
+        this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
+        timeout2(index + 1);
+      }, 40);
   }
 
   onAddedWall({col, row}: {col: number, row: number}) {
