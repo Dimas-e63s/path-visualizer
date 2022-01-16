@@ -1,9 +1,10 @@
 import {Node, NodeWeights} from '../../models/Node.class';
-import {GridRow, Grid, GridMap} from '../../models/grid.types';
+import {GridRow, Grid} from '../../models/grid.types';
 import {Utils} from '../utils/utils.class';
 
 // TODO:
 //  - optimize traverse() with priorityQueue
+//  - add test cases for negative index and NaN
 
 export class Dijkstra {
   private readonly grid: Grid;
@@ -35,31 +36,20 @@ export class Dijkstra {
     unvisitedNodes.sort((nodeA, nodeB) => nodeA.distance - nodeB.distance);
   }
 
-  static getNodesCopy(grid: Grid): GridMap {
-    const nodes: GridMap = new Map();
-    for (const row of grid) {
-      for (const node of row) {
-        nodes.set(Utils.getNodeKey(node), node.clone());
-      }
-    }
-    return nodes;
-  }
-
   static isNodeAccessible(node: Node): boolean {
     return node.distance !== NodeWeights.WALL;
   }
 
-   traverse(): [GridRow, GridRow] {
+  traverse(): [GridRow, GridRow] {
     const visitedNodesInOrder: GridRow = [];
     this.startNode.distance = 0;
-    const unvisitedNodes = Dijkstra.getNodesCopy(this.grid);
+    const unvisitedNodes = Utils.getNodesCopy(this.grid);
 
     const gridCopy = [];
     for (const node of unvisitedNodes.values()) {
       gridCopy.push(node);
     }
 
-    const startNodeId = Utils.getNodeKey(this.startNode);
     const endNodeId = Utils.getNodeKey(this.endNode);
     const {totalRow, totalCol} = Utils.getGridSize(this.grid);
 
@@ -91,12 +81,9 @@ export class Dijkstra {
         });
     }
 
-    debugger
-    const shortestPath = Utils.getNodesInShortestPathOrder({
-      startNode: unvisitedNodes.get(startNodeId) as Node,
-      finishNode: unvisitedNodes.get(endNodeId) as Node,
-      grid: unvisitedNodes,
-    });
+    const shortestPath = Utils.getNodesInShortestPathOrder(
+      unvisitedNodes.get(endNodeId) as Node,
+    );
 
     return [visitedNodesInOrder, shortestPath];
   }

@@ -9,7 +9,7 @@ interface GridSize {
 }
 
 interface GridNodeCoordinates {
-  columnIdx: number;
+  colIdx: number;
   rowIdx: number;
 }
 

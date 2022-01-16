@@ -1,6 +1,6 @@
 import {Dijkstra} from './dijkstra';
 import {Node, NodeWeights} from '../../models/Node.class';
-import {Grid, GridRow} from '../../models/grid.types';
+import {GridRow} from '../../models/grid.types';
 
 // TODO :
 //  - cover constructor
@@ -109,47 +109,6 @@ describe('Dijkstra Class', () => {
       Dijkstra.sortNodesByDistance(stubArr);
 
       expect(stubArr).toEqual(stubExpectedResult);
-    })
-  })
-
-  describe('getNodesCopy', () => {
-    beforeEach(() => {
-      const nodeClassMatcher = (a: Node, b: Node) => {
-        return a.id !== b.id
-          && a.getColumnIdx() === b.getColumnIdx()
-          && a.getRowIdx() === b.getRowIdx()
-          && a.getIsFinishNode() === b.getIsFinishNode()
-          && a.getIsStartNode() === b.getIsStartNode()
-          && a.distance === b.distance
-          && a.previousNode === b.previousNode
-          && a.weight === b.weight;
-      }
-
-      jasmine.addCustomEqualityTester(nodeClassMatcher);
-    })
-    it('should return empty hash-map', () => {
-      let stubVal: Grid = [];
-
-      expect(Dijkstra.getNodesCopy(stubVal)).toHaveSize(0);
-    });
-
-    it('should return hash-map with 3 Node', () => {
-      const gridRow: GridRow = Array(3).fill(0).map((_, idx) => new Node({
-        colIdx: idx,
-        rowIdx: idx,
-        isFinishNode: false,
-        isStartNode: false,
-        distance: 1
-      }));
-
-      const [stubNode1, stubNode2, stubNode3] = gridRow;
-      const clonedGrid = Dijkstra.getNodesCopy([gridRow]);
-      const [clonedNode1, clonedNode2, clonedNode3] = clonedGrid.values();
-
-      expect(clonedGrid).toHaveSize(3);
-      expect(clonedNode1).toEqual(stubNode1);
-      expect(clonedNode2).toEqual(stubNode2);
-      expect(clonedNode3).toEqual(stubNode3);
     })
   })
 

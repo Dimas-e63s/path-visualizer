@@ -1,16 +1,16 @@
 import {v4} from 'uuid';
-interface NodeInterface {
+export interface NodeInterface {
   rowIdx: number;
   colIdx: number;
-  isStartNode: boolean;
-  isFinishNode: boolean;
+  isStartNode?: boolean;
+  isFinishNode?: boolean;
   distance?: number;
   weight?: number
-  previousNode?: {columnIdx: number, rowIdx: number}
+  previousNode?: Node
   isShortestPath?: boolean
 }
 
-enum NodeWeights {
+export enum NodeWeights {
   WALL = Infinity,
   EMPTY = 1
 }
@@ -28,7 +28,7 @@ export class Node {
   readonly id: string;
 
   // @ts-ignore
-  constructor({rowIdx, colIdx, isStartNode, isFinishNode, distance = Infinity, weight = NodeWeights.EMPTY, previousNode = {columnIdx: null, rowIdx: null}, isShortestPath = false}: NodeInterface) {
+  constructor({rowIdx, colIdx, isStartNode = false, isFinishNode = false, distance = Infinity, weight = NodeWeights.EMPTY, previousNode = null, isShortestPath = false}: NodeInterface) {
     this.id = v4();
     this.rowIdx = rowIdx;
     this.columnIdx = colIdx;
