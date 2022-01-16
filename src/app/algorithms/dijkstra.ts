@@ -30,24 +30,39 @@ function sortNodesByDistance(unvisitedNodes: any) {
   unvisitedNodes.sort((nodeA: any, nodeB: any) => nodeA.distance - nodeB.distance);
 }
 
+function getNodesCopy(grid: any): any {
+  const nodes = [];
+  for (const row of grid) {
+    for (const node of row) {
+      nodes.push(node);
+    }
+  }
+  return nodes;
+}
+
 export function dijkstra({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}): [GridRow, GridRow] {
   const visitedNodesInOrder: GridRow = [];
-  const unvisitedNodes = Utils.getNodesCopy(grid);
-
+  startNode.distance = 0;
+  const unvisitedNodes = getNodesCopy(grid);
   const {totalRow, totalCol} = Utils.getGridSize(grid);
 
-  unvisitedNodes[Utils.getNodeKey(startNode)].distance = 0;
-  const customMinHeap = new CustomHeap<Node>((a, b) => a.distance - b.distance);
-  customMinHeap.insert(unvisitedNodes[Utils.getNodeKey(startNode)] as Node);
-
-  while (!customMinHeap.isEmpty()) {
-    const closestNode = customMinHeap.extractRoot() as Node;
+  while (unvisitedNodes.length > 0) {
+    // debugger
+    sortNodesByDistance(unvisitedNodes);
+    // debugger
+    const closestNode = unvisitedNodes.shift();
 
     if (closestNode.isWall()) {
       continue;
     }
 
+    if (closestNode.distance === Infinity) {
+      break;
+    }
+
+    closestNode.setAsVisited();
     visitedNodesInOrder.push(closestNode);
+
     if (Utils.isEndNode(closestNode, endNode)) {
       break;
     }
@@ -55,16 +70,15 @@ export function dijkstra({grid, startNode, endNode}: {grid: Grid, startNode: Nod
     Utils.updateUnvisitedNeighbors(
       {
         node: closestNode,
-        grid: unvisitedNodes,
+        grid: grid,
         totalCol,
         totalRow,
-        minHeap: customMinHeap,
       });
   }
-
+  debugger
   const res = Utils.getNodesInShortestPathOrder({
     startNode,
-    finishNode: visitedNodesInOrder[visitedNodesInOrder.length - 1],
+    finishNode: endNode,
     grid: unvisitedNodes,
   });
 
@@ -120,14 +134,11 @@ export class Utils {
                                     grid,
                                     totalCol,
                                     totalRow,
-                                    minHeap,
-                                  }: {node: Node, grid: UnvisitedNodes, totalCol: number, totalRow: number, minHeap: Heap}): void {
+                                  }: {node: Node, grid: any, totalCol: number, totalRow: number}): void {
     const unvisitedNeighbors = Utils.getUnvisitedNeighbors({node, grid, totalCol, totalRow});
     for (const neighbor of unvisitedNeighbors) {
-      neighbor.setAsVisited();
-      neighbor.distance = node.distance + 1;
-      neighbor.previousNode = {columnIdx: node.getColumnIdx(), rowIdx: node.getRowIdx()};
-      minHeap.insert(neighbor);
+      neighbor.distance = node.distance + neighbor.weight;
+      neighbor.previousNode = node;
     }
   }
 
@@ -140,18 +151,20 @@ export class Utils {
     const neighbors: GridRow = [];
     const {columnIdx: col, rowIdx: row} = node;
     if (!Dijkstra.isFirstRow(row)) {
-      neighbors.push(
-        grid[Utils.getNodeKey({columnIdx: col, rowIdx: row - 1})],
-      );
-    }
-    if (!Dijkstra.isLastRow(row, totalRow - 1)) {
-      neighbors.push(grid[Utils.getNodeKey({columnIdx: col, rowIdx: row + 1})]);
+      //@ts-ignore
+      neighbors.push(grid[row - 1][col]);
     }
     if (!Dijkstra.isFirstColumn(col)) {
-      neighbors.push(grid[Utils.getNodeKey({columnIdx: col - 1, rowIdx: row})]);
+      //@ts-ignore
+      neighbors.push(grid[row][col - 1]);
     }
     if (!Dijkstra.isLastColumn(col, totalCol - 1)) {
-      neighbors.push(grid[Utils.getNodeKey({columnIdx: col + 1, rowIdx: row})]);
+      //@ts-ignore
+      neighbors.push(grid[row][col + 1]);
+    }
+    if (!Dijkstra.isLastRow(row, totalRow - 1)) {
+      //@ts-ignore
+      neighbors.push(grid[row + 1][col]);
     }
 
     return neighbors.filter(neighbor => !neighbor.isVisitedNode());
@@ -160,14 +173,14 @@ export class Utils {
   static getNodesInShortestPathOrder({startNode, finishNode, grid}: {startNode: Node, finishNode: Node, grid: UnvisitedNodes}) {
     const nodesInShortestPathOrder = [];
     let currentNode = finishNode;
-
-    while (true) {
-      currentNode = grid[Utils.getNodeKey(currentNode.previousNode)];
-      if (currentNode.getRowIdx() === startNode.getRowIdx() && currentNode.getColumnIdx() === startNode.getColumnIdx()) {
-        break;
-      }
+    while (currentNode.previousNode.columnIdx !== null && currentNode.previousNode.rowIdx !== null) {
       nodesInShortestPathOrder.unshift(currentNode);
+      currentNode = currentNode.previousNode;
     }
+    if (nodesInShortestPathOrder.length === 0) {
+      return [];
+    }
+    nodesInShortestPathOrder.length = nodesInShortestPathOrder.length - 1;
     return nodesInShortestPathOrder;
   }
 }

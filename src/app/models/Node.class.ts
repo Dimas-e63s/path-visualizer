@@ -12,7 +12,7 @@ interface NodeInterface {
 
 enum NodeWeights {
   WALL = Infinity,
-  EMPTY = 0
+  EMPTY = 1
 }
 
 export class Node {
