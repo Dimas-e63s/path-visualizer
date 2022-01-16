@@ -7,10 +7,17 @@ interface UnvisitedNodes {
   [key: string]: Node;
 }
 
+interface GridSize {
+  totalRow: number,
+  totalCol: number
+}
+
 export interface GridNodeCoordinates {
   columnIdx: number;
   rowIdx: number;
 }
+
+type GridMap = Map<string, Node>;
 
 type Heap = CustomHeap<Node>;
 
@@ -32,12 +39,15 @@ export class Dijkstra {
   }
 }
 
+function sortNodesByDistance(unvisitedNodes: any) {
+  unvisitedNodes.sort((nodeA: any, nodeB: any) => nodeA.distance - nodeB.distance);
+}
+
 export function dijkstra({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}): [GridRow, GridRow] {
   const visitedNodesInOrder: GridRow = [];
   const unvisitedNodes = Utils.getNodesCopy(grid);
 
-  const totalRow = grid.length;
-  const totalCol = grid[0].length;
+  const {totalRow, totalCol} = Utils.getGridSize(grid);
 
   unvisitedNodes[Utils.getNodeKey(startNode)].distance = 0;
   const customMinHeap = new CustomHeap<Node>((a, b) => a.distance - b.distance);
@@ -79,6 +89,21 @@ export class Utils {
     return `${node.columnIdx}-${node.rowIdx}`;
   }
 
+  static getGridRowSize(grid: Grid): number {
+    return grid.length;
+  }
+
+  static getGridColumnSize(grid: Grid): number {
+    return grid[0].length;
+  }
+
+  static getGridSize(grid: Grid): GridSize {
+    return {
+      totalRow: Utils.getGridRowSize(grid),
+      totalCol: Utils.getGridColumnSize(grid),
+    };
+  }
+
   static getNodesCopy(grid: Grid): UnvisitedNodes {
     const nodesMap: UnvisitedNodes = {};
     for (const row of grid) {
@@ -87,6 +112,15 @@ export class Utils {
       }
     }
     return nodesMap;
+  }
+
+  static traverseGrid({
+                        minHeap,
+                        visitedNode,
+                        endNode,
+                        gridSize,
+                      }: {minHeap: CustomHeap<Node>, visitedNode: GridRow, endNode: Node, gridSize: GridSize}) {
+
   }
 
   static isEndNode(currNode: Node, finishNode: Node): boolean {

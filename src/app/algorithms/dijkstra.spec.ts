@@ -1,4 +1,5 @@
 import {Utils, Dijkstra, GridNodeCoordinates} from './dijkstra';
+import {AppComponent} from '../app.component';
 
 describe('Dijkstra Class', () => {
   describe('isFirstRow', () => {
@@ -70,7 +71,14 @@ describe('Utils Class', () => {
         rowIdx: 10,
         columnIdx: 2,
       };
-      expect(Utils.getNodeKey(stubNode)).toBe('10-2');
+      expect(Utils.getNodeKey(stubNode)).toBe('2-10');
+    });
+  });
+
+  describe('getGridRowSize', () => {
+    it('should return 10 for 2d grid', () => {
+      let stubGrid =
+      expect(Utils.getNodeKey(stubNode)).toBe('2-10');
     });
   });
 });
