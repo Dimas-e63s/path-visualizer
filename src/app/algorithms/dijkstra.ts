@@ -1,23 +1,10 @@
-//@ts-ignore
-import {CustomHeap, HeapNode} from '@datastructures-js/heap';
+import {CustomHeap} from '@datastructures-js/heap';
 import {Node} from '../models/Node.class';
-import {GridRow, Grid} from '../models/grid.types';
+import {GridRow, Grid, GridSize} from '../models/grid.types';
 
 interface UnvisitedNodes {
   [key: string]: Node;
 }
-
-interface GridSize {
-  totalRow: number,
-  totalCol: number
-}
-
-export interface GridNodeCoordinates {
-  columnIdx: number;
-  rowIdx: number;
-}
-
-type GridMap = Map<string, Node>;
 
 type Heap = CustomHeap<Node>;
 
