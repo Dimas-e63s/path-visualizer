@@ -11,7 +11,7 @@
 
   &--visited {
     background-color: rgb(53, 219, 231);
-    animation: visitAnimation 1.5s ease-out;
+    animation: visitAnimation 1.5s ease-out 0s 1 alternate forwards running;
 
     border-right: 1px solid rgb(175, 216, 248);
     border-left: 1px solid rgb(175, 216, 248);
