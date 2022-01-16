@@ -1,5 +1,4 @@
 import {Grid, GridRow, GridSize} from '../models/grid.types';
-import {CustomHeap} from '@datastructures-js/heap';
 import {Node} from '../models/Node.class';
 import {Dijkstra} from './dijkstra';
 
@@ -38,11 +37,10 @@ export class Utils {
   }
 
   static traverseGrid({
-                        minHeap,
                         visitedNode,
                         endNode,
                         gridSize,
-                      }: {minHeap: CustomHeap<Node>, visitedNode: GridRow, endNode: Node, gridSize: GridSize}) {
+                      }: {visitedNode: GridRow, endNode: Node, gridSize: GridSize}) {
 
   }
 

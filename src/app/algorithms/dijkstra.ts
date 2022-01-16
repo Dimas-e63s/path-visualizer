@@ -1,9 +1,6 @@
-import {CustomHeap} from '@datastructures-js/heap';
 import {Node} from '../models/Node.class';
-import {GridRow, Grid, GridSize} from '../models/grid.types';
+import {GridRow, Grid} from '../models/grid.types';
 import {Utils} from './utils.class';
-
-type Heap = CustomHeap<Node>;
 
 export class Dijkstra {
   static isFirstRow(rowIdx: number): boolean {
@@ -50,9 +47,6 @@ export function dijkstra({grid, startNode, endNode}: {grid: Grid, startNode: Nod
 
   const startNodeId = `${startNode.getRowIdx()}-${startNode.getColumnIdx()}`;
   const endNodeId = `${endNode.getRowIdx()}-${endNode.getColumnIdx()}`
-
-  const minHeap = new CustomHeap<Node>((a, b) => a.distance - b.distance);
-  minHeap.insert(unvisitedNodes.get(startNodeId))
 
   const {totalRow, totalCol} = Utils.getGridSize(grid);
 
