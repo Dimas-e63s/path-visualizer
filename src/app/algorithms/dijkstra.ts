@@ -1,10 +1,7 @@
 import {CustomHeap} from '@datastructures-js/heap';
 import {Node} from '../models/Node.class';
 import {GridRow, Grid, GridSize} from '../models/grid.types';
-
-interface UnvisitedNodes {
-  [key: string]: Node;
-}
+import {Utils} from './utils.class';
 
 type Heap = CustomHeap<Node>;
 
@@ -31,10 +28,10 @@ function sortNodesByDistance(unvisitedNodes: any) {
 }
 
 function getNodesCopy(grid: any): any {
-  const nodes = [];
+  const nodes = new Map();
   for (const row of grid) {
     for (const node of row) {
-      nodes.push(node);
+      nodes.set(`${node.getRowIdx()}-${node.getColumnIdx()}`, node.clone());
     }
   }
   return nodes;
@@ -43,14 +40,25 @@ function getNodesCopy(grid: any): any {
 export function dijkstra({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}): [GridRow, GridRow] {
   const visitedNodesInOrder: GridRow = [];
   startNode.distance = 0;
+  // SHARE REFERENCE
   const unvisitedNodes = getNodesCopy(grid);
+
+  const gridCopy = [];
+  for (const node of unvisitedNodes.values()) {
+    gridCopy.push(node);
+  }
+
+  const startNodeId = `${startNode.getRowIdx()}-${startNode.getColumnIdx()}`;
+  const endNodeId = `${endNode.getRowIdx()}-${endNode.getColumnIdx()}`
+
+  const minHeap = new CustomHeap<Node>((a, b) => a.distance - b.distance);
+  minHeap.insert(unvisitedNodes.get(startNodeId))
+
   const {totalRow, totalCol} = Utils.getGridSize(grid);
 
-  while (unvisitedNodes.length > 0) {
-    // debugger
-    sortNodesByDistance(unvisitedNodes);
-    // debugger
-    const closestNode = unvisitedNodes.shift();
+  while (gridCopy.length > 0) {
+    sortNodesByDistance(gridCopy);
+    const closestNode = gridCopy.shift();
 
     if (closestNode.isWall()) {
       continue;
@@ -70,15 +78,16 @@ export function dijkstra({grid, startNode, endNode}: {grid: Grid, startNode: Nod
     Utils.updateUnvisitedNeighbors(
       {
         node: closestNode,
-        grid: grid,
+        grid: unvisitedNodes,
         totalCol,
         totalRow,
       });
   }
+
   debugger
   const res = Utils.getNodesInShortestPathOrder({
-    startNode,
-    finishNode: endNode,
+    startNode: unvisitedNodes.get(startNodeId),
+    finishNode: unvisitedNodes.get(endNodeId),
     grid: unvisitedNodes,
   });
 
