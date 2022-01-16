@@ -49,7 +49,7 @@ export class GridNodeComponent implements OnChanges{
       [`${BASE_CLASS}--finish`]: this.vm.getIsFinishNode(),
       [`${BASE_CLASS}--visited`]: this.vm.isVisitedNode(),
       [`${BASE_CLASS}--wall`]: this.vm.isWall(),
-      [`${BASE_CLASS}--path`]: this.vm.isShortestPath
+      [`${BASE_CLASS}--path`]: this.vm.getIsShortestPath()
     };
   }
 }

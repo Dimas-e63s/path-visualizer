@@ -84,7 +84,7 @@ export class Node {
   }
 
   setAsWall(): void {
-    if (!(this.isStartNode && this.isFinishNode)) {
+    if (!this.isStartNode && !this.isFinishNode) {
       this.weight = NodeWeights.WALL;
     }
   }
@@ -97,4 +97,7 @@ export class Node {
     return this.isFinishNode;
   }
 
+  getIsShortestPath() {
+    return !this.isStartNode && !this.isFinishNode && this.isShortestPath;
+  }
 }
