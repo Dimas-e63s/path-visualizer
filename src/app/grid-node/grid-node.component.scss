@@ -1,0 +1,75 @@
+:host {
+  display: flex;
+  flex: 1;
+  pointer-events: auto;
+
+}
+.node {
+  width: 100%;
+  border-right: 1px solid #595959;
+  border-left: 1px solid #595959;
+
+  &--visited {
+    background-color: rgb(53, 219, 231);
+    animation: visitAnimation 1.5s ease-out 0s 1 alternate forwards running;
+
+    border-right: 1px solid rgb(175, 216, 248);
+    border-left: 1px solid rgb(175, 216, 248);
+  }
+
+  &--wall,
+  &--start,
+  &--finish,
+  &--path {
+    animation: scaleAnimation .4s ease-out;
+  }
+
+  &--wall {
+    background-color: #0c3547ff;
+  }
+
+  &--start {
+    background-color: green;
+  }
+
+  &--finish {
+    background-color: red;
+  }
+
+  &--path {
+    background-color: yellow;
+  }
+}
+
+@keyframes visitAnimation {
+  0% {
+    border-radius: 50%;
+    transform: scale(0);
+    background-color: rgb(7, 7, 189);
+  }
+  50% {
+    background-color: rgb(53, 219, 231);
+  }
+  75% {
+    transform: scale(1.2);
+    background-color: rgba(0, 217, 159, 0.75);
+  }
+  100% {
+    transform: scale(1.0);
+    background-color: rgb(53, 219, 231);
+  }
+}
+
+@keyframes scaleAnimation {
+  0% {
+    transform: scale(.3);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1.0);
+  }
+}
