@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {Node} from './models/Node.class';
-import {dijkstra} from './algorithms/dijkstra';
+import {Dijkstra} from './algorithms/dijkstra/dijkstra';
 import {Grid, GridRow} from './models/grid.types';
 
 @Component({
@@ -9,8 +9,8 @@ import {Grid, GridRow} from './models/grid.types';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  private startNode = {colIdx: 5, rowIdx: 10};
-  private finishNode = {colIdx: 25, rowIdx: 2};
+  private startNode = {colIdx: 2, rowIdx: 2};
+  private finishNode = {colIdx: 11, rowIdx: 0};
   nodes = this.generateGrid();
   buildWalls = false;
   prevNode = {col: null, row: null};
@@ -35,11 +35,11 @@ export class AppComponent {
   runAlgo() {
     const startNode = this.getStartNode();
     const endNode = this.getEndNode();
-    const [visitedNodesInOrder, shortestPath] = dijkstra({
+    const [visitedNodesInOrder, shortestPath] = new Dijkstra({
       grid: this.nodes,
       startNode,
       endNode,
-    });
+    }).traverse();
 
     const timeout = (index: number) =>
       setTimeout(() =>  {
