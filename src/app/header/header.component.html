@@ -1,0 +1,32 @@
+<header class="header">
+  <h1 class="header__title">Pathfinding Visualizer</h1>
+  <app-dropdown [items]="algorithmsOptions" buttonText="Algorithms"></app-dropdown>
+  <app-dropdown [items]="mazesOptions" buttonText="Mazes"></app-dropdown>
+  <button
+    tuiButton
+    size="m"
+    type="button"
+    (click)="onAlgoClick()"
+  >
+    Run Algo
+  </button>
+  <button
+    tuiButton
+    size="m"
+    type="button"
+    appearance="secondary"
+    (click)="onClearPath()"
+  >
+    Clear Path
+  </button>
+  <button
+    tuiButton
+    size="m"
+    type="button"
+    appearance="secondary"
+    (click)="onClearWalls()"
+  >
+    Clear Walls
+  </button>
+  <app-dropdown [items]="speedOptions" buttonText="Speed"></app-dropdown>
+</header>
