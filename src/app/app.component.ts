@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Node} from './models/Node.class';
+import {Node, NodeWeights} from './models/Node.class';
 import {Dijkstra} from './algorithms/dijkstra/dijkstra';
 import {Grid, GridRow} from './models/grid.types';
 import {distinctUntilChanged, fromEvent, map, Subject, takeUntil} from 'rxjs';
@@ -255,5 +255,25 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private isSameNode(node: any): boolean {
     return this.prevNode.row !== node.row || this.prevNode.col !== node.col;
+  }
+
+  clearWalls() {
+    for(const row of this.nodes) {
+      for (const column of row) {
+        if (column.isWall()) {
+          this.nodes[column.getRowIdx()][column.getColumnIdx()] = column.clone({weight: NodeWeights.EMPTY})
+        }
+      }
+    }
+  }
+
+  clearPath() {
+    for(const row of this.nodes) {
+      for (const column of row) {
+        if (column.isVisitedNode() || column.isShortestPath) {
+          this.nodes[column.getRowIdx()][column.getColumnIdx()] = column.clone({isShortestPath: false})
+        }
+      }
+    }
   }
 }
