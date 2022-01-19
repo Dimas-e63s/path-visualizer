@@ -71,7 +71,7 @@ export class Utils {
 
   static getBelowNode(node: Node, grid: GridMap): Node {
     const {rowIdx, colIdx} = Utils.getNodeCoordinates(node);
-    const nodeBelow = new Node({colIdx, rowIdx: rowIdx - 1});
+    const nodeBelow = new Node({colIdx, rowIdx: rowIdx + 1});
 
     return grid.get(Utils.getNodeKey(nodeBelow)) as Node;
   }
@@ -85,14 +85,14 @@ export class Utils {
 
   static getUpNode(node: Node, grid: GridMap): Node {
     const {rowIdx, colIdx} = Utils.getNodeCoordinates(node);
-    const upNode = new Node({colIdx: colIdx + 1, rowIdx});
+    const upNode = new Node({colIdx, rowIdx: rowIdx - 1});
 
     return grid.get(Utils.getNodeKey(upNode)) as Node;
   }
 
   static getRightNode(node: Node, grid: GridMap): Node {
     const {rowIdx, colIdx} = Utils.getNodeCoordinates(node);
-    const rightNode = new Node({colIdx, rowIdx: rowIdx + 1});
+    const rightNode = new Node({colIdx: colIdx + 1, rowIdx});
 
     return grid.get(Utils.getNodeKey(rightNode)) as Node;
   }
@@ -106,15 +106,15 @@ export class Utils {
     const neighbors: GridRow = [];
     const {columnIdx: col, rowIdx: row} = node;
     if (!Dijkstra.isFirstRow(row)) {
+      neighbors.push(Utils.getUpNode(node, grid));
+    }
+    if (!Dijkstra.isLastRow(row, totalRow - 1)) {
       neighbors.push(Utils.getBelowNode(node, grid));
     }
     if (!Dijkstra.isFirstColumn(col)) {
       neighbors.push(Utils.getLeftNode(node, grid));
     }
     if (!Dijkstra.isLastColumn(col, totalCol - 1)) {
-      neighbors.push(Utils.getUpNode(node, grid));
-    }
-    if (!Dijkstra.isLastRow(row, totalRow - 1)) {
       neighbors.push(Utils.getRightNode(node, grid));
     }
 

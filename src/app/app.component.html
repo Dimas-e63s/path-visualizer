@@ -1,6 +1,12 @@
-<button (click)="runAlgo()">Run Dijkstra</button>
-<button (click)="clearBoard()">Clear Board</button>
-<div style="height: 200px;"></div>
+<tui-root>
+<app-header
+  (onAlgoRunButtonWasClicked)="runAlgo()"
+  (onClearPathWasClicked)="clearPath()"
+  (onClearWallsWasClicked)="clearWalls()"
+></app-header>
+  <div style="height: 120px">
+    Lorem ipsum dolor sit amet.
+  </div>
 <section
   (mousedown)="startEditing()"
   (mouseup)="breakEdit()"
@@ -19,3 +25,5 @@
     ></app-grid-node>
   </div>
 </section>
+
+</tui-root>

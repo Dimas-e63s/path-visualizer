@@ -1,0 +1,15 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #34495e;
+  height: 75px;
+  padding: 0 15px;
+
+  &__title {
+    font-family: 'Roboto', sans-serif;
+    color: #fff;
+    letter-spacing: .5px;
+    font-size: 20px;
+  }
+}
