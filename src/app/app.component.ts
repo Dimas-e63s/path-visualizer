@@ -123,12 +123,12 @@ export class AppComponent implements OnInit, OnDestroy {
           }
           return;
         }
-        const node = visitedNodesInOrder[index];
+        const node = visitedNodesInOrder[index] as Node;
         const copy = this.nodes[node.getRowIdx()][node.getColumnIdx()].clone();
         copy.setAsVisited();
         this.nodes[node.getRowIdx()][node.getColumnIdx()] = copy;
         timeout(index + 1);
-      }, 5);
+      }, 15);
 
     timeout(0);
 
@@ -137,7 +137,7 @@ export class AppComponent implements OnInit, OnDestroy {
         if (index === shortestPath.length){
           return;
         }
-        const node = shortestPath[index].clone({isShortestPath: true});
+        const node = (shortestPath[index] as Node).clone({isShortestPath: true});
         this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
         timeout2(index + 1);
       }, 40);
@@ -261,19 +261,13 @@ export class AppComponent implements OnInit, OnDestroy {
     for(const row of this.nodes) {
       for (const column of row) {
         if (column.isWall()) {
-          this.nodes[column.getRowIdx()][column.getColumnIdx()] = column.clone({weight: NodeWeights.EMPTY})
+          this.nodes[column.getRowIdx()][column.getColumnIdx()] = column.clone({weight: NodeWeights.EMPTY, previousNode: null})
         }
       }
     }
   }
 
   clearPath() {
-    for(const row of this.nodes) {
-      for (const column of row) {
-        if (column.isVisitedNode() || column.isShortestPath) {
-          this.nodes[column.getRowIdx()][column.getColumnIdx()] = column.clone({isShortestPath: false})
-        }
-      }
-    }
+    this.clearBoard();
   }
 }

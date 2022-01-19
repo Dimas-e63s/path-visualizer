@@ -6,7 +6,7 @@ export interface NodeInterface {
   isFinishNode?: boolean;
   distance?: number;
   weight?: number
-  previousNode?: Node
+  previousNode?: Node | null
   isShortestPath?: boolean
 }
 
