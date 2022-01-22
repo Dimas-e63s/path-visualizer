@@ -3,6 +3,7 @@ import {Node, NodeWeights} from './models/Node.class';
 import {Dijkstra} from './algorithms/dijkstra/dijkstra';
 import {Grid, GridRow} from './models/grid.types';
 import {distinctUntilChanged, fromEvent, map, Subject, takeUntil} from 'rxjs';
+import {Backtracking} from './algorithms/maze-generation/backtracking/backtracking';
 
 @Component({
   selector: 'app-root',
@@ -269,5 +270,22 @@ export class AppComponent implements OnInit, OnDestroy {
 
   clearPath() {
     this.clearBoard();
+    const maze = new Backtracking(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
+    const nodesToAnimate: GridRow = [];
+    for (const node of maze.values()) {
+      nodesToAnimate.push(node);
+    }
+
+    const timeout = (index: number) =>
+      setTimeout(() =>  {
+        if (index === nodesToAnimate.length){
+          return;
+        }
+        const node = nodesToAnimate[index] as Node;
+        this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
+        timeout(index + 1);
+      }, 0);
+
+    timeout(0);
   }
 }

@@ -1,6 +1,7 @@
 import {Grid, GridMap, GridRow} from '../../../models/grid.types';
 import {Utils} from '../../utils/utils.class';
 import {NodeWeights, Node} from '../../../models/Node.class';
+import {Stack} from '@datastructures-js/stack';
 
 enum DirectionsEnum {
   N = 1,
@@ -23,7 +24,7 @@ const DY = new Map<DirectionsEnum, number>([
   [DirectionsEnum.S, 1],
 ]);
 
-export class RecursiveBacktracking {
+export class Backtracking {
   private readonly totalCol: number;
   private readonly totalRow: number;
   private readonly visitedNodes = new Set<string>();
@@ -41,11 +42,9 @@ export class RecursiveBacktracking {
     this.grid = Utils.getNodesCopy(grid);
   }
 
-  helper2() {
+  getMaze() {
     this.transformToWalls();
-    this.generateMaze({cx: 0, cy: 0, grid: this.grid});
-    const oldStart = this.grid.get(Utils.getNodeKey(this.startNode));
-    const oldEnd = this.grid.get(Utils.getNodeKey(this.endNode));
+    this.generateMazeIterative({cx: 0, cy: 0, grid: this.grid});
 
     this.grid.set(Utils.getNodeKey(this.startNode), this.startNode);
     this.grid.set(Utils.getNodeKey(this.endNode), this.endNode);
@@ -60,6 +59,63 @@ export class RecursiveBacktracking {
 
   private getNodeKey(row: number, col: number): string {
     return `${row}-${col}`;
+  }
+
+  private generateMazeIterative({cx, cy, grid}: {cx: number, cy: number, grid: GridMap}) {
+    // 1. Choose the initial cell, mark it as visited and push it to the stack
+    // 2. While the stack is not empty
+    //    1. Pop a cell from the stack and make it a current cell
+    //    2. If the current cell has any neighbours which have not been visited
+    //        1. Push the current cell to the stack
+    //        2. Choose one of the unvisited neighbours
+    //        3. Remove the wall between the current cell and the chosen cell
+    //        4. Mark the chosen cell as visited and push it to the stack
+    const stack = new Stack<string>();
+    const initialNodeKey = this.getNodeKey(cy, cx);
+    stack.push(initialNodeKey);
+
+    this.visitedNodes.add(initialNodeKey);
+    const initialNode = grid.get(initialNodeKey)!.clone({weight: NodeWeights.EMPTY});
+    grid.set(initialNodeKey, initialNode);
+
+    while (!stack.isEmpty()) {
+      const currNode = stack.pop();
+
+      const direction = this.randomSort([DirectionsEnum.N, DirectionsEnum.S, DirectionsEnum.E, DirectionsEnum.W]);
+
+      const unvisitedNodes = direction.filter(direction => {
+        let wallX = +currNode.split('-')[1] + DX.get(direction)!;
+        let wallY = +currNode.split('-')[0] + DY.get(direction)!;
+
+        let newX = wallX + DX.get(direction)!;
+        let newY = wallY + DY.get(direction)!;
+
+        return (newY >= 0 && newY < this.totalRow)
+          && (newX >= 0 && newX < this.totalCol)
+          && !this.visitedNodes.has(this.getNodeKey(newY, newX))
+          && !this.visitedNodes.has(this.getNodeKey(wallY, wallX));
+      });
+
+      if (unvisitedNodes.length > 0) {
+        stack.push(currNode);
+
+        let wallX = +currNode.split('-')[1] + DX.get(unvisitedNodes[0])!;
+        let wallY = +currNode.split('-')[0] + DY.get(unvisitedNodes[0])!;
+
+        let newX = wallX + DX.get(unvisitedNodes[0])!;
+        let newY = wallY + DY.get(unvisitedNodes[0])!;
+
+        this.visitedNodes.add(this.getNodeKey(wallY, wallX));
+        const oldWall = grid.get(this.getNodeKey(wallY, wallX))!.clone({weight: NodeWeights.EMPTY});
+        grid.set(this.getNodeKey(wallY, wallX), oldWall);
+
+        this.visitedNodes.add(this.getNodeKey(newY, newX));
+        const neighbor = grid.get(this.getNodeKey(newY, newX))!.clone({weight: NodeWeights.EMPTY});
+        grid.set(this.getNodeKey(newY, newX), neighbor);
+
+        stack.push(this.getNodeKey(newY, newX));
+      }
+    }
   }
 
   private generateMaze({cx, cy, grid}: {cx: number, cy: number, grid: GridMap}) {
