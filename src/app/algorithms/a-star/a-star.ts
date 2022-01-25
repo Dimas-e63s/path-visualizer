@@ -72,9 +72,13 @@ export class AStar {
     return [nodesToAnimate, shortestPath];
   }
 
-  heuristic({currentNode, endNode}: {currentNode: Node, endNode: Node}) {
-    const colAbs = Math.abs(currentNode.getColumnIdx() - endNode.getColumnIdx());
-    const rowAbs = Math.abs(currentNode.getRowIdx() - endNode.getRowIdx());
+  private getPointsDistance(x: number, y: number) {
+    return Math.abs(x - y);
+  }
+
+  private heuristic({currentNode, endNode}: {currentNode: Node, endNode: Node}): number {
+    const colAbs = this.getPointsDistance(currentNode.getColumnIdx(), endNode.getColumnIdx());
+    const rowAbs = this.getPointsDistance(currentNode.getRowIdx(), endNode.getRowIdx());
 
     return (rowAbs + colAbs) * 1.001;
   }

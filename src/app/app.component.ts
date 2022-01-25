@@ -4,9 +4,11 @@ import {Dijkstra} from './algorithms/dijkstra/dijkstra';
 import {Grid, GridMap, GridRow} from './models/grid.types';
 import {distinctUntilChanged, fromEvent, map, Subject, takeUntil} from 'rxjs';
 import {Backtracking} from './algorithms/maze-generation/backtracking/backtracking';
-import {MazeGenerationEnum} from './header/header.component';
+import {MazeGenerationEnum, PathAlgorithmEnum} from './header/header.component';
 import {Kruskal} from './algorithms/maze-generation/kruskal/kruskal';
 import {Prim} from './algorithms/maze-generation/prim/prim';
+import {AStar} from './algorithms/a-star/a-star';
+import {UnweightedAlgorithms} from './algorithms/unweighted/unweighted-algorithms';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +19,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private startNode = {colIdx: 2, rowIdx: 20};
   private finishNode = {colIdx: 11, rowIdx: 0};
   private destroy$ = new Subject<void>();
+  private selectedPathAlgo: PathAlgorithmEnum = PathAlgorithmEnum.DIJKSTRA;
   nodes = this.generateGrid();
   buildWalls = false;
   prevNode = {col: null, row: null};
@@ -113,11 +116,40 @@ export class AppComponent implements OnInit, OnDestroy {
   runAlgo() {
     const startNode = this.getStartNode();
     const endNode = this.getEndNode();
-    const [visitedNodesInOrder, shortestPath] = new Dijkstra({
-      grid: this.nodes,
-      startNode,
-      endNode,
-    }).traverse();
+
+    let visitedNodesInOrder: GridRow;
+    let shortestPath: GridRow;
+
+    switch (this.selectedPathAlgo) {
+      case PathAlgorithmEnum.DIJKSTRA:
+        [visitedNodesInOrder, shortestPath] = new Dijkstra({
+          grid: this.nodes,
+          startNode,
+          endNode,
+        }).traverse();
+        break;
+      case PathAlgorithmEnum.A_STAR:
+        [visitedNodesInOrder, shortestPath] = new AStar().traverse({
+          grid: this.nodes,
+          startNode,
+          endNode,
+        });
+        break;
+      case PathAlgorithmEnum.BFS:
+        [visitedNodesInOrder, shortestPath] = new UnweightedAlgorithms().bfs({
+          grid: this.nodes,
+          startNode,
+          endNode,
+        });
+        break;
+      case PathAlgorithmEnum.DFS:
+        [visitedNodesInOrder, shortestPath] = new UnweightedAlgorithms().dfs({
+          grid: this.nodes,
+          startNode,
+          endNode,
+        });
+        break;
+    }
 
     const timeout = (index: number) =>
       setTimeout(() =>  {
@@ -219,48 +251,6 @@ export class AppComponent implements OnInit, OnDestroy {
     return node.id;
   }
 
-  private calculateAmountOfColumns(element: Window) {
-    return Math.floor(element.innerWidth / 30);
-  }
-
-  private calculateAmountOfRows(element: Window) {
-    return Math.floor((element.innerHeight * .8) / 30);
-  }
-
-  private getGridSize(): {row: number, col: number} {
-    return {
-      row: this.calculateAmountOfRows(window),
-      col: this.calculateAmountOfColumns(window)
-    }
-  }
-
-  private generateGridNode({row, col}: {row: number, col: number}): Node {
-    return new Node({
-      rowIdx: row,
-      colIdx: col,
-      isStartNode: row === this.startNode.rowIdx && col === this.startNode.colIdx,
-      isFinishNode: row === this.finishNode.rowIdx && col === this.finishNode.colIdx,
-    });
-  }
-
-  private generateEmptyGrid({row, col}: {row: number, col: number}) {
-    return Array(row)
-      .fill(0)
-      .map(() => Array(col).fill(null));
-  }
-
-  private getStartNode(): Node {
-    return this.nodes[this.startNode.rowIdx][this.startNode.colIdx];
-  }
-
-  private getEndNode(): Node {
-    return this.nodes[this.finishNode.rowIdx][this.finishNode.colIdx];
-  }
-
-  private isSameNode(node: any): boolean {
-    return this.prevNode.row !== node.row || this.prevNode.col !== node.col;
-  }
-
   clearWalls() {
     for(const row of this.nodes) {
       for (const column of row) {
@@ -275,8 +265,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.clearBoard();
   }
 
-  onAlgorithmSelected(algo: string) {
-    console.log(algo);
+  onAlgorithmSelected(algo: PathAlgorithmEnum) {
+    this.selectedPathAlgo = algo
   }
 
   onMazeAlgoSelected(mazeAlgo: string) {
@@ -317,5 +307,47 @@ export class AppComponent implements OnInit, OnDestroy {
 
   onAnimSpeedSelected(animSpeed: string) {
     console.log(animSpeed);
+  }
+
+  private calculateAmountOfColumns(element: Window) {
+    return Math.floor(element.innerWidth / 30);
+  }
+
+  private calculateAmountOfRows(element: Window) {
+    return Math.floor((element.innerHeight * .8) / 30);
+  }
+
+  private getGridSize(): {row: number, col: number} {
+    return {
+      row: this.calculateAmountOfRows(window),
+      col: this.calculateAmountOfColumns(window)
+    }
+  }
+
+  private generateGridNode({row, col}: {row: number, col: number}): Node {
+    return new Node({
+      rowIdx: row,
+      colIdx: col,
+      isStartNode: row === this.startNode.rowIdx && col === this.startNode.colIdx,
+      isFinishNode: row === this.finishNode.rowIdx && col === this.finishNode.colIdx,
+    });
+  }
+
+  private generateEmptyGrid({row, col}: {row: number, col: number}) {
+    return Array(row)
+      .fill(0)
+      .map(() => Array(col).fill(null));
+  }
+
+  private getStartNode(): Node {
+    return this.nodes[this.startNode.rowIdx][this.startNode.colIdx];
+  }
+
+  private getEndNode(): Node {
+    return this.nodes[this.finishNode.rowIdx][this.finishNode.colIdx];
+  }
+
+  private isSameNode(node: any): boolean {
+    return this.prevNode.row !== node.row || this.prevNode.col !== node.col;
   }
 }

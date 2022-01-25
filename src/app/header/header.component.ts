@@ -7,6 +7,13 @@ export enum MazeGenerationEnum {
   PRIM = 'Prim\'s Algorithm'
 }
 
+export enum PathAlgorithmEnum {
+  DIJKSTRA = 'Dijkstra Algorithm',
+  A_STAR = 'A* Search Algorithm',
+  BFS = 'Breath-first Search',
+  DFS = 'Depth-first Search'
+}
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -17,12 +24,17 @@ export class HeaderComponent {
   @Output() onAlgoRunButtonWasClicked = new EventEmitter<void>();
   @Output() onClearPathWasClicked = new EventEmitter<void>();
   @Output() onClearWallsWasClicked = new EventEmitter<void>();
-  @Output() onAlgorithmSelectedWasClicked = new EventEmitter<string>();
-  @Output() onMazeAlgorithmWasClicked = new EventEmitter<string>();
+  @Output() onAlgorithmSelectedWasClicked = new EventEmitter<PathAlgorithmEnum>();
+  @Output() onMazeAlgorithmWasClicked = new EventEmitter<MazeGenerationEnum>();
   @Output() onAnimSpeedWasClicked = new EventEmitter<string>();
 
   readonly animationSpeedOptions = ['Fast', 'Average', 'Slow'];
-  readonly algorithmsOptions = ['Dijkstra', 'A* Search', 'Breath-first Search', 'Depth-first Search'];
+  readonly algorithmsOptions = [
+    PathAlgorithmEnum.DIJKSTRA,
+    PathAlgorithmEnum.A_STAR,
+    PathAlgorithmEnum.BFS,
+    PathAlgorithmEnum.DFS
+  ];
   readonly mazesOptions = [
     MazeGenerationEnum.BACKTRACKING_REC,
     MazeGenerationEnum.BACKTRACKING_ITR,
@@ -42,11 +54,11 @@ export class HeaderComponent {
     this.onClearWallsWasClicked.emit();
   }
 
-  onAlgorithmSelected(algo: string) {
+  onAlgorithmSelected(algo: PathAlgorithmEnum) {
     this.onAlgorithmSelectedWasClicked.emit(algo);
   }
 
-  onMazeAlgorithmSelected(mazeAlgo: string) {
+  onMazeAlgorithmSelected(mazeAlgo: MazeGenerationEnum) {
     this.onMazeAlgorithmWasClicked.emit(mazeAlgo);
   }
 

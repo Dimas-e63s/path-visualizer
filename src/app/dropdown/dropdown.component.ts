@@ -11,12 +11,12 @@ export class DropdownComponent  {
   component?: TuiHostedDropdownComponent;
   @Input() items!: string[];
   @Input() buttonText!: string;
-  @Output() itemSelected = new EventEmitter<string>();
+  @Output() itemSelected = new EventEmitter<any>();
 
 
   open = false;
 
-  onClick(item: string) {
+  onClick(item: any) {
     this.open = false;
 
     if (this.component && this.component.nativeFocusableElement) {
