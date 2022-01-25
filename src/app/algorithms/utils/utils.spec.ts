@@ -187,7 +187,7 @@ describe('Utils Class', () => {
     it('should return node one row below current node', () => {
       const currentRow = 10;
       const currentNode = createNode({rowIdx: currentRow, colIdx: 9});
-      const nodeBelow = createNode({rowIdx: currentRow - 1, colIdx: 9});
+      const nodeBelow = createNode({rowIdx: currentRow + 1, colIdx: 9});
       const grid: GridMap = new Map([
         [Utils.getNodeKey(nodeBelow), nodeBelow]
       ]);
@@ -211,9 +211,9 @@ describe('Utils Class', () => {
 
   describe('getUpNode', () => {
     it('should return node one level above of current node', () => {
-      const currentColumn = 10;
-      const currentNode = createNode({rowIdx: 10, colIdx: currentColumn});
-      const upNode = createNode({rowIdx: 10, colIdx: currentColumn + 1});
+      const currentRow = 10;
+      const currentNode = createNode({rowIdx: currentRow, colIdx: 10});
+      const upNode = createNode({rowIdx: currentRow - 1, colIdx: 10});
       const grid: GridMap = new Map([
         [Utils.getNodeKey(upNode), upNode]
       ]);
@@ -224,14 +224,32 @@ describe('Utils Class', () => {
 
   describe('getRightNode', () => {
     it('should return right node of current node', () => {
-      const currentRow = 10;
-      const currentNode = createNode({rowIdx: currentRow, colIdx: 9});
-      const rightNode = createNode({rowIdx: currentRow + 1, colIdx: 9});
+      const currentCol = 10;
+      const currentNode = createNode({rowIdx: 10, colIdx: currentCol});
+      const rightNode = createNode({rowIdx: 10, colIdx: currentCol + 1});
       const grid: GridMap = new Map([
         [Utils.getNodeKey(rightNode), rightNode]
       ]);
 
       expect(Utils.getRightNode(currentNode, grid)).toEqual(rightNode);
     })
+  });
+
+  describe('getGridSize', () => {
+    it('should return {0, 0} for empty grid', () => {
+      const stubEmptyGrid: Grid = [];
+
+      expect(Utils.getGridSize(stubEmptyGrid)).toEqual({totalRow: 0, totalCol: 0});
+    });
+
+    it('should return size of the grid', () => {
+      const rows = 2;
+      const cols = 2;
+      const stubEmptyGrid: Grid = Array(rows)
+        .fill(0)
+        .map(() => Array(cols).fill(null));
+
+      expect(Utils.getGridSize(stubEmptyGrid)).toEqual({totalRow: rows, totalCol: cols});
+    });
   });
 });

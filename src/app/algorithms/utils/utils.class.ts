@@ -36,14 +36,6 @@ export class Utils {
     return nodes;
   }
 
-  static traverseGrid({
-                        visitedNode,
-                        endNode,
-                        gridSize,
-                      }: {visitedNode: GridRow, endNode: Node, gridSize: GridSize}) {
-
-  }
-
   static isEndNode(currNode: Node, endNode: Node): boolean {
     return currNode.getRowIdx() === endNode.getRowIdx()
       && currNode.getColumnIdx() === endNode.getColumnIdx();
@@ -102,9 +94,9 @@ export class Utils {
                                  grid,
                                  totalCol,
                                  totalRow,
-                               }: {node: any, grid: GridMap, totalCol: number, totalRow: number}): GridRow {
+                               }: {node: Node, grid: GridMap, totalCol: number, totalRow: number}): GridRow {
     const neighbors: GridRow = [];
-    const {columnIdx: col, rowIdx: row} = node;
+    const {colIdx: col, rowIdx: row} = Utils.getNodeCoordinates(node);
     if (!Dijkstra.isFirstRow(row)) {
       neighbors.push(Utils.getUpNode(node, grid));
     }
