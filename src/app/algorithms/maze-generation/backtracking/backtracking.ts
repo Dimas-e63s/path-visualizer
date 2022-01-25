@@ -40,11 +40,19 @@ export class Backtracking {
     this.totalCol = totalCol;
     this.totalRow = totalRow;
     this.grid = Utils.getNodesCopy(grid);
+    this.transformToWalls();
   }
 
-  getMaze() {
-    this.transformToWalls();
+  getMazeIterative() {
     this.generateMazeIterative({cx: 0, cy: 0, grid: this.grid});
+
+    this.grid.set(Utils.getNodeKey(this.startNode), this.startNode);
+    this.grid.set(Utils.getNodeKey(this.endNode), this.endNode);
+    return this.grid;
+  }
+
+  getMazeRecursive() {
+    this.generateMazeRecursive({cx: 0, cy: 0, grid: this.grid});
 
     this.grid.set(Utils.getNodeKey(this.startNode), this.startNode);
     this.grid.set(Utils.getNodeKey(this.endNode), this.endNode);
@@ -118,7 +126,7 @@ export class Backtracking {
     }
   }
 
-  private generateMaze({cx, cy, grid}: {cx: number, cy: number, grid: GridMap}) {
+  private generateMazeRecursive({cx, cy, grid}: {cx: number, cy: number, grid: GridMap}) {
     // 1. Given a current cell as a parameter,
     // 2. Mark the current cell as visited
     // 3. While the current cell has any unvisited neighbour cells
@@ -148,7 +156,7 @@ export class Backtracking {
         this.visitedNodes.add(this.getNodeKey(wallY, wallX));
         const oldWall = grid.get(this.getNodeKey(wallY, wallX))!.clone({weight: NodeWeights.EMPTY});
         grid.set(this.getNodeKey(wallY, wallX), oldWall);
-        this.generateMaze({cx: newX, cy: newY, grid});
+        this.generateMazeRecursive({cx: newX, cy: newY, grid});
       }
     });
   }

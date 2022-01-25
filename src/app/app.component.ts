@@ -1,9 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Node, NodeWeights} from './models/Node.class';
 import {Dijkstra} from './algorithms/dijkstra/dijkstra';
-import {Grid, GridRow} from './models/grid.types';
+import {Grid, GridMap, GridRow} from './models/grid.types';
 import {distinctUntilChanged, fromEvent, map, Subject, takeUntil} from 'rxjs';
 import {Backtracking} from './algorithms/maze-generation/backtracking/backtracking';
+import {MazeGenerationEnum} from './header/header.component';
+import {Kruskal} from './algorithms/maze-generation/kruskal/kruskal';
+import {Prim} from './algorithms/maze-generation/prim/prim';
 
 @Component({
   selector: 'app-root',
@@ -270,9 +273,32 @@ export class AppComponent implements OnInit, OnDestroy {
 
   clearPath() {
     this.clearBoard();
-    const maze = new Backtracking(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
+  }
+
+  onAlgorithmSelected(algo: string) {
+    console.log(algo);
+  }
+
+  onMazeAlgoSelected(mazeAlgo: string) {
+    let maze: GridMap;
+
+    switch (mazeAlgo) {
+      case MazeGenerationEnum.BACKTRACKING_ITR:
+        maze = new Backtracking(this.nodes, this.getStartNode(), this.getEndNode()).getMazeIterative();
+        break;
+      case MazeGenerationEnum.BACKTRACKING_REC:
+        maze = new Backtracking(this.nodes, this.getStartNode(), this.getEndNode()).getMazeRecursive();
+        break;
+      case MazeGenerationEnum.KRUSKAL:
+        maze = new Kruskal(this.nodes, this.getStartNode(), this.getEndNode()).helper();
+        break;
+      case MazeGenerationEnum.PRIM:
+        maze = new Prim(this.nodes, this.getStartNode(), this.getEndNode()).helper();
+        break;
+    }
+
     const nodesToAnimate: GridRow = [];
-    for (const node of maze.values()) {
+    for (const node of maze!.values()) {
       nodesToAnimate.push(node);
     }
 
@@ -287,5 +313,9 @@ export class AppComponent implements OnInit, OnDestroy {
       }, 0);
 
     timeout(0);
+  }
+
+  onAnimSpeedSelected(animSpeed: string) {
+    console.log(animSpeed);
   }
 }
