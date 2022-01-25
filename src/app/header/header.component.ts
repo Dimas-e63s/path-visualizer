@@ -10,9 +10,13 @@ export class HeaderComponent {
   @Output() onAlgoRunButtonWasClicked = new EventEmitter<void>();
   @Output() onClearPathWasClicked = new EventEmitter<void>();
   @Output() onClearWallsWasClicked = new EventEmitter<void>();
-  speedOptions = ['Fast', 'Average', 'Slow'];
-  algorithmsOptions = ['Dijkstra', 'A* Search', 'Breath-first Search', 'Depth-first Search'];
-  mazesOptions = ['Duno', 'Duno']
+  @Output() onAlgorithmSelectedWasClicked = new EventEmitter<string>();
+  @Output() onMazeAlgorithmWasClicked = new EventEmitter<string>();
+  @Output() onAnimSpeedWasClicked = new EventEmitter<string>();
+
+  readonly animationSpeedOptions = ['Fast', 'Average', 'Slow'];
+  readonly algorithmsOptions = ['Dijkstra', 'A* Search', 'Breath-first Search', 'Depth-first Search'];
+  readonly mazesOptions = ['Backtracking Recursive', 'Backtracking Iterative', 'Kruskal\'s Algorithm', 'Prim\'s Algorithm']
 
   onAlgoClick() {
     this.onAlgoRunButtonWasClicked.emit();
@@ -24,5 +28,17 @@ export class HeaderComponent {
 
   onClearWalls() {
     this.onClearWallsWasClicked.emit();
+  }
+
+  onAlgorithmSelected(algo: string) {
+    this.onAlgorithmSelectedWasClicked.emit(algo);
+  }
+
+  onMazeAlgorithmSelected(mazeAlgo: string) {
+    this.onMazeAlgorithmWasClicked.emit(mazeAlgo);
+  }
+
+  onAnimationSpeedSelected(animationSpeed: string) {
+    this.onAnimSpeedWasClicked.emit(animationSpeed);
   }
 }

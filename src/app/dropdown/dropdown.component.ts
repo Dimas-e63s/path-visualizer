@@ -1,5 +1,4 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {TUI_ARROW} from '@taiga-ui/kit';
+import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {TuiHostedDropdownComponent} from '@taiga-ui/core';
 
 @Component({
@@ -12,15 +11,19 @@ export class DropdownComponent  {
   component?: TuiHostedDropdownComponent;
   @Input() items!: string[];
   @Input() buttonText!: string;
+  @Output() itemSelected = new EventEmitter<string>();
+
 
   open = false;
 
-  onClick() {
+  onClick(item: string) {
     this.open = false;
 
     if (this.component && this.component.nativeFocusableElement) {
       this.component.nativeFocusableElement.focus();
     }
+
+    this.itemSelected.emit(item);
   }
 
 }

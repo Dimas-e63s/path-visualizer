@@ -1,7 +1,15 @@
 <header class="header">
   <h1 class="header__title">Pathfinding Visualizer</h1>
-  <app-dropdown [items]="algorithmsOptions" buttonText="Algorithms"></app-dropdown>
-  <app-dropdown [items]="mazesOptions" buttonText="Mazes"></app-dropdown>
+  <app-dropdown
+    buttonText="Algorithms"
+    [items]="algorithmsOptions"
+    (itemSelected)="onAlgorithmSelected($event)"
+  ></app-dropdown>
+  <app-dropdown
+    [items]="mazesOptions"
+    buttonText="Mazes"
+    (itemSelected)="onMazeAlgorithmSelected($event)"
+  ></app-dropdown>
   <button
     tuiButton
     size="m"
@@ -28,5 +36,9 @@
   >
     Clear Walls
   </button>
-  <app-dropdown [items]="speedOptions" buttonText="Speed"></app-dropdown>
+  <app-dropdown
+    [items]="animationSpeedOptions"
+    buttonText="Speed"
+    (itemSelected)="onAnimationSpeedSelected($event)"
+  ></app-dropdown>
 </header>
