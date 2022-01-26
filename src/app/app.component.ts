@@ -27,6 +27,7 @@ export class AppComponent implements OnInit, OnDestroy {
   prevEnd = {col: null, row: null};
   moveHead = false;
   moveEnd = false;
+  isButtonsDisabled = false;
 
   ngOnInit(): void {
     fromEvent(window, 'resize')
@@ -114,6 +115,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   runAlgo() {
+    this.isButtonsDisabled = true;
     const startNode = this.getStartNode();
     const endNode = this.getEndNode();
 
@@ -171,6 +173,7 @@ export class AppComponent implements OnInit, OnDestroy {
     const timeout2 = (index: number) =>
       setTimeout(() =>  {
         if (index === shortestPath.length){
+          this.isButtonsDisabled = false;
           return;
         }
         const node = (shortestPath[index] as Node).clone({isShortestPath: true});
@@ -180,6 +183,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   onAddedWall({col, row}: {col: number, row: number}) {
+    if (this.isButtonsDisabled) return;
+
     const selectedNode = this.nodes[row][col];
     if (selectedNode.getIsStartNode()) {
       this.moveHead = true;
@@ -197,7 +202,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   startEditing(): void {
-    if (!this.moveHead && !this.moveEnd) {
+    if (!this.moveHead && !this.moveEnd && !this.isButtonsDisabled) {
       this.buildWalls = !this.buildWalls;
     }
   }
@@ -252,6 +257,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   clearWalls() {
+    this.isButtonsDisabled = true;
     for(const row of this.nodes) {
       for (const column of row) {
         if (column.isWall()) {
@@ -259,6 +265,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       }
     }
+    this.isButtonsDisabled = false;
   }
 
   clearPath() {

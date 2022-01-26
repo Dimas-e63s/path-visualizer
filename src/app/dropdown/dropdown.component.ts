@@ -1,16 +1,19 @@
-import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {TuiHostedDropdownComponent} from '@taiga-ui/core';
 
 @Component({
   selector: 'app-dropdown',
   templateUrl: './dropdown.component.html',
-  styleUrls: ['./dropdown.component.scss']
+  styleUrls: ['./dropdown.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DropdownComponent  {
   @ViewChild(TuiHostedDropdownComponent)
   component?: TuiHostedDropdownComponent;
+
   @Input() items!: string[];
   @Input() buttonText!: string;
+  @Input() canOpen!: boolean;
   @Output() itemSelected = new EventEmitter<any>();
 
 
@@ -23,7 +26,12 @@ export class DropdownComponent  {
       this.component.nativeFocusableElement.focus();
     }
 
-    this.itemSelected.emit(item);
+    this.emitSelectedOption(item);
   }
 
+  private emitSelectedOption(item: any): void {
+    if (this.canOpen) {
+      this.itemSelected.emit(item);
+    }
+  }
 }

@@ -1,5 +1,6 @@
 <tui-root>
 <app-header
+  [isButtonsDisabled]="isButtonsDisabled"
   (onAlgoRunButtonWasClicked)="runAlgo()"
   (onClearPathWasClicked)="clearPath()"
   (onClearWallsWasClicked)="clearWalls()"

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 
 export enum MazeGenerationEnum {
   BACKTRACKING_ITR = 'Backtracking Iterative',
@@ -21,6 +21,7 @@ export enum PathAlgorithmEnum {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaderComponent {
+  @Input() isButtonsDisabled!: boolean;
   @Output() onAlgoRunButtonWasClicked = new EventEmitter<void>();
   @Output() onClearPathWasClicked = new EventEmitter<void>();
   @Output() onClearWallsWasClicked = new EventEmitter<void>();

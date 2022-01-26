@@ -3,15 +3,18 @@
   <app-dropdown
     buttonText="Algorithms"
     [items]="algorithmsOptions"
+    [canOpen]="!isButtonsDisabled"
     (itemSelected)="onAlgorithmSelected($event)"
   ></app-dropdown>
   <app-dropdown
-    [items]="mazesOptions"
     buttonText="Mazes"
+    [items]="mazesOptions"
+    [canOpen]="!isButtonsDisabled"
     (itemSelected)="onMazeAlgorithmSelected($event)"
   ></app-dropdown>
   <button
     tuiButton
+    [disabled]="isButtonsDisabled"
     size="m"
     type="button"
     (click)="onAlgoClick()"
@@ -20,6 +23,7 @@
   </button>
   <button
     tuiButton
+    [disabled]="isButtonsDisabled"
     size="m"
     type="button"
     appearance="secondary"
@@ -29,6 +33,7 @@
   </button>
   <button
     tuiButton
+    [disabled]="isButtonsDisabled"
     size="m"
     type="button"
     appearance="secondary"
@@ -37,8 +42,9 @@
     Clear Walls
   </button>
   <app-dropdown
-    [items]="animationSpeedOptions"
     buttonText="Speed"
+    [items]="animationSpeedOptions"
+    [canOpen]="!isButtonsDisabled"
     (itemSelected)="onAnimationSpeedSelected($event)"
   ></app-dropdown>
 </header>
