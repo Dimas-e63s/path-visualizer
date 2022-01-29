@@ -10,11 +10,11 @@ export class NodeValidation {
     return a.id === b.id;
   }
 
-  static isHasDifferentRow(a: Node, b: Node) {
-    return a.getRowIdx() !== b.getRowIdx();
+  static rowEquals(a: Node, b: Node) {
+    return a.getRowIdx() === b.getRowIdx();
   }
 
-  static isHasDifferentCol(a: Node, b: Node) {
+  static colEquals(a: Node, b: Node) {
     return a.getColumnIdx() !== b.getColumnIdx();
   }
 }
