@@ -37,20 +37,14 @@ export class NodeValidation {
 
 export const SomeCustomMatchers: CustomMatcherFactories = {
   // @ts-ignore
-  toReallyEqualVisitedNode: function(util: MatchersUtil, customEqualityTester: CustomEqualityTester[]): CustomMatcher {
+  toReallyEqualVisitedNode: (util: MatchersUtil, customEqualityTester: CustomEqualityTester[]): CustomMatcher => {
     return {
       compare: function(expected: Node[], actual: Node[], anotherCustomArg: any): CustomMatcherResult {
         let passes = true;
         let message = '';
         if (actual.length === expected.length) {
           for (let i = 0; i < actual.length; i++) {
-            if (
-              actual[i].getRowIdx() !== expected[i].getRowIdx()
-              || actual[i].getColumnIdx() !== expected[i].getColumnIdx()
-              || actual[i].isVisitedNode() === expected[i].isVisitedNode()
-              || actual[i].weight !== expected[i].weight
-              || NodeValidation.isHasSameId(actual[i], expected[i])
-            ) {
+            if (!NodeValidation.isVisitedNodeCopy(actual[i], expected[i])) {
               passes = false;
               break;
             }
@@ -64,41 +58,7 @@ export const SomeCustomMatchers: CustomMatcherFactories = {
           pass: passes,
           message
         };
-
       },
     };
   },
-  // @ts-ignore
-  toReallyEqualShortestPathNode: function(util: MatchersUtil, customEqualityTester: CustomEqualityTester[]): CustomMatcher {
-    return {
-      compare: function(expected: Node[], actual: Node[], anotherCustomArg: any): CustomMatcherResult {
-        let passes = true;
-        let message = '';
-        if (actual.length === expected.length) {
-          for (let i = 0; i < actual.length; i++) {
-            if (
-              actual[i].getRowIdx() !== expected[i].getRowIdx()
-              || actual[i].getColumnIdx() !== expected[i].getColumnIdx()
-              || actual[i].weight !== expected[i].weight
-              || NodeValidation.isHasSameId(actual[i], expected[i])
-              || actual[i].isShortestPath !== expected[i].isShortestPath
-            ) {
-              debugger
-              passes = false;
-              break;
-            }
-          }
-        } else {
-          message = `Expected ${expected.length} to have size ${actual.length}.`;
-          passes = false;
-        }
-
-        return {
-          pass: passes,
-          message
-        };
-
-      },
-    };
-  }
 };
