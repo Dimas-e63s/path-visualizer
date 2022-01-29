@@ -19,8 +19,8 @@ export enum NodeWeights {
 export class Node {
   private readonly rowIdx: number;
   private readonly columnIdx: number;
-  private isStartNode: boolean;
-  private isFinishNode: boolean;
+  private readonly isStartNode: boolean;
+  private readonly isFinishNode: boolean;
   private isVisited: boolean;
   isShortestPath;
   previousNode: any;
