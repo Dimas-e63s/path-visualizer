@@ -65,6 +65,12 @@ export class Node {
     }
   }
 
+  private validateDestinationInput({isStartNode, isFinishNode}: {isStartNode: boolean, isFinishNode: boolean}) {
+    if (isStartNode && isFinishNode) {
+      throw new Error(`Node can't be startNode and endNode at the same time`);
+    }
+  }
+
   clone(args: Partial<NodeInterface> = {}): Node {
     return new Node({
       rowIdx: this.rowIdx,
@@ -100,7 +106,7 @@ export class Node {
   }
 
   setAsWall(): void {
-    if (this.isValidNode()) {
+    if (this.isEmptyNode()) {
       this.weight = NodeWeights.WALL;
     }
   }
@@ -117,7 +123,7 @@ export class Node {
     return !this.isStartNode && !this.isFinishNode && this.isShortestPath;
   }
 
-  private isValidNode(): boolean {
+  private isEmptyNode(): boolean {
     return !this.getIsStartNode() && !this.getIsFinishNode();
   }
 }

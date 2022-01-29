@@ -55,19 +55,26 @@ describe('Node', () => {
       stubNode = stubNode.clone({isStartNode: true});
 
       // @ts-expect-error
-      expect(stubNode.isValidNode()).toBeFalse();
+      expect(stubNode.isEmptyNode()).toBeFalse();
     });
 
     it('should return false for endNode', () => {
       stubNode = stubNode.clone({isFinishNode: true});
 
       // @ts-expect-error
-      expect(stubNode.isValidNode()).toBeFalse();
+      expect(stubNode.isEmptyNode()).toBeFalse();
     });
 
     it('should return true for regular Node', () => {
       // @ts-expect-error
-      expect(stubNode.isValidNode()).toBeTrue();
+      expect(stubNode.isEmptyNode()).toBeTrue();
     });
+  });
+
+  describe('validateDestinationInput', () => {
+    it('it should throw error for node with both startNode and endNode set to true', () => {
+      // @ts-expect-error
+      expect(() => stubNode.validateDestinationInput({isStartNode: true, isFinishNode: true})).toThrow();
+    })
   });
 });
