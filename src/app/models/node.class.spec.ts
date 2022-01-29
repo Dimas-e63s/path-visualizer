@@ -3,6 +3,15 @@ import {Node} from './Node.class';
 // TODO: - search for other techniques for testing private methods
 
 describe('Node', () => {
+  let stubNode: Node;
+
+  beforeEach(() => {
+    stubNode = new Node({
+      rowIdx: 1,
+      colIdx: 1,
+    });
+  });
+
   describe('init logic', () => {
     it('should validate rowIdx and colIdx for NaN', () => {
       expect(() => new Node({
@@ -55,14 +64,6 @@ describe('Node', () => {
   });
 
   describe('isValidNode', () => {
-    let stubNode: Node;
-
-    beforeEach(() => {
-      stubNode = new Node({
-        rowIdx: 1,
-        colIdx: 1,
-      });
-    })
     it('should return false for startNode', () => {
       stubNode = stubNode.clone({isStartNode: true});
 
