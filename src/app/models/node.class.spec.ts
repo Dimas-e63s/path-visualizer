@@ -13,53 +13,40 @@ describe('Node', () => {
   });
 
   describe('init logic', () => {
-    it('should validate rowIdx and colIdx for NaN', () => {
-      expect(() => new Node({
-        rowIdx: NaN,
-        colIdx: 1,
-      })).toThrow();
-
-      expect(() => new Node({
-        rowIdx: 10,
-        colIdx: NaN,
-      })).toThrow();
-
-      expect(() => new Node({
-        rowIdx: NaN,
-        colIdx: NaN,
-      }));
+    it('should throw error for NaN rowIdx', () => {
+      expect(() => stubNode.clone({rowIdx: NaN})).toThrow();
     });
-    it('should validate rowIdx and colIdx for Infinity', () => {
-      expect(() => new Node({
-        rowIdx: Infinity,
-        colIdx: 1,
-      })).toThrow();
 
-      expect(() => new Node({
-        rowIdx: 10,
-        colIdx: Infinity,
-      })).toThrow();
-
-      expect(() => new Node({
-        rowIdx: Infinity,
-        colIdx: Infinity,
-      })).toThrow();
+    it('should throw error for NaN colIdx', () => {
+      expect(() => stubNode.clone({colIdx: NaN})).toThrow();
     });
-    it('should validate rowIdx and colIdx for negative values', () => {
-      expect(() => new Node({
-        rowIdx: -1,
-        colIdx: 1,
-      })).toThrow();
 
-      expect(() => new Node({
-        rowIdx: 10,
-        colIdx: -1,
-      })).toThrow();
+    it('should throw error for Node with coordinates set to NaN', () => {
+      expect(() => stubNode.clone({colIdx: NaN, rowIdx: NaN})).toThrow();
+    });
 
-      expect(() => new Node({
-        rowIdx: -1,
-        colIdx: -1,
-      })).toThrow();
+    it('should throw error for Infinity rowIdx', () => {
+      expect(() => stubNode.clone({rowIdx: Infinity})).toThrow();
+    });
+
+    it('should throw error for Infinity colIdx', () => {
+      expect(() => stubNode.clone({colIdx: Infinity})).toThrow();
+    });
+
+    it('should throw error for Node with coordinates set to Infinity', () => {
+      expect(() => stubNode.clone({colIdx: Infinity, rowIdx: Infinity})).toThrow();
+    });
+
+    it('should throw error for negative rowIdx', () => {
+      expect(() => stubNode.clone({rowIdx: -1})).toThrow();
+    });
+
+    it('should throw error for negative colIdx', () => {
+      expect(() => stubNode.clone({colIdx: -1})).toThrow();
+    });
+
+    it('should throw error for Node with coordinates set to negative numbers', () => {
+      expect(() => stubNode.clone({colIdx: -1, rowIdx: -1})).toThrow();
     });
   });
 
@@ -67,20 +54,20 @@ describe('Node', () => {
     it('should return false for startNode', () => {
       stubNode = stubNode.clone({isStartNode: true});
 
-      // @ts-ignore
+      // @ts-expect-error
       expect(stubNode.isValidNode()).toBeFalse();
     });
 
     it('should return false for endNode', () => {
       stubNode = stubNode.clone({isFinishNode: true});
 
-      // @ts-ignore
+      // @ts-expect-error
       expect(stubNode.isValidNode()).toBeFalse();
     });
 
     it('should return true for regular Node', () => {
-      // @ts-ignore
+      // @ts-expect-error
       expect(stubNode.isValidNode()).toBeTrue();
-    })
+    });
   });
 });
