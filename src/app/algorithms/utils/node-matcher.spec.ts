@@ -1,4 +1,4 @@
-import {Node} from '../../models/Node.class';
+import {Node, NodeWeights} from '../../models/Node.class';
 import {NodeValidation} from './node-matcher';
 
 describe('NodeValidation', () => {
@@ -29,12 +29,67 @@ describe('NodeValidation', () => {
   });
 
   describe('colEquals', () => {
-    it('it should return true for nodes with different colIdx\'s', () => {
-      expect(NodeValidation.colEquals(stubNode, stubNode.clone({colIdx: stubNode.getColumnIdx() + 1}))).toBeTrue();
+    it('it should return true for nodes with the same colIdx\'s', () => {
+      expect(NodeValidation.colEquals(stubNode, stubNode)).toBeTrue();
     });
 
-    it('it should return false for nodes with the same colIdx\'s', () => {
-      expect(NodeValidation.colEquals(stubNode, stubNode)).toBeFalse();
+    it('it should return false for nodes with different colIdx\'s', () => {
+      expect(NodeValidation.colEquals(stubNode, stubNode.clone({colIdx: stubNode.getColumnIdx() + 1}))).toBeFalse();
     });
-  })
-})
+  });
+
+  describe('weightEquals', () => {
+    it('should return true for nodes with the same weight\'s', () => {
+      expect(NodeValidation.weightEquals(stubNode, stubNode)).toBeTrue();
+    });
+
+    it('it should return false for nodes with different weight\'s', () => {
+      expect(NodeValidation.weightEquals(stubNode, stubNode.clone({weight: NodeWeights.WALL}))).toBeFalse();
+    });
+  });
+
+  describe('visitedNodesEqual', () => {
+    it('should return true for both nodes set as visited', () => {
+      stubNode.setAsVisited();
+      expect(NodeValidation.visitedNodesEqual(stubNode, stubNode)).toBeTrue()
+    });
+
+    it('should return true for both nodes set as visited', () => {
+      const unvisitedNode = stubNode.clone();
+      stubNode.setAsVisited();
+
+      expect(NodeValidation.visitedNodesEqual(stubNode, unvisitedNode)).toBeFalse()
+    });
+  });
+
+  describe('isNodeCopy', () => {
+    it('should return false for nodes with the same id\'s', () => {
+      expect(NodeValidation.isVisitedNodeCopy(stubNode, stubNode)).toBeFalse();
+    });
+
+    it('should return false for nodes with the diff rowIdx\'s', () => {
+      expect(NodeValidation.isVisitedNodeCopy(stubNode, stubNode.clone({rowIdx: stubNode.getRowIdx() + 1}))).toBeFalse();
+    });
+
+    it('should return false for nodes with the diff colIdx\'s', () => {
+      expect(NodeValidation.isVisitedNodeCopy(stubNode, stubNode.clone({colIdx: stubNode.getColumnIdx() + 1}))).toBeFalse();
+    });
+
+    it('should return false for nodes with the diff weight\'s', () => {
+      expect(NodeValidation.isVisitedNodeCopy(stubNode, stubNode.clone({weight: NodeWeights.WALL}))).toBeFalse();
+    });
+
+    it('should return false for nodes with the diff visited states', () => {
+      const unvisitedNode = stubNode.clone();
+      stubNode.setAsVisited();
+      expect(NodeValidation.isVisitedNodeCopy(stubNode, unvisitedNode)).toBeFalse();
+    });
+
+    it('should return true for nodes with the same coordinates, weights, visitedState', () => {
+      const nodeClone = stubNode.clone();
+      nodeClone.setAsVisited();
+      stubNode.setAsVisited();
+      expect(NodeValidation.isVisitedNodeCopy(stubNode, nodeClone)).toBeTrue();
+    });
+  });
+});

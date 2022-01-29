@@ -15,7 +15,23 @@ export class NodeValidation {
   }
 
   static colEquals(a: Node, b: Node) {
-    return a.getColumnIdx() !== b.getColumnIdx();
+    return a.getColumnIdx() === b.getColumnIdx();
+  }
+
+  static weightEquals(a: Node, b: Node) {
+    return a.weight === b.weight;
+  }
+
+  static visitedNodesEqual(a: Node, b: Node) {
+    return a.isVisitedNode() && b.isVisitedNode();
+  }
+
+  static isVisitedNodeCopy(a: Node, b: Node) {
+    return NodeValidation.rowEquals(a, b)
+      && NodeValidation.colEquals(a, b)
+      && NodeValidation.weightEquals(a, b)
+      && NodeValidation.visitedNodesEqual(a, b)
+      && !NodeValidation.isHasSameId(a, b)
   }
 }
 
