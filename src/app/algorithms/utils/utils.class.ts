@@ -46,11 +46,19 @@ export class Utils {
                                     grid,
                                     totalCol,
                                     totalRow,
-                                  }: {node: Node, grid: any, totalCol: number, totalRow: number}): void {
+    prioQ,
+    counter
+                                  }: {node: Node, grid: any, totalCol: number, totalRow: number, prioQ: any, counter: {counter: number}}): void {
     const unvisitedNeighbors = Utils.getUnvisitedNeighbors({node, grid, totalCol, totalRow});
     for (const neighbor of unvisitedNeighbors) {
-      neighbor.distance = node.distance + neighbor.weight;
-      neighbor.previousNode = node;
+      const distance = node.distance + neighbor.weight;
+
+      if (distance < grid.get(Utils.getNodeKey(neighbor)).distance) {
+        neighbor.distance = node.distance + neighbor.weight;
+        prioQ.enqueue({node: neighbor, timestamp: Date.now() +  counter.counter})
+        neighbor.previousNode = node;
+      }
+      counter.counter += 1;
     }
   }
 

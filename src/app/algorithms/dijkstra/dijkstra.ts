@@ -4,7 +4,6 @@ import {Utils} from '../utils/utils.class';
 import {PriorityQueue} from '@datastructures-js/priority-queue';
 
 // TODO:
-//  - optimize traverse() with priorityQueue
 //  - optimize further with Fibonacci Queue
 
 interface NodeOption {
@@ -38,10 +37,6 @@ export class Dijkstra {
     return colIdx === lastColIdx;
   }
 
-  static sortNodesByDistance(unvisitedNodes: GridRow): void {
-    unvisitedNodes.sort((nodeA, nodeB) => nodeA.distance - nodeB.distance);
-  }
-
   static isNodeAccessible(node: Node): boolean {
     return node.distance !== NodeWeights.WALL;
   }
@@ -73,11 +68,7 @@ export class Dijkstra {
     const counter = {counter: 1};
 
     while (!prioQ.isEmpty()) {
-      Dijkstra.sortNodesByDistance(gridCopy);
-      const poll1 = prioQ.dequeue();
-      // debugger
-      const closestNode = poll1.node;
-      console.log(Utils.getNodeKey(closestNode), poll1.timestamp);
+      const closestNode = prioQ.dequeue().node;
 
       if (closestNode.isWall()) {
         continue;
