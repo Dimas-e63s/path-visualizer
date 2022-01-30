@@ -38,7 +38,7 @@ export class Dijkstra {
   }
 
   static isNodeAccessible(node: Node): boolean {
-    return node.distance !== NodeWeights.WALL;
+    return node.distance < Infinity;
   }
 
   traverse(): [GridRow, GridRow] {

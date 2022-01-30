@@ -1,11 +1,10 @@
 import {Dijkstra} from './dijkstra';
 import {Node, NodeWeights} from '../../models/Node.class';
-import {Grid, GridRow} from '../../models/grid.types';
+import {Grid} from '../../models/grid.types';
 import {SomeCustomMatchers} from '../utils/node-matcher';
 
 // TODO :
 //  - cover constructor
-//  - cover traverse method
 //  - extract logic for creating grid
 
 describe('Dijkstra Class', () => {
@@ -97,16 +96,14 @@ describe('Dijkstra Class', () => {
   })
 
   describe('traverse', () => {
+    let grid: Grid;
     beforeEach(() => {
       jasmine.addMatchers(SomeCustomMatchers);
-    });
-    // return shortest path
-    // don't return shortest path
-    it('should return empty shortestPath', () => {
-      const grid: Grid = new Array(6)
+      grid = new Array(6)
         .fill(null)
         .map(() => new Array(6).fill(null));
-
+    });
+    it('should return empty shortestPath', () => {
       const startNode = {colIdx: 2, rowIdx: 5};
       const endNode = {colIdx: 5, rowIdx: 0};
       const walls = [
@@ -172,10 +169,6 @@ describe('Dijkstra Class', () => {
       expect(nodesToAnimate).toReallyEqualVisitedNode(nodesToAnimateStub);
     });
     it('should return shortestPath', () => {
-      const grid: Grid = new Array(6)
-        .fill(null)
-        .map(() => new Array(6).fill(null));
-
       const startNode = {colIdx: 2, rowIdx: 5};
       const endNode = {colIdx: 5, rowIdx: 0};
 
