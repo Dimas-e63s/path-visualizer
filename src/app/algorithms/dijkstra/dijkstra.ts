@@ -1,9 +1,16 @@
 import {Node, NodeWeights} from '../../models/Node.class';
 import {GridRow, Grid} from '../../models/grid.types';
 import {Utils} from '../utils/utils.class';
+import {PriorityQueue} from '@datastructures-js/priority-queue';
 
 // TODO:
 //  - optimize traverse() with priorityQueue
+//  - optimize further with Fibonacci Queue
+
+interface NodeOption {
+  node: Node;
+  timestamp: number;
+}
 
 export class Dijkstra {
   private readonly grid: Grid;
@@ -44,6 +51,17 @@ export class Dijkstra {
     this.startNode.distance = 0;
     const unvisitedNodes = Utils.getNodesCopy(this.grid);
 
+    //@ts-ignore
+    const prioQ = new PriorityQueue<NodeOption>({
+      compare: (a: NodeOption, b: NodeOption) => {
+        if (a.node.distance < b.node.distance) return -1; // do not swap
+        if (a.node.distance > b.node.distance) return 1; // swap
+
+        // salaries are the same, compare rank
+        return a.timestamp > b.timestamp ? 1 : 0;
+      }
+    });
+
     const gridCopy = [];
     for (const node of unvisitedNodes.values()) {
       gridCopy.push(node);
@@ -51,10 +69,15 @@ export class Dijkstra {
 
     const endNodeId = Utils.getNodeKey(this.endNode);
     const {totalRow, totalCol} = Utils.getGridSize(this.grid);
+    prioQ.enqueue({node: unvisitedNodes.get(Utils.getNodeKey(this.startNode)), timestamp: Date.now()});
+    const counter = {counter: 1};
 
-    while (gridCopy.length > 0) {
+    while (!prioQ.isEmpty()) {
       Dijkstra.sortNodesByDistance(gridCopy);
-      const closestNode = gridCopy.shift() as Node;
+      const poll1 = prioQ.dequeue();
+      // debugger
+      const closestNode = poll1.node;
+      console.log(Utils.getNodeKey(closestNode), poll1.timestamp);
 
       if (closestNode.isWall()) {
         continue;
@@ -77,6 +100,8 @@ export class Dijkstra {
           grid: unvisitedNodes,
           totalCol,
           totalRow,
+          prioQ,
+          counter
         });
     }
 
