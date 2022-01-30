@@ -25,20 +25,22 @@ describe('AStar', () => {
 
   describe('getPointsDistance', () => {
     it('should return absolute difference between two points', () => {
+      let stubX = 23;
+      let stubY = 40;
+
+      expect(AStar.getPointsDistance(stubX, stubY)).toEqual(17);
+    });
+
+    it('should return 0 for stating point', () => {
       let stubX = 0;
       let stubY = 0;
 
       expect(AStar.getPointsDistance(stubX, stubY)).toEqual(0);
-
-      stubX = 23;
-      stubY = 40;
-
-      expect(AStar.getPointsDistance(stubX, stubY)).toEqual(17);
     });
   });
 
   describe('calculateHeuristic', () => {
-    it('should return calculatedHeuristic between two Nodes', () => {
+    it('should return heuristic between two Nodes', () => {
       let stubCurrentNode = createNode({rowIdx: 10, colIdx: 10});
       let stubEndNode = createNode({rowIdx: 40, colIdx: 38});
       const COMPARE_PRECISION = 6;
@@ -47,19 +49,14 @@ describe('AStar', () => {
         currentNode: stubCurrentNode,
         endNode: stubEndNode,
       })).toBeCloseTo(58.058, COMPARE_PRECISION);
+    });
 
-      stubEndNode = stubCurrentNode;
+    it('should return heuristic equal to 0', () => {
+      let stubCurrentNode = createNode({rowIdx: 10, colIdx: 10});
       expect(AStar.calculateHeuristic({
         currentNode: stubCurrentNode,
-        endNode: stubEndNode,
+        endNode: stubCurrentNode,
       })).toEqual(0);
-
-      stubCurrentNode = createNode({rowIdx: 8, colIdx: 0});
-      stubEndNode = createNode({rowIdx: 49, colIdx: 35});
-      expect(AStar.calculateHeuristic({
-        currentNode: stubCurrentNode,
-        endNode: stubEndNode,
-      })).toEqual(76.076, COMPARE_PRECISION);
     });
   });
 
@@ -130,7 +127,7 @@ describe('AStar', () => {
       expect(AStar.isInvalidNode(stubNode)).toBeTrue();
     });
 
-    it('should return false for unvisited Node', () => {
+    it('should return false for empty Node', () => {
       const stubNode = createNode({rowIdx: 23, colIdx: 23});
 
       expect(AStar.isInvalidNode(stubNode)).toBeFalse();
