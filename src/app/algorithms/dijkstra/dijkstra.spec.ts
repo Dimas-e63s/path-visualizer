@@ -1,6 +1,6 @@
 import {Dijkstra} from './dijkstra';
-import {Node, NodeWeights} from '../../models/Node.class';
-import {Grid} from '../../models/grid.types';
+import {Node} from '../../models/Node.class';
+import {Grid, GridRow} from '../../models/grid.types';
 import {SomeCustomMatchers} from '../utils/node-matcher';
 
 // TODO :
@@ -19,86 +19,73 @@ describe('Dijkstra Class', () => {
 
   describe('isFirstRow', () => {
     it('should return false to rowIdx different than 0', () => {
-      let stubValue = 1;
-      expect(Dijkstra.isFirstRow(stubValue)).toBeFalse();
+      expect(Dijkstra.isFirstRow(1)).toBeFalse();
     });
 
     it('should return true to rowIdx equal 0', () => {
-      let stubValue = 0;
-      expect(Dijkstra.isFirstRow(stubValue)).toBeTrue();
+      expect(Dijkstra.isFirstRow(0)).toBeTrue();
     });
   });
 
   describe('isLastRow', () => {
     it('should return false to rowIdx equal 1 and lastRowIdx equal 7', () => {
-      let stubRowIdx = 1;
-      let stubLastRowIdx = 10;
-      expect(Dijkstra.isLastRow(stubRowIdx, stubLastRowIdx)).toBeFalse();
+      expect(Dijkstra.isLastRow(1, 10)).toBeFalse();
     });
 
     it('should return true to the rowIdx equal to lastRowIdx', () => {
-      let stubRowIdx = 240;
-      let stubLastRowIdx = 240;
-      expect(Dijkstra.isLastRow(stubRowIdx, stubLastRowIdx)).toBeTrue();
+      expect(Dijkstra.isLastRow(240, 240)).toBeTrue();
     });
   });
 
   describe('isFirstColumn', () => {
     it('should return false for columnIdx equal 2', () => {
-      let stubColIdx = 2;
-      expect(Dijkstra.isFirstColumn(stubColIdx)).toBeFalse();
+      expect(Dijkstra.isFirstColumn(2)).toBeFalse();
     });
 
     it('should return true for columnIdx equal 0', () => {
-      let stubColIdx = 0;
-      expect(Dijkstra.isFirstColumn(stubColIdx)).toBeTrue();
+      expect(Dijkstra.isFirstColumn(0)).toBeTrue();
     });
   });
 
   describe('isLastColumn', () => {
     it('should return false for different columnIdx and lastColumnIdx', () => {
-      let stubColIdx = 2;
-      let stubLastColIdx = 7;
-      expect(Dijkstra.isLastColumn(stubColIdx, stubLastColIdx)).toBeFalse();
+      expect(Dijkstra.isLastColumn(2, 7)).toBeFalse();
     });
 
     it('should return true for the same columnIdx and lastColumnIdx', () => {
-      let stubColIdx = 7;
-      let stubLastColIdx = 7;
-      expect(Dijkstra.isLastColumn(stubColIdx, stubLastColIdx)).toBeTrue();
+      expect(Dijkstra.isLastColumn(7, 7)).toBeTrue();
     });
   });
 
   describe('isNodeAccessible', () => {
-    it('should return true for empty Node', () => {
-      const stubNode = new Node({
+    let stubNode: Node;
+    beforeEach(() => {
+      stubNode = new Node({
         colIdx: 1,
         rowIdx: 1,
         isStartNode: false,
         isFinishNode: false,
-        distance: NodeWeights.EMPTY
       });
+    });
 
-      expect(Dijkstra.isNodeAccessible(stubNode)).toBeTrue();
-    })
+    it('should return true for empty Node', () => {
+      expect(Dijkstra.isNodeAccessible(stubNode.clone({distance: 0}))).toBeTrue();
+    });
 
     it('should return false for Wall Node', () => {
-      const stubNode = new Node({
-        colIdx: 1,
-        rowIdx: 1,
-        isStartNode: false,
-        isFinishNode: false,
-        distance: NodeWeights.WALL
-      });
-
-      expect(Dijkstra.isNodeAccessible(stubNode)).toBeFalse();
-    })
-  })
+      expect(Dijkstra.isNodeAccessible(stubNode.clone({distance: Infinity}))).toBeFalse();
+    });
+  });
 
   describe('traverse', () => {
     let grid: Grid;
     const startNode = {colIdx: 2, rowIdx: 5};
     const endNode = {colIdx: 5, rowIdx: 0};
+    const mapNodesToVisited = (grid: GridRow) => grid.map(node => {
+      const nodeCopy = node.clone({});
+      nodeCopy.setAsVisited();
+      return nodeCopy;
+    });
     beforeEach(() => {
       jasmine.addMatchers(SomeCustomMatchers);
       grid = new Array(6)
@@ -126,7 +113,7 @@ describe('Dijkstra Class', () => {
         {colIdx: 5, rowIdx: 2},
         {colIdx: 5, rowIdx: 3},
         {colIdx: 5, rowIdx: 4},
-        {colIdx: 5, rowIdx: 5}
+        {colIdx: 5, rowIdx: 5},
       ];
 
       for (const keyEntry of walls) {
@@ -136,11 +123,9 @@ describe('Dijkstra Class', () => {
       const [nodesToAnimate, shortestPath] = new Dijkstra({
         grid,
         startNode: grid[startNode.rowIdx][startNode.colIdx],
-        endNode: grid[endNode.rowIdx][endNode.colIdx]
-      })
-        .traverse();
+        endNode: grid[endNode.rowIdx][endNode.colIdx],
+      }).traverse();
 
-      // PRIO_Q
       let nodesToAnimateStub = [
         grid[5][2],
         grid[4][2],
@@ -156,23 +141,20 @@ describe('Dijkstra Class', () => {
         grid[4][0],
         grid[4][4],
         grid[3][0],
-        grid[3][4]
+        grid[3][4],
       ];
 
-      nodesToAnimateStub = nodesToAnimateStub.map(node => {
-        const nodeCopy = node.clone({});
-        nodeCopy.setAsVisited();
-        return nodeCopy;
-      });
-
       expect(shortestPath).toReallyEqualVisitedNode([]);
-      expect(nodesToAnimate).toReallyEqualVisitedNode(nodesToAnimateStub);
+      expect(nodesToAnimate).toReallyEqualVisitedNode(
+        mapNodesToVisited(nodesToAnimateStub),
+      );
     });
+
     it('should return shortestPath', () => {
       const [nodesToAnimate, shortestPath] = new Dijkstra({
         grid,
         startNode: grid[startNode.rowIdx][startNode.colIdx],
-        endNode: grid[endNode.rowIdx][endNode.colIdx]
+        endNode: grid[endNode.rowIdx][endNode.colIdx],
       }).traverse();
 
       let nodesToAnimateStub = [
@@ -211,7 +193,7 @@ describe('Dijkstra Class', () => {
         grid[0][0],
         grid[0][4],
         grid[1][5],
-        grid[0][5]
+        grid[0][5],
       ];
 
       let shortestPathStub = [
@@ -222,23 +204,15 @@ describe('Dijkstra Class', () => {
         grid[0][2],
         grid[0][3],
         grid[0][4],
-        grid[0][5]
-      ]
+        grid[0][5],
+      ];
 
-      shortestPathStub = shortestPathStub.map(node => {
-        const nodeCopy = node.clone({});
-        nodeCopy.setAsVisited();
-        return nodeCopy;
-      });
-
-      nodesToAnimateStub = nodesToAnimateStub.map(node => {
-        const nodeCopy = node.clone({});
-        nodeCopy.setAsVisited();
-        return nodeCopy;
-      });
-
-      expect(shortestPath).toReallyEqualVisitedNode(shortestPathStub);
-      expect(nodesToAnimate).toReallyEqualVisitedNode(nodesToAnimateStub);
+      expect(shortestPath).toReallyEqualVisitedNode(
+        mapNodesToVisited(shortestPathStub),
+      );
+      expect(nodesToAnimate).toReallyEqualVisitedNode(
+        mapNodesToVisited(nodesToAnimateStub),
+      );
     });
-  })
+  });
 });
