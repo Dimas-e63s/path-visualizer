@@ -1,4 +1,4 @@
-import {Grid, GridRow} from '../../models/grid.types';
+import {Grid, GridMap, GridRow} from '../../models/grid.types';
 import {Node} from '../../models/Node.class';
 import {Utils} from '../utils/utils.class';
 import PriorityQueue from '../../data-structures/prio';
@@ -8,30 +8,35 @@ export class AStar {
     if (startNode === null || endNode == null) {
       return;
     }
+
     const {totalRow, totalCol} = Utils.getGridSize(grid);
     const gridMap = Utils.getNodesCopy(grid);
-    const prioQ = new PriorityQueue();
     const nodesToAnimate: GridRow = [];
+
+    const prioQ = new PriorityQueue();
     const gScore = new Map<string, number>();
     const fScore = new Map<string, number>();
 
-    for (const node of gridMap.values()) {
-      const nodeKey  = Utils.getNodeKey(node);
-      gScore.set(nodeKey, Infinity);
-      fScore.set(nodeKey, Infinity);
-    }
+    AStar.populateMapsWithDefaultValues({
+      gScore,
+      fScore,
+      grid: gridMap,
+    });
 
-    const startNodeKey = Utils.getNodeKey(startNode);
-    gScore.set(startNodeKey, 0);
-    fScore.set(startNodeKey, this.heuristic({currentNode: startNode, endNode}));
-
-    prioQ.add(startNodeKey, fScore.get(startNodeKey));
+    AStar.setStartNode({
+      startNodeKey: Utils.getNodeKey(startNode),
+      startNode,
+      endNode,
+      fScore,
+      gScore,
+      prioQ,
+    });
 
     while (!prioQ.isEmpty()) {
       const currentNodeKey = prioQ.poll();
       const currentNode = gridMap.get(currentNodeKey) as Node;
       nodesToAnimate.push(currentNode);
-      currentNode.setAsVisited()
+      currentNode.setAsVisited();
 
       if (Utils.isEndNode(currentNode, endNode)) {
         break;
@@ -41,45 +46,100 @@ export class AStar {
         node: currentNode,
         grid: gridMap,
         totalRow,
-        totalCol
+        totalCol,
       });
 
       for (const neighbor of neighbors) {
-        if (neighbor.isVisitedNode() || neighbor.isWall()) {
+        if (AStar.isInvalidNode(neighbor)) {
           continue;
         }
 
         const neighborKey = Utils.getNodeKey(neighbor);
-        //@ts-ignore
-        const tentative_gScore = gScore.get(currentNodeKey) + neighbor.weight;
-        // @ts-ignore
-        if (tentative_gScore < gScore.get(Utils.getNodeKey(neighbor))) {
+        const tentative_gScore = gScore.get(currentNodeKey)! + neighbor.weight;
+        if (AStar.isNeighborHasCloserPath({
+          tentative_gScore,
+          gScore, neighbor,
+        })) {
           neighbor.previousNode = currentNode;
           gScore.set(neighborKey, tentative_gScore);
-          fScore.set(neighborKey, tentative_gScore + this.heuristic({currentNode: neighbor, endNode}));
+          fScore.set(neighborKey, tentative_gScore + AStar.calculateHeuristic({currentNode: neighbor, endNode}));
 
           if (!prioQ.hasValue(neighborKey)) {
-            prioQ.add(neighborKey, fScore.get(neighborKey))
+            prioQ.add(neighborKey, fScore.get(neighborKey));
           }
         }
       }
     }
 
     const shortestPath = Utils.getNodesInShortestPathOrder(
-      gridMap.get(Utils.getNodeKey(endNode)) as Node
+      gridMap.get(Utils.getNodeKey(endNode)) as Node,
     );
 
     return [nodesToAnimate, shortestPath];
   }
 
-  private getPointsDistance(x: number, y: number) {
+  static setStartNode({
+                        startNodeKey,
+                        gScore,
+                        fScore,
+                        prioQ,
+                        endNode,
+                        startNode,
+                      }: {
+    startNodeKey: string,
+    gScore: Map<string, number>,
+    fScore: Map<string, number>,
+    prioQ: PriorityQueue,
+    endNode: Node,
+    startNode: Node
+  }): void {
+    gScore.set(startNodeKey, 0);
+    fScore.set(startNodeKey, AStar.calculateHeuristic({currentNode: startNode, endNode}));
+    prioQ.add(startNodeKey, fScore.get(startNodeKey));
+  }
+
+  static isInvalidNode(node: Node): boolean {
+    return node.isVisitedNode() || node.isWall();
+  }
+
+  static populateMapsWithDefaultValues({
+                                         gScore,
+                                         fScore,
+                                         grid,
+                                       }:
+                                         {
+                                           gScore: Map<string, number>,
+                                           fScore: Map<string, number>,
+                                           grid: GridMap
+                                         },
+  ): void {
+    for (const node of grid.values()) {
+      const nodeKey = Utils.getNodeKey(node);
+      gScore.set(nodeKey, Infinity);
+      fScore.set(nodeKey, Infinity);
+    }
+  }
+
+  static getPointsDistance(x: number, y: number) {
     return Math.abs(x - y);
   }
 
-  private heuristic({currentNode, endNode}: {currentNode: Node, endNode: Node}): number {
-    const colAbs = this.getPointsDistance(currentNode.getColumnIdx(), endNode.getColumnIdx());
-    const rowAbs = this.getPointsDistance(currentNode.getRowIdx(), endNode.getRowIdx());
+  static calculateHeuristic({currentNode, endNode}: {currentNode: Node, endNode: Node}): number {
+    const colAbs = AStar.getPointsDistance(currentNode.getColumnIdx(), endNode.getColumnIdx());
+    const rowAbs = AStar.getPointsDistance(currentNode.getRowIdx(), endNode.getRowIdx());
 
     return (rowAbs + colAbs) * 1.001;
+  }
+
+  static isNeighborHasCloserPath({
+                                   tentative_gScore,
+                                   gScore,
+                                   neighbor,
+                                 }: {
+    tentative_gScore: number,
+    gScore: Map<string, number>,
+    neighbor: Node
+  }) {
+    return tentative_gScore < gScore.get(Utils.getNodeKey(neighbor))!;
   }
 }
