@@ -1,5 +1,5 @@
 import {Node} from '../../models/Node.class';
-import {Grid, GridMap} from '../../models/grid.types';
+import {Grid, GridMap, GridRow} from '../../models/grid.types';
 import {Utils} from '../utils/utils.class';
 import {Dijkstra} from '../dijkstra/dijkstra';
 import { Stack } from '@datastructures-js/stack';
@@ -9,23 +9,24 @@ export class UnweightedAlgorithms {
   dfs({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}) {
     const stack = new Stack<Node>();
     const gridMap = Utils.getNodesCopy(grid);
-    const exploredNodes = new Set().add(Utils.getNodeKey(startNode));
+
     stack.push(gridMap.get(Utils.getNodeKey(startNode)) as Node);
+
     const {totalRow, totalCol} = Utils.getGridSize(grid);
-    const visitedNodes = [];
+    const visitedNodes: GridRow = [];
 
     while (!stack.isEmpty()) {
       const currentNode = stack.pop();
-      visitedNodes.push(currentNode);
 
-      exploredNodes.add(Utils.getNodeKey(currentNode));
+      if (currentNode.isVisitedNode() || currentNode.isWall()) {
+        continue;
+      }
+
+      currentNode.setAsVisited();
+      visitedNodes.push(currentNode);
 
       if (Utils.isEndNode(currentNode, endNode)) {
         break;
-      }
-
-      if (currentNode.isWall()) {
-        continue;
       }
 
       const neighbors = UnweightedAlgorithms.getNeighbors({
@@ -36,18 +37,18 @@ export class UnweightedAlgorithms {
       })
 
       neighbors.forEach(neighbor => {
-        if (!exploredNodes.has(Utils.getNodeKey(neighbor))) {
+        if(!neighbor.isVisitedNode()) {
           neighbor.previousNode = currentNode;
           stack.push(neighbor);
         }
       })
     }
 
-    const shortestpath = Utils.getNodesInShortestPathOrder(
+    const shortestPath = Utils.getNodesInShortestPathOrder(
       gridMap.get(Utils.getNodeKey(endNode)) as Node
     )
 
-    return [visitedNodes, shortestpath]
+    return [visitedNodes, shortestPath]
   }
 
   bfs({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}) {
@@ -102,23 +103,27 @@ export class UnweightedAlgorithms {
     const {rowIdx, colIdx} = Utils.getNodeCoordinates(currentNode);
 
     if (!Dijkstra.isFirstColumn(colIdx)) {
-      const neighbor = Utils.getLeftNode(currentNode, grid);
-      neighbors.push(neighbor)
+      neighbors.push(
+        Utils.getLeftNode(currentNode, grid)
+      )
     }
 
     if (!Dijkstra.isLastRow(rowIdx, totalRow - 1)) {
-      const neighbor = Utils.getBelowNode(currentNode, grid);
-      neighbors.push(neighbor)
+      neighbors.push(
+        Utils.getBelowNode(currentNode, grid)
+      )
     }
 
     if (!Dijkstra.isLastColumn(colIdx, totalCol - 1)) {
-      const neighbor = Utils.getRightNode(currentNode, grid);
-      neighbors.push(neighbor);
+      neighbors.push(
+        Utils.getRightNode(currentNode, grid)
+      );
     }
 
     if (!Dijkstra.isFirstRow(rowIdx)) {
-      const neighbor = Utils.getUpNode(currentNode, grid);
-      neighbors.push(neighbor);
+      neighbors.push(
+        Utils.getUpNode(currentNode, grid)
+      );
     }
 
     return neighbors;
