@@ -97,6 +97,8 @@ describe('Dijkstra Class', () => {
 
   describe('traverse', () => {
     let grid: Grid;
+    const startNode = {colIdx: 2, rowIdx: 5};
+    const endNode = {colIdx: 5, rowIdx: 0};
     beforeEach(() => {
       jasmine.addMatchers(SomeCustomMatchers);
       grid = new Array(6)
@@ -104,8 +106,6 @@ describe('Dijkstra Class', () => {
         .map(() => new Array(6).fill(null));
     });
     it('should return empty shortestPath', () => {
-      const startNode = {colIdx: 2, rowIdx: 5};
-      const endNode = {colIdx: 5, rowIdx: 0};
       const walls = [
         {colIdx: 0, rowIdx: 2},
         {colIdx: 1, rowIdx: 2},
@@ -169,9 +169,6 @@ describe('Dijkstra Class', () => {
       expect(nodesToAnimate).toReallyEqualVisitedNode(nodesToAnimateStub);
     });
     it('should return shortestPath', () => {
-      const startNode = {colIdx: 2, rowIdx: 5};
-      const endNode = {colIdx: 5, rowIdx: 0};
-
       for (let row = 0; row < 6; row++) {
         for (let col = 0; col < 6; col++) {
           grid[row][col] = new Node({
