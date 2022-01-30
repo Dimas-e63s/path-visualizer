@@ -241,7 +241,7 @@ describe('AStar', () => {
         endNode: grid[endNode.rowIdx][endNode.colIdx],
       });
 
-      const nodesToAnimateStub = [
+      let nodesToAnimateStub = [
         grid[5][2],
         grid[4][2],
         grid[3][2],
@@ -253,12 +253,13 @@ describe('AStar', () => {
         grid[0][5],
       ];
 
-      nodesToAnimateStub.map(node => {
-        node.setAsVisited();
-        return node;
+      nodesToAnimateStub = nodesToAnimateStub.map(node => {
+        const nodeCopy = node.clone({});
+        nodeCopy.setAsVisited();
+        return nodeCopy;
       })
 
-      const shortestPathStub = [
+      let shortestPathStub = [
         grid[4][2],
         grid[3][2],
         grid[2][2],
@@ -269,7 +270,81 @@ describe('AStar', () => {
         grid[0][5],
       ];
 
+      shortestPathStub = shortestPathStub.map(node => {
+        const nodeCopy = node.clone({});
+        nodeCopy.setAsVisited();
+        return nodeCopy;
+      })
       expect(nodesToAnimate).toReallyEqualVisitedNode(nodesToAnimateStub);
+      expect(shortestPath).toReallyEqualVisitedNode(shortestPathStub);
+    });
+
+    it('should return empty closest path', () => {
+      const grid: Grid = new Array(6)
+        .fill(null)
+        .map(() => new Array(6).fill(null));
+
+      const startNode = {colIdx: 2, rowIdx: 5};
+      const endNode = {colIdx: 5, rowIdx: 0};
+      const walls = [
+        {colIdx: 0, rowIdx: 2},
+        {colIdx: 1, rowIdx: 2},
+        {colIdx: 2, rowIdx: 2},
+        {colIdx: 3, rowIdx: 2},
+        {colIdx: 4, rowIdx: 2},
+        {colIdx: 5, rowIdx: 2},
+        {colIdx: 5, rowIdx: 3},
+        {colIdx: 5, rowIdx: 4},
+        {colIdx: 5, rowIdx: 5}
+      ];
+
+      for (let row = 0; row < 6; row++) {
+        for (let col = 0; col < 6; col++) {
+          grid[row][col] = new Node({
+            rowIdx: row,
+            colIdx: col,
+            isStartNode: startNode.colIdx === col && startNode.rowIdx === row,
+            isFinishNode: endNode.colIdx === col && endNode.rowIdx === row,
+          });
+        }
+      }
+
+      for (const keyEntry of walls) {
+        grid[keyEntry.rowIdx][keyEntry.colIdx].setAsWall();
+      }
+
+      const [nodesToAnimate, shortestPath] = new AStar().traverse({
+        grid,
+        startNode: grid[startNode.rowIdx][startNode.colIdx],
+        endNode: grid[endNode.rowIdx][endNode.colIdx],
+      });
+
+      let nodesToAnimateStub = [
+        grid[5][2],
+        grid[4][2],
+        grid[3][2],
+        grid[3][3],
+        grid[3][4],
+        grid[4][3],
+        grid[5][3],
+        grid[5][4],
+        grid[4][4],
+        grid[3][1],
+        grid[4][1],
+        grid[5][1],
+        grid[3][0],
+        grid[4][0],
+        grid[5][0]
+      ];
+
+      nodesToAnimateStub = nodesToAnimateStub.map(node => {
+        const nodeCopy = node.clone({});
+        nodeCopy.setAsVisited();
+        return nodeCopy;
+      })
+
+      expect(nodesToAnimate).toReallyEqualVisitedNode(nodesToAnimateStub);
+      expect(shortestPath).toReallyEqualVisitedNode([]);
     });
   });
 });
