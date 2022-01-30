@@ -5,12 +5,6 @@ import {Utils} from '../utils/utils.class';
 import PriorityQueue from '../../data-structures/prio';
 import {SomeCustomMatchers} from '../utils/node-matcher';
 
-declare namespace jasmine {
-  interface Matchers<T> {
-    toReallyEqual(expected: any, anotherCustomArg: any, expectationFailOutput?: any): boolean;
-  }
-}
-
 describe('AStar', () => {
   let emptyGrid: Grid;
   let createNode: (metaData: NodeInterface) => Node;
@@ -110,10 +104,6 @@ describe('AStar', () => {
   });
 
   describe('isInvalidNode', () => {
-    // determine if neighbor is not visited and it's not a wall
-    // Node --> bool
-    // true false
-
     it('should return false for visited wall', () => {
       const stubNode = createNode({rowIdx: 10, colIdx: 12});
       stubNode.setAsVisited();
@@ -167,19 +157,20 @@ describe('AStar', () => {
 
   describe('isNeighborHasCloserPath', () => {
     let startNode: Node;
+    let stubNode: Node;
     let gScore: Map<string, number>;
 
     beforeEach(() => {
       startNode = createNode({colIdx: 0, rowIdx: 10});
+      stubNode = createNode({colIdx: 10, rowIdx: 10});
+
       gScore = new Map<string, number>([
         [Utils.getNodeKey(startNode), 0],
+        [Utils.getNodeKey(stubNode), Infinity]
       ]);
     });
 
     it('should return true for Node with closest path', () => {
-      const stubNode = createNode({colIdx: 10, rowIdx: 10});
-      gScore.set(Utils.getNodeKey(stubNode), Infinity);
-
       const tentative_gScore = gScore.get(Utils.getNodeKey(startNode))! + stubNode.weight;
 
       expect(AStar.isNeighborHasCloserPath({
@@ -190,9 +181,7 @@ describe('AStar', () => {
     });
 
     it('should return false for Node with longer path', () => {
-      const stubNode = createNode({colIdx: 10, rowIdx: 10, weight: NodeWeights.WALL});
-      gScore.set(Utils.getNodeKey(stubNode), Infinity);
-
+      stubNode = stubNode.clone({weight: NodeWeights.WALL});
       const tentative_gScore = gScore.get(Utils.getNodeKey(startNode))! + stubNode.weight;
 
       expect(AStar.isNeighborHasCloserPath({
