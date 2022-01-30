@@ -1,11 +1,31 @@
 import {Dijkstra} from './dijkstra';
 import {Node, NodeWeights} from '../../models/Node.class';
-import {GridRow} from '../../models/grid.types';
+import {Grid, GridRow} from '../../models/grid.types';
+import {SomeCustomMatchers} from '../utils/node-matcher';
 
 // TODO :
 //  - cover constructor
 //  - cover traverse method
 //  - extract logic for creating grid
+
+
+// 0. Mark all nodes unvisited.
+//    - Create a set of all the unvisited nodes
+// 1. Assign to every node a tentative distance value:
+//    - set it to zero for our initial node
+//    - infinity for all other nodes
+//    - Set the initial node as current
+// 2. For the current node, consider all of its unvisited neighbors
+//      - calculate their tentative distances through the current node
+//      - Compare the newly calculated tentative distance to the current assigned value and assign the smaller one. For example, if the current node A is marked with a distance of 6, and the edge connecting it with a neighbor B has length 2, then the distance to B through A will be 6 + 2 = 8. If B was previously marked with a distance greater than 8 then change it to 8. Otherwise, the current value will be kept.
+// 3. When we are done considering all of the unvisited neighbors of the current node,
+//    - mark the current node as visited
+//    - remove it from the unvisited set
+//    - A visited node will never be checked again
+// 4. If the destination node has been marked visited (when planning a route between two specific nodes) or if the smallest tentative distance among the nodes in the unvisited set is infinity (when planning a complete traversal; occurs when there is no connection between the initial node and remaining unvisited nodes),
+//    - then stop. The algorithm has finished.
+// 5. Otherwise, select the unvisited node that is marked with the smallest tentative distance
+//    - set it as the new current node, and go back to step 3.
 
 describe('Dijkstra Class', () => {
   describe('constructor', () => {
@@ -127,6 +147,206 @@ describe('Dijkstra Class', () => {
   })
 
   describe('traverse', () => {
+    beforeEach(() => {
+      jasmine.addMatchers(SomeCustomMatchers);
+    });
+    // return shortest path
+    // don't return shortest path
+    it('should return empty shortestPath', () => {
+      const grid: Grid = new Array(6)
+        .fill(null)
+        .map(() => new Array(6).fill(null));
 
+      const startNode = {colIdx: 2, rowIdx: 5};
+      const endNode = {colIdx: 5, rowIdx: 0};
+      const walls = [
+        {colIdx: 0, rowIdx: 2},
+        {colIdx: 1, rowIdx: 2},
+        {colIdx: 2, rowIdx: 2},
+        {colIdx: 3, rowIdx: 2},
+        {colIdx: 4, rowIdx: 2},
+        {colIdx: 5, rowIdx: 2},
+        {colIdx: 5, rowIdx: 3},
+        {colIdx: 5, rowIdx: 4},
+        {colIdx: 5, rowIdx: 5}
+      ];
+
+      for (let row = 0; row < 6; row++) {
+        for (let col = 0; col < 6; col++) {
+          grid[row][col] = new Node({
+            rowIdx: row,
+            colIdx: col,
+            isStartNode: startNode.colIdx === col && startNode.rowIdx === row,
+            isFinishNode: endNode.colIdx === col && endNode.rowIdx === row,
+          });
+        }
+      }
+
+      for (const keyEntry of walls) {
+        grid[keyEntry.rowIdx][keyEntry.colIdx].setAsWall();
+      }
+
+      const [nodesToAnimate, shortestPath] = new Dijkstra({
+        grid,
+        startNode: grid[startNode.rowIdx][startNode.colIdx],
+        endNode: grid[endNode.rowIdx][endNode.colIdx]
+      })
+        .traverse();
+
+      // PRIO_Q
+      // let nodesToAnimateStub = [
+      //   grid[5][2],
+      //   grid[4][2],
+      //   grid[5][1],
+      //   grid[5][3],
+      //   grid[4][1],
+      //   grid[5][0],
+      //   grid[4][3],
+      //   grid[5][4],
+      //   grid[3][1],
+      //   grid[4][0],
+      //   grid[3][3],
+      //   grid[4][4],
+      //   grid[3][0],
+      //   grid[3][2],
+      //   grid[3][4]
+      // ];
+      let nodesToAnimateStub = [
+        grid[5][2],
+        grid[4][2],
+        grid[5][1],
+        grid[5][3],
+        grid[3][2],
+        grid[4][1],
+        grid[4][3],
+        grid[5][0],
+        grid[5][4],
+        grid[3][1],
+        grid[3][3],
+        grid[4][0],
+        grid[4][4],
+        grid[3][0],
+        grid[3][4]
+      ];
+
+      nodesToAnimateStub = nodesToAnimateStub.map(node => {
+        const nodeCopy = node.clone({});
+        nodeCopy.setAsVisited();
+        return nodeCopy;
+      });
+
+      expect(shortestPath).toReallyEqualVisitedNode([]);
+      expect(nodesToAnimate).toReallyEqualVisitedNode(nodesToAnimateStub);
+    });
+    it('should return shortestPath', () => {
+      const grid: Grid = new Array(6)
+        .fill(null)
+        .map(() => new Array(6).fill(null));
+
+      const startNode = {colIdx: 2, rowIdx: 5};
+      const endNode = {colIdx: 5, rowIdx: 0};
+
+      for (let row = 0; row < 6; row++) {
+        for (let col = 0; col < 6; col++) {
+          grid[row][col] = new Node({
+            rowIdx: row,
+            colIdx: col,
+            isStartNode: startNode.colIdx === col && startNode.rowIdx === row,
+            isFinishNode: endNode.colIdx === col && endNode.rowIdx === row,
+          });
+        }
+      }
+
+      const [nodesToAnimate, shortestPath] = new Dijkstra({
+        grid,
+        startNode: grid[startNode.rowIdx][startNode.colIdx],
+        endNode: grid[endNode.rowIdx][endNode.colIdx]
+      })
+        .traverse();
+
+      // PRIO_Q
+      // let nodesToAnimateStub = [
+      //   grid[5][2],
+      //   grid[4][2],
+      //   grid[5][1],
+      //   grid[5][3],
+      //   grid[4][1],
+      //   grid[5][0],
+      //   grid[4][3],
+      //   grid[5][4],
+      //   grid[3][1],
+      //   grid[4][0],
+      //   grid[3][3],
+      //   grid[4][4],
+      //   grid[3][0],
+      //   grid[3][2],
+      //   grid[3][4]
+      // ];
+
+      let nodesToAnimateStub = [
+        grid[5][2],
+        grid[4][2],
+        grid[5][1],
+        grid[5][3],
+        grid[3][2],
+        grid[4][1],
+        grid[4][3],
+        grid[5][0],
+        grid[5][4],
+        grid[2][2],
+        grid[3][1],
+        grid[3][3],
+        grid[4][0],
+        grid[4][4],
+        grid[5][5],
+        grid[1][2],
+        grid[2][1],
+        grid[2][3],
+        grid[3][0],
+        grid[3][4],
+        grid[4][5],
+        grid[0][2],
+        grid[1][1],
+        grid[1][3],
+        grid[2][0],
+        grid[2][4],
+        grid[3][5],
+        grid[0][1],
+        grid[0][3],
+        grid[1][0],
+        grid[1][4],
+        grid[2][5],
+        grid[0][0],
+        grid[0][4],
+        grid[1][5],
+        grid[0][5]
+      ];
+
+      let shortestPathStub = [
+        grid[5][3],
+        grid[5][4],
+        grid[5][5],
+        grid[4][5],
+        grid[3][5],
+        grid[2][5],
+        grid[1][5],
+        grid[0][5]
+      ]
+
+      shortestPathStub = shortestPathStub.map(node => {
+        const nodeCopy = node.clone({});
+        nodeCopy.setAsVisited();
+        return nodeCopy;
+      });
+
+      nodesToAnimateStub = nodesToAnimateStub.map(node => {
+        const nodeCopy = node.clone({});
+        nodeCopy.setAsVisited();
+        return nodeCopy;
+      });
+
+      expect(shortestPath).toReallyEqualVisitedNode(shortestPathStub);
+      expect(nodesToAnimate).toReallyEqualVisitedNode(nodesToAnimateStub);
+    });
   })
 });
