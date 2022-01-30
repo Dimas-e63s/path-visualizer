@@ -14,7 +14,7 @@ export const SomeCustomMatchers: CustomMatcherFactories = {
       compare: function(expected: GridRow, actual: GridRow, anotherCustomArg: any): CustomMatcherResult {
         let passes = true;
         let message = '';
-        if (actual.length === expected.length) {
+        if (NodeValidation.isEqualSize(actual, expected)) {
           for (let i = 0; i < actual.length; i++) {
             if (!NodeValidation.isVisitedNodeCopy(actual[i], expected[i])) {
               passes = false;
