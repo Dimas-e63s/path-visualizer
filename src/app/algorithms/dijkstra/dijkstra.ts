@@ -4,7 +4,6 @@ import {Utils} from '../utils/utils.class';
 
 // TODO:
 //  - optimize traverse() with priorityQueue
-//  - add test cases for negative index and NaN
 
 export class Dijkstra {
   private readonly grid: Grid;

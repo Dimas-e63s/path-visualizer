@@ -5,6 +5,7 @@ import {GridRow} from '../../models/grid.types';
 // TODO :
 //  - cover constructor
 //  - cover traverse method
+//  - extract logic for creating grid
 
 describe('Dijkstra Class', () => {
   describe('constructor', () => {
@@ -17,64 +18,51 @@ describe('Dijkstra Class', () => {
   });
 
   describe('isFirstRow', () => {
-    it('should return false to 1 row', () => {
+    it('should return false to rowIdx different than 0', () => {
       let stubValue = 1;
-      expect(Dijkstra.isFirstRow(stubValue)).toBeFalse();
-
-      stubValue = 10;
-      expect(Dijkstra.isFirstRow(stubValue)).toBeFalse();
-
-      stubValue = 2345;
       expect(Dijkstra.isFirstRow(stubValue)).toBeFalse();
     });
 
-    it('should return true to 0 row', () => {
+    it('should return true to rowIdx equal 0', () => {
       let stubValue = 0;
       expect(Dijkstra.isFirstRow(stubValue)).toBeTrue();
     });
   });
 
   describe('isLastRow', () => {
-    it('should return false to 1 rowIdx and 7 lastRowIdx', () => {
+    it('should return false to rowIdx equal 1 and lastRowIdx equal 7', () => {
       let stubRowIdx = 1;
       let stubLastRowIdx = 10;
       expect(Dijkstra.isLastRow(stubRowIdx, stubLastRowIdx)).toBeFalse();
-      stubRowIdx = 10;
-      stubLastRowIdx = 1000;
-      expect(Dijkstra.isLastRow(stubRowIdx, stubLastRowIdx)).toBeFalse();
     });
 
-    it('should return true to the same rowIdx', () => {
-      let stubRowIdx = 1;
-      let stubLastRowIdx = 1;
-      expect(Dijkstra.isLastRow(stubRowIdx, stubLastRowIdx)).toBeTrue();
-
-      stubRowIdx = 240;
-      stubLastRowIdx = 240;
+    it('should return true to the rowIdx equal to lastRowIdx', () => {
+      let stubRowIdx = 240;
+      let stubLastRowIdx = 240;
       expect(Dijkstra.isLastRow(stubRowIdx, stubLastRowIdx)).toBeTrue();
     });
   });
 
   describe('isFirstColumn', () => {
-    it('should return false for columnIdx 2', () => {
+    it('should return false for columnIdx equal 2', () => {
       let stubColIdx = 2;
       expect(Dijkstra.isFirstColumn(stubColIdx)).toBeFalse();
     });
 
-    it('should return true for columnIdx 0', () => {
+    it('should return true for columnIdx equal 0', () => {
       let stubColIdx = 0;
       expect(Dijkstra.isFirstColumn(stubColIdx)).toBeTrue();
     });
   });
 
   describe('isLastColumn', () => {
-    it('should return false for columnIdx 2 and 7 lastColumnIdx', () => {
+    it('should return false for different columnIdx and lastColumnIdx', () => {
       let stubColIdx = 2;
       let stubLastColIdx = 7;
       expect(Dijkstra.isLastColumn(stubColIdx, stubLastColIdx)).toBeFalse();
     });
 
-    it('should return true for columnIdx 7 and 7 lastColumnIdx', () => {
+    it('should return true for the same columnIdx and lastColumnIdx', () => {
       let stubColIdx = 7;
       let stubLastColIdx = 7;
       expect(Dijkstra.isLastColumn(stubColIdx, stubLastColIdx)).toBeTrue();
@@ -102,7 +90,7 @@ describe('Dijkstra Class', () => {
       expect(mappedArr).toEqual(stubExpectedResult);
     })
 
-    it('should not sort empty array', () => {
+    it('should leave empty array without changes', () => {
       let stubExpectedResult: GridRow = [];
       let stubArr: GridRow = [];
 
@@ -113,7 +101,7 @@ describe('Dijkstra Class', () => {
   })
 
   describe('isNodeAccessible', () => {
-    it('should return true', () => {
+    it('should return true for empty Node', () => {
       const stubNode = new Node({
         colIdx: 1,
         rowIdx: 1,
@@ -125,7 +113,7 @@ describe('Dijkstra Class', () => {
       expect(Dijkstra.isNodeAccessible(stubNode)).toBeTrue();
     })
 
-    it('should return false', () => {
+    it('should return false for Wall Node', () => {
       const stubNode = new Node({
         colIdx: 1,
         rowIdx: 1,
