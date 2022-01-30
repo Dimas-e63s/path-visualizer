@@ -104,6 +104,17 @@ describe('Dijkstra Class', () => {
       grid = new Array(6)
         .fill(null)
         .map(() => new Array(6).fill(null));
+
+      for (let row = 0; row < 6; row++) {
+        for (let col = 0; col < 6; col++) {
+          grid[row][col] = new Node({
+            rowIdx: row,
+            colIdx: col,
+            isStartNode: startNode.colIdx === col && startNode.rowIdx === row,
+            isFinishNode: endNode.colIdx === col && endNode.rowIdx === row,
+          });
+        }
+      }
     });
     it('should return empty shortestPath', () => {
       const walls = [
@@ -117,17 +128,6 @@ describe('Dijkstra Class', () => {
         {colIdx: 5, rowIdx: 4},
         {colIdx: 5, rowIdx: 5}
       ];
-
-      for (let row = 0; row < 6; row++) {
-        for (let col = 0; col < 6; col++) {
-          grid[row][col] = new Node({
-            rowIdx: row,
-            colIdx: col,
-            isStartNode: startNode.colIdx === col && startNode.rowIdx === row,
-            isFinishNode: endNode.colIdx === col && endNode.rowIdx === row,
-          });
-        }
-      }
 
       for (const keyEntry of walls) {
         grid[keyEntry.rowIdx][keyEntry.colIdx].setAsWall();
@@ -169,23 +169,11 @@ describe('Dijkstra Class', () => {
       expect(nodesToAnimate).toReallyEqualVisitedNode(nodesToAnimateStub);
     });
     it('should return shortestPath', () => {
-      for (let row = 0; row < 6; row++) {
-        for (let col = 0; col < 6; col++) {
-          grid[row][col] = new Node({
-            rowIdx: row,
-            colIdx: col,
-            isStartNode: startNode.colIdx === col && startNode.rowIdx === row,
-            isFinishNode: endNode.colIdx === col && endNode.rowIdx === row,
-          });
-        }
-      }
-
       const [nodesToAnimate, shortestPath] = new Dijkstra({
         grid,
         startNode: grid[startNode.rowIdx][startNode.colIdx],
         endNode: grid[endNode.rowIdx][endNode.colIdx]
-      })
-        .traverse();
+      }).traverse();
 
       let nodesToAnimateStub = [
         grid[5][2],
