@@ -217,14 +217,11 @@ describe('Dijkstra Class', () => {
         nodeCopy.setAsVisited();
         return nodeCopy;
       });
-      nodesToAnimate.forEach(node => {
-        console.log(`${node.getRowIdx()}-${node.getColumnIdx()}`);
-      })
-      debugger
+
       expect(shortestPath).toReallyEqualVisitedNode([]);
       expect(nodesToAnimate).toReallyEqualVisitedNode(nodesToAnimateStub);
     });
-    xit('should return shortestPath', () => {
+    it('should return shortestPath', () => {
       const grid: Grid = new Array(6)
         .fill(null)
         .map(() => new Array(6).fill(null));
@@ -249,25 +246,6 @@ describe('Dijkstra Class', () => {
         endNode: grid[endNode.rowIdx][endNode.colIdx]
       })
         .traverse();
-
-      // PRIO_Q
-      // let nodesToAnimateStub = [
-      //   grid[5][2],
-      //   grid[4][2],
-      //   grid[5][1],
-      //   grid[5][3],
-      //   grid[4][1],
-      //   grid[5][0],
-      //   grid[4][3],
-      //   grid[5][4],
-      //   grid[3][1],
-      //   grid[4][0],
-      //   grid[3][3],
-      //   grid[4][4],
-      //   grid[3][0],
-      //   grid[3][2],
-      //   grid[3][4]
-      // ];
 
       let nodesToAnimateStub = [
         grid[5][2],
@@ -309,13 +287,13 @@ describe('Dijkstra Class', () => {
       ];
 
       let shortestPathStub = [
-        grid[5][3],
-        grid[5][4],
-        grid[5][5],
-        grid[4][5],
-        grid[3][5],
-        grid[2][5],
-        grid[1][5],
+        grid[4][2],
+        grid[3][2],
+        grid[2][2],
+        grid[1][2],
+        grid[0][2],
+        grid[0][3],
+        grid[0][4],
         grid[0][5]
       ]
 
@@ -330,7 +308,7 @@ describe('Dijkstra Class', () => {
         nodeCopy.setAsVisited();
         return nodeCopy;
       });
-
+      debugger
       expect(shortestPath).toReallyEqualVisitedNode(shortestPathStub);
       expect(nodesToAnimate).toReallyEqualVisitedNode(nodesToAnimateStub);
     });
