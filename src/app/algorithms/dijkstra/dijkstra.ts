@@ -1,7 +1,8 @@
-import {Node, NodeWeights} from '../../models/Node.class';
+import {Node} from '../../models/Node.class';
 import {GridRow, Grid} from '../../models/grid.types';
 import {Utils} from '../utils/utils.class';
 import {PriorityQueue} from '@datastructures-js/priority-queue';
+import {AlgorithmBase} from '../algorithm-base/algorithm-base';
 
 // TODO:
 //  - optimize further with Fibonacci Queue
@@ -11,15 +12,9 @@ interface NodeOption {
   timestamp: number;
 }
 
-export class Dijkstra {
-  private readonly grid: Grid;
-  private readonly startNode: Node;
-  private readonly endNode: Node;
-
+export class Dijkstra extends AlgorithmBase {
   constructor({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}) {
-    this.grid = grid;
-    this.startNode = startNode;
-    this.endNode = endNode;
+    super({grid, startNode, endNode});
   }
   static isFirstRow(rowIdx: number): boolean {
     return rowIdx === 0;

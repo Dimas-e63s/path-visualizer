@@ -2,6 +2,7 @@ import {Grid, GridMap, GridRow} from '../../../models/grid.types';
 import {Utils} from '../../utils/utils.class';
 import {NodeWeights, Node} from '../../../models/Node.class';
 import {Stack} from '@datastructures-js/stack';
+import {AlgorithmBase} from '../../algorithm-base/algorithm-base';
 
 enum DirectionsEnum {
   N = 1,
@@ -24,44 +25,41 @@ const DY = new Map<DirectionsEnum, number>([
   [DirectionsEnum.S, 1],
 ]);
 
-export class Backtracking {
+export class Backtracking extends AlgorithmBase {
   private readonly totalCol: number;
   private readonly totalRow: number;
   private readonly visitedNodes = new Set<string>();
-  private readonly grid: GridMap;
+  private readonly gridMap: GridMap;
   private nodesToAnimate: GridRow = [];
-  private readonly startNode: Node;
-  private readonly endNode: Node;
 
   constructor(grid: Grid, startNode: Node, endNode: Node) {
-    this.startNode = startNode;
-    this.endNode = endNode;
+    super({grid, startNode, endNode});
+    this.gridMap = Utils.getNodesCopy(this.grid);
     const {totalRow, totalCol} = Utils.getGridSize(grid);
     this.totalCol = totalCol;
     this.totalRow = totalRow;
-    this.grid = Utils.getNodesCopy(grid);
     this.transformToWalls();
   }
 
   getMazeIterative() {
-    this.generateMazeIterative({cx: 0, cy: 0, grid: this.grid});
+    this.generateMazeIterative({cx: 0, cy: 0, grid: this.gridMap});
 
-    this.grid.set(Utils.getNodeKey(this.startNode), this.startNode);
-    this.grid.set(Utils.getNodeKey(this.endNode), this.endNode);
-    return this.grid;
+    this.gridMap.set(Utils.getNodeKey(this.startNode), this.startNode);
+    this.gridMap.set(Utils.getNodeKey(this.endNode), this.endNode);
+    return this.gridMap;
   }
 
   getMazeRecursive() {
-    this.generateMazeRecursive({cx: 0, cy: 0, grid: this.grid});
+    this.generateMazeRecursive({cx: 0, cy: 0, grid: this.gridMap});
 
-    this.grid.set(Utils.getNodeKey(this.startNode), this.startNode);
-    this.grid.set(Utils.getNodeKey(this.endNode), this.endNode);
-    return this.grid;
+    this.gridMap.set(Utils.getNodeKey(this.startNode), this.startNode);
+    this.gridMap.set(Utils.getNodeKey(this.endNode), this.endNode);
+    return this.gridMap;
   }
 
   private transformToWalls() {
-    for (const node of this.grid.values()) {
-      this.grid.set(Utils.getNodeKey(node), node.clone({weight: NodeWeights.WALL}));
+    for (const node of this.gridMap.values()) {
+      this.gridMap.set(Utils.getNodeKey(node), node.clone({weight: NodeWeights.WALL}));
     }
   }
 

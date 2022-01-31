@@ -84,25 +84,25 @@ export class AppComponent implements OnInit, OnDestroy {
         }).traverse();
         break;
       case PathAlgorithmEnum.A_STAR:
-        [visitedNodesInOrder, shortestPath] = new AStar().traverse({
+        [visitedNodesInOrder, shortestPath] = new AStar({
           grid: this.nodes,
           startNode,
           endNode,
-        });
+        }).traverse();
         break;
       case PathAlgorithmEnum.BFS:
-        [visitedNodesInOrder, shortestPath] = new UnweightedAlgorithms().bfs({
+        [visitedNodesInOrder, shortestPath] = new UnweightedAlgorithms({
           grid: this.nodes,
           startNode,
           endNode,
-        });
+        }).bfs();
         break;
       case PathAlgorithmEnum.DFS:
-        [visitedNodesInOrder, shortestPath] = new UnweightedAlgorithms().dfs({
+        [visitedNodesInOrder, shortestPath] = new UnweightedAlgorithms({
           grid: this.nodes,
           startNode,
           endNode,
-        });
+        }).dfs();
         break;
     }
 

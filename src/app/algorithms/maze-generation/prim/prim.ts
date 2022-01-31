@@ -1,6 +1,7 @@
 import {Grid, GridMap} from '../../../models/grid.types';
 import {Utils} from '../../utils/utils.class';
 import {Node, NodeWeights} from '../../../models/Node.class';
+import {AlgorithmBase} from '../../algorithm-base/algorithm-base';
 
 enum DirectionsEnum {
   N = 1,
@@ -25,31 +26,29 @@ const DY = new Map<DirectionsEnum, number>([
 
 const directions = [DirectionsEnum.N, DirectionsEnum.S, DirectionsEnum.W, DirectionsEnum.E];
 
-export class Prim {
-  private grid: GridMap;
-  private readonly startNode: Node;
-  private readonly endNode: Node;
+export class Prim extends AlgorithmBase {
+  private readonly gridMap: GridMap;
   private readonly totalCol: number;
   private readonly totalRow: number;
+
   constructor(grid: Grid, startNode: Node, endNode: Node) {
-    this.grid = Utils.getNodesCopy(grid);
+    super({grid, startNode, endNode});
+    this.gridMap = Utils.getNodesCopy(grid);
     const {totalRow, totalCol} = Utils.getGridSize(grid);
     this.totalCol = totalCol;
     this.totalRow = totalRow;
-    this.startNode = startNode;
-    this.endNode = endNode;
   }
 
   helper() {
-    for (const node of this.grid.values()) {
-      this.grid.set(`${node.getRowIdx()}-${node.getColumnIdx()}`, node.clone({weight: NodeWeights.WALL}));
+    for (const node of this.gridMap.values()) {
+      this.gridMap.set(`${node.getRowIdx()}-${node.getColumnIdx()}`, node.clone({weight: NodeWeights.WALL}));
     }
     this.generateMaze();
 
-    this.grid.set(Utils.getNodeKey(this.startNode), this.startNode);
-    this.grid.set(Utils.getNodeKey(this.endNode), this.endNode);
+    this.gridMap.set(Utils.getNodeKey(this.startNode), this.startNode);
+    this.gridMap.set(Utils.getNodeKey(this.endNode), this.endNode);
 
-    return this.grid;
+    return this.gridMap;
   }
 
   private generateMaze() {
@@ -57,9 +56,9 @@ export class Prim {
 
     const randomCell = `${this.getRandomIdx(0, this.totalRow - 1)}-${this.getRandomIdx(0, this.totalCol - 1)}`;
 
-    let initialCell = this.grid.get(randomCell)!;
+    let initialCell = this.gridMap.get(randomCell)!;
     initialCell = initialCell.clone({weight: NodeWeights.EMPTY});
-    this.grid.set(randomCell, initialCell);
+    this.gridMap.set(randomCell, initialCell);
 
     const {rowIdx, colIdx} = Utils.getNodeCoordinates(initialCell);
 
@@ -82,7 +81,7 @@ export class Prim {
     while (Object.keys(frontierArr).length > 0) {
       const neighborKey = this.randomKey(frontierArr);
       delete frontierArr[neighborKey];
-      const {colIdx, rowIdx} = Utils.getNodeCoordinates(this.grid.get(neighborKey)!);
+      const {colIdx, rowIdx} = Utils.getNodeCoordinates(this.gridMap.get(neighborKey)!);
 
       const neighbours: any = {};
       directions.forEach(direction => {
@@ -95,7 +94,7 @@ export class Prim {
           && wr <= this.totalRow -1
           && wc >= 0
           && wc <= this.totalCol - 1
-          && !this.grid.get(`${wr}-${wc}`)!.isWall()
+          && !this.gridMap.get(`${wr}-${wc}`)!.isWall()
         ) {
           neighbours[`${r}-${c}`] = `${r}-${c}`;
         }
@@ -105,18 +104,18 @@ export class Prim {
           && wr <= this.totalRow -1
           && wc >= 0
           && wc <= this.totalCol - 1
-          && this.grid.get(`${wr}-${wc}`)!.isWall()
+          && this.gridMap.get(`${wr}-${wc}`)!.isWall()
         ) {
           frontierArr[`${wr}-${wc}`] = `${wr}-${wc}`;
         }
       });
 
       const randNeighbour = this.randomKey(neighbours);
-      const randNeighborCopy = this.grid.get(randNeighbour)!.clone({weight: NodeWeights.EMPTY});
-      const randFCopy = this.grid.get(neighborKey)!.clone({weight: NodeWeights.EMPTY});
+      const randNeighborCopy = this.gridMap.get(randNeighbour)!.clone({weight: NodeWeights.EMPTY});
+      const randFCopy = this.gridMap.get(neighborKey)!.clone({weight: NodeWeights.EMPTY});
 
-      this.grid.set(randNeighbour, randNeighborCopy);
-      this.grid.set(neighborKey, randFCopy);
+      this.gridMap.set(randNeighbour, randNeighborCopy);
+      this.gridMap.set(neighborKey, randFCopy);
     }
   }
 

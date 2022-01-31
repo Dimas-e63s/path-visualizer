@@ -3,34 +3,33 @@ import {Node, NodeWeights} from '../../../models/Node.class';
 import {Grid, GridMap} from '../../../models/grid.types';
 import {Dijkstra} from '../../dijkstra/dijkstra';
 import {DisjointSet} from '../../../data-structures/disjoint-set';
+import {AlgorithmBase} from '../../algorithm-base/algorithm-base';
 
 // TODO:
 //  - add original mode (deleting walls)
 //  - refactor for maze generation (adding walls)
 //  - add last row and column for odd size
 
-export class Kruskal {
-  private grid: GridMap;
+export class Kruskal extends AlgorithmBase{
+  private readonly gridMap: GridMap;
   private readonly totalCol: number;
   private readonly totalRow: number;
-  private readonly startNode: Node;
-  private readonly endNode: Node;
 
   constructor(grid: Grid, startNode: Node, endNode: Node) {
-    this.grid = Utils.getNodesCopy(grid);
+    super({grid, startNode, endNode});
+
+    this.gridMap = Utils.getNodesCopy(grid);
     const {totalRow, totalCol} = Utils.getGridSize(grid);
     this.totalCol = totalCol;
     this.totalRow = totalRow;
-    this.startNode = startNode;
-    this.endNode = endNode;
   }
 
   helper() {
     this.generateMaze2();
 
-    this.grid.set(Utils.getNodeKey(this.startNode), this.startNode);
-    this.grid.set(Utils.getNodeKey(this.endNode), this.endNode);
-    return this.grid;
+    this.gridMap.set(Utils.getNodeKey(this.startNode), this.startNode);
+    this.gridMap.set(Utils.getNodeKey(this.endNode), this.endNode);
+    return this.gridMap;
   }
 
   generateMaze2() {
@@ -39,7 +38,7 @@ export class Kruskal {
     const removedWalls = [];
     let edges = [];
 
-    for (const [key, node] of this.grid.entries()) {
+    for (const [key, node] of this.gridMap.entries()) {
       if (node.getColumnIdx() % 2 === 0 || node.getRowIdx() % 2 === 0) {
         if (
           !Dijkstra.isFirstColumn(node.getColumnIdx())
@@ -66,13 +65,13 @@ export class Kruskal {
       ) {
         set.union(set.get(`${row}-${+col - 1}`), set.get(`${row}-${+col + 1}`))
 
-        const node1 = this.grid.get(`${row}-${+col + 1}`)!.clone({weight: NodeWeights.EMPTY});
-        const node2 = this.grid.get(`${row}-${+col - 1}`)!.clone({weight: NodeWeights.EMPTY});
-        const node3 = this.grid.get(`${row}-${+col}`)!.clone({weight: NodeWeights.EMPTY});
+        const node1 = this.gridMap.get(`${row}-${+col + 1}`)!.clone({weight: NodeWeights.EMPTY});
+        const node2 = this.gridMap.get(`${row}-${+col - 1}`)!.clone({weight: NodeWeights.EMPTY});
+        const node3 = this.gridMap.get(`${row}-${+col}`)!.clone({weight: NodeWeights.EMPTY});
 
-        this.grid.set(`${row}-${+col + 1}`, node1);
-        this.grid.set(`${row}-${+col - 1}`, node2);
-        this.grid.set(`${row}-${+col}`, node3);
+        this.gridMap.set(`${row}-${+col + 1}`, node1);
+        this.gridMap.set(`${row}-${+col - 1}`, node2);
+        this.gridMap.set(`${row}-${+col}`, node3);
       }
       if (
         +col % 2 !== 0
@@ -80,13 +79,13 @@ export class Kruskal {
       ) {
 
         set.union(set.get(`${+row - 1}-${col}`), set.get(`${+row + 1}-${col}`))
-        const node1 = this.grid.get(`${+row - 1}-${col}`)!.clone({weight: NodeWeights.EMPTY});
-        const node2 = this.grid.get(`${+row + 1}-${col}`)!.clone({weight: NodeWeights.EMPTY});
-        const node3 = this.grid.get(`${row}-${col}`)!.clone({weight: NodeWeights.EMPTY});
+        const node1 = this.gridMap.get(`${+row - 1}-${col}`)!.clone({weight: NodeWeights.EMPTY});
+        const node2 = this.gridMap.get(`${+row + 1}-${col}`)!.clone({weight: NodeWeights.EMPTY});
+        const node3 = this.gridMap.get(`${row}-${col}`)!.clone({weight: NodeWeights.EMPTY});
 
-        this.grid.set(`${+row - 1}-${col}`, node1);
-        this.grid.set(`${+row + 1}-${col}`, node2);
-        this.grid.set(`${row}-${col}`, node3);
+        this.gridMap.set(`${+row - 1}-${col}`, node1);
+        this.gridMap.set(`${+row + 1}-${col}`, node2);
+        this.gridMap.set(`${row}-${col}`, node3);
       }
     })
   }

@@ -2,15 +2,20 @@ import {Grid, GridMap, GridRow} from '../../models/grid.types';
 import {Node} from '../../models/Node.class';
 import {Utils} from '../utils/utils.class';
 import PriorityQueue from '../../data-structures/prio';
+import {AlgorithmBase} from '../algorithm-base/algorithm-base';
 
-export class AStar {
-  traverse({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}): any {
-    if (startNode === null || endNode == null) {
+export class AStar extends AlgorithmBase{
+  constructor({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}) {
+    super({grid, startNode, endNode});
+  }
+
+  traverse(): any {
+    if (this.startNode === null || this.endNode == null) {
       return;
     }
 
-    const {totalRow, totalCol} = Utils.getGridSize(grid);
-    const gridMap = Utils.getNodesCopy(grid);
+    const {totalRow, totalCol} = Utils.getGridSize(this.grid);
+    const gridMap = Utils.getNodesCopy(this.grid);
     const nodesToAnimate: GridRow = [];
 
     const prioQ = new PriorityQueue();
@@ -24,9 +29,9 @@ export class AStar {
     });
 
     AStar.setStartNode({
-      startNodeKey: Utils.getNodeKey(startNode),
-      startNode,
-      endNode,
+      startNodeKey: Utils.getNodeKey(this.startNode),
+      startNode: this.startNode,
+      endNode: this.endNode,
       fScore,
       gScore,
       prioQ,
@@ -38,7 +43,7 @@ export class AStar {
       nodesToAnimate.push(currentNode);
       currentNode.setAsVisited();
 
-      if (Utils.isEndNode(currentNode, endNode)) {
+      if (Utils.isEndNode(currentNode, this.endNode)) {
         break;
       }
 
@@ -62,7 +67,7 @@ export class AStar {
         })) {
           neighbor.previousNode = currentNode;
           gScore.set(neighborKey, tentative_gScore);
-          fScore.set(neighborKey, tentative_gScore + AStar.calculateHeuristic({currentNode: neighbor, endNode}));
+          fScore.set(neighborKey, tentative_gScore + AStar.calculateHeuristic({currentNode: neighbor, endNode: this.endNode}));
 
           if (!prioQ.hasValue(neighborKey)) {
             prioQ.add(neighborKey, fScore.get(neighborKey));
@@ -72,7 +77,7 @@ export class AStar {
     }
 
     const shortestPath = Utils.getNodesInShortestPathOrder(
-      gridMap.get(Utils.getNodeKey(endNode)) as Node,
+      gridMap.get(Utils.getNodeKey(this.endNode)) as Node,
     );
 
     return [nodesToAnimate, shortestPath];

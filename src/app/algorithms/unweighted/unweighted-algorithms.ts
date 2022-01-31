@@ -4,15 +4,20 @@ import {Utils} from '../utils/utils.class';
 import {Dijkstra} from '../dijkstra/dijkstra';
 import { Stack } from '@datastructures-js/stack';
 import { Queue } from '@datastructures-js/queue';
+import {AlgorithmBase} from '../algorithm-base/algorithm-base';
 
-export class UnweightedAlgorithms {
-  dfs({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}) {
+export class UnweightedAlgorithms extends AlgorithmBase {
+  constructor({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}) {
+    super({grid, startNode, endNode});
+  }
+
+  dfs() {
     const stack = new Stack<Node>();
-    const gridMap = Utils.getNodesCopy(grid);
+    const gridMap = Utils.getNodesCopy(this.grid);
 
-    stack.push(gridMap.get(Utils.getNodeKey(startNode)) as Node);
+    stack.push(gridMap.get(Utils.getNodeKey(this.startNode)) as Node);
 
-    const {totalRow, totalCol} = Utils.getGridSize(grid);
+    const {totalRow, totalCol} = Utils.getGridSize(this.grid);
     const visitedNodes: GridRow = [];
 
     while (!stack.isEmpty()) {
@@ -25,7 +30,7 @@ export class UnweightedAlgorithms {
       currentNode.setAsVisited();
       visitedNodes.push(currentNode);
 
-      if (Utils.isEndNode(currentNode, endNode)) {
+      if (Utils.isEndNode(currentNode, this.endNode)) {
         break;
       }
 
@@ -45,18 +50,18 @@ export class UnweightedAlgorithms {
     }
 
     const shortestPath = Utils.getNodesInShortestPathOrder(
-      gridMap.get(Utils.getNodeKey(endNode)) as Node
+      gridMap.get(Utils.getNodeKey(this.endNode)) as Node
     )
 
     return [visitedNodes, shortestPath]
   }
 
-  bfs({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}) {
+  bfs() {
     const queue = new Queue<Node>();
-    const gridMap = Utils.getNodesCopy(grid);
-    const exploredNodes = new Set().add(Utils.getNodeKey(startNode));
-    queue.enqueue(gridMap.get(Utils.getNodeKey(startNode)) as Node);
-    const {totalRow, totalCol} = Utils.getGridSize(grid);
+    const gridMap = Utils.getNodesCopy(this.grid);
+    const exploredNodes = new Set().add(Utils.getNodeKey(this.startNode));
+    queue.enqueue(gridMap.get(Utils.getNodeKey(this.startNode)) as Node);
+    const {totalRow, totalCol} = Utils.getGridSize(this.grid);
     const visitedNodes = [];
 
     while (!queue.isEmpty()) {
@@ -68,7 +73,7 @@ export class UnweightedAlgorithms {
       currentNode.setAsVisited();
       visitedNodes.push(currentNode);
 
-      if (Utils.isEndNode(currentNode, endNode)) {
+      if (Utils.isEndNode(currentNode, this.endNode)) {
         break;
       }
 
@@ -89,7 +94,7 @@ export class UnweightedAlgorithms {
     }
 
     const shortestPath = Utils.getNodesInShortestPathOrder(
-      gridMap.get(Utils.getNodeKey(endNode)) as Node
+      gridMap.get(Utils.getNodeKey(this.endNode)) as Node
     )
 
     return [visitedNodes, shortestPath]

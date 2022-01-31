@@ -221,11 +221,11 @@ describe('AStar', () => {
         }
       }
 
-      const [nodesToAnimate, shortestPath] = new AStar().traverse({
+      const [nodesToAnimate, shortestPath] = new AStar({
         grid,
         startNode: grid[startNode.rowIdx][startNode.colIdx],
         endNode: grid[endNode.rowIdx][endNode.colIdx],
-      });
+      }).traverse();
 
       let nodesToAnimateStub = [
         grid[5][2],
@@ -299,11 +299,11 @@ describe('AStar', () => {
         grid[keyEntry.rowIdx][keyEntry.colIdx].setAsWall();
       }
 
-      const [nodesToAnimate, shortestPath] = new AStar().traverse({
+      const [nodesToAnimate, shortestPath] = new AStar({
         grid,
         startNode: grid[startNode.rowIdx][startNode.colIdx],
         endNode: grid[endNode.rowIdx][endNode.colIdx],
-      });
+      }).traverse();
 
       let nodesToAnimateStub = [
         grid[5][2],

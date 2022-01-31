@@ -54,11 +54,11 @@ describe('UnweightedAlgorithms', () => {
         grid[keyEntry.rowIdx][keyEntry.colIdx].setAsWall();
       }
 
-      const [nodesToAnimate, shortestPath] = new UnweightedAlgorithms().dfs({
+      const [nodesToAnimate, shortestPath] = new UnweightedAlgorithms({
         grid,
         startNode: grid[startNode.rowIdx][startNode.colIdx],
         endNode: grid[endNode.rowIdx][endNode.colIdx],
-      });
+      }).dfs();
 
       const nodesToAnimateStub = [
         grid[5][2],
@@ -85,11 +85,11 @@ describe('UnweightedAlgorithms', () => {
     });
 
     it('should return non-empty shortestPath', () => {
-      const [nodesToAnimate, shortestPath] = new UnweightedAlgorithms().dfs({
+      const [nodesToAnimate, shortestPath] = new UnweightedAlgorithms({
         grid,
         startNode: grid[startNode.rowIdx][startNode.colIdx],
         endNode: grid[endNode.rowIdx][endNode.colIdx],
-      });
+      }).dfs();
 
       const nodesToAnimateStub = [
         grid[5][2],
@@ -141,11 +141,11 @@ describe('UnweightedAlgorithms', () => {
         grid[keyEntry.rowIdx][keyEntry.colIdx].setAsWall();
       }
 
-      const [nodesToAnimate, shortestPath] = new UnweightedAlgorithms().bfs({
+      const [nodesToAnimate, shortestPath] = new UnweightedAlgorithms({
         grid,
         startNode: grid[startNode.rowIdx][startNode.colIdx],
         endNode: grid[endNode.rowIdx][endNode.colIdx],
-      });
+      }).bfs();
 
       const nodesToAnimateStub = [
         grid[5][2],
@@ -172,11 +172,11 @@ describe('UnweightedAlgorithms', () => {
     });
 
     it('should return non-empty shortestPath', () => {
-      const [nodesToAnimate, shortestPath] = new UnweightedAlgorithms().bfs({
+      const [nodesToAnimate, shortestPath] = new UnweightedAlgorithms({
         grid,
         startNode: grid[startNode.rowIdx][startNode.colIdx],
         endNode: grid[endNode.rowIdx][endNode.colIdx],
-      });
+      }).bfs();
 
       const nodesToAnimateStub = [
         grid[5][2],
