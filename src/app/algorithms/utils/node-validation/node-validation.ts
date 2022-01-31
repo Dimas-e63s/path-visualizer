@@ -22,6 +22,22 @@ export class NodeValidation {
     return a.isVisitedNode() && b.isVisitedNode();
   }
 
+  static isEqualSize(a: GridRow, b: GridRow): boolean {
+    return a.length === b.length;
+  }
+
+  static isStartNodeEquals(a: Node, b: Node): boolean {
+    return a.getIsStartNode() === b.getIsStartNode();
+  }
+
+  static isEndNodeEquals(a: Node, b: Node): boolean {
+    return a.getIsFinishNode() === b.getIsFinishNode();
+  }
+
+  static isDistanceEquals(a: Node, b: Node): boolean {
+    return a.distance === b.distance;
+  }
+
   static isVisitedNodeCopy(a: Node, b: Node) {
     return NodeValidation.rowEquals(a, b)
       && NodeValidation.colEquals(a, b)
@@ -30,7 +46,13 @@ export class NodeValidation {
       && !NodeValidation.isHasSameId(a, b)
   }
 
-  static isEqualSize(a: GridRow, b: GridRow): boolean {
-    return a.length === b.length;
+  static isNodeCopy(a: Node, b: Node): boolean {
+    return NodeValidation.rowEquals(a, b)
+      && NodeValidation.colEquals(a, b)
+      && NodeValidation.weightEquals(a, b)
+      && NodeValidation.isStartNodeEquals(a, b)
+      && NodeValidation.isEndNodeEquals(a, b)
+      && NodeValidation.isDistanceEquals(a, b)
+      && !NodeValidation.isHasSameId(a, b);
   }
 }

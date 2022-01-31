@@ -51,14 +51,14 @@ describe('NodeValidation', () => {
   describe('visitedNodesEqual', () => {
     it('should return true for both nodes set as visited', () => {
       stubNode.setAsVisited();
-      expect(NodeValidation.visitedNodesEqual(stubNode, stubNode)).toBeTrue()
+      expect(NodeValidation.visitedNodesEqual(stubNode, stubNode)).toBeTrue();
     });
 
     it('should return true for both nodes set as visited', () => {
       const unvisitedNode = stubNode.clone();
       stubNode.setAsVisited();
 
-      expect(NodeValidation.visitedNodesEqual(stubNode, unvisitedNode)).toBeFalse()
+      expect(NodeValidation.visitedNodesEqual(stubNode, unvisitedNode)).toBeFalse();
     });
   });
 
@@ -98,8 +98,48 @@ describe('NodeValidation', () => {
       expect(NodeValidation.isEqualSize([stubNode], [stubNode])).toBeTrue();
     });
 
-    it('should return false for GridRow\'s with the different size\'s',  () => {
+    it('should return false for GridRow\'s with the different size\'s', () => {
       expect(NodeValidation.isEqualSize([stubNode], [])).toBeFalse();
-    })
+    });
+  });
+
+  describe('isStartNodeEquals', () => {
+    it('should return false for Node\'s with different startNode flags', () => {
+      expect(NodeValidation.isStartNodeEquals(stubNode, stubNode.clone({isStartNode: true}))).toBeFalse();
+    });
+
+    it('should return true for Node\'s with the same startNode flags', () => {
+      expect(NodeValidation.isStartNodeEquals(stubNode, stubNode)).toBeTrue();
+    });
+  });
+
+  describe('isEndNodeEquals', () => {
+    it('should return false for Node\'s with different endNode flags', () => {
+      expect(NodeValidation.isEndNodeEquals(stubNode, stubNode.clone({isFinishNode: true}))).toBeFalse();
+    });
+
+    it('should return true for Node\'s with the same endNode flags', () => {
+      expect(NodeValidation.isEndNodeEquals(stubNode, stubNode)).toBeTrue();
+    });
+  });
+
+  describe('isDistanceEquals', () => {
+    it('should return false for Node\'s with different distance', () => {
+      expect(NodeValidation.isDistanceEquals(stubNode, stubNode.clone({distance: 0}))).toBeFalse();
+    });
+
+    it('should return true for Node\'s with the same distance', () => {
+      expect(NodeValidation.isDistanceEquals(stubNode, stubNode)).toBeTrue();
+    });
+  });
+
+  describe('isNodeCopy', () => {
+    it('should return true for Node\'s with the same fields, but diff ID\'s', () => {
+      expect(NodeValidation.isNodeCopy(stubNode, stubNode.clone())).toBeTrue();
+    });
+
+    it('should return false for Node\'s with the same fields and same ID\'s', () => {
+      expect(NodeValidation.isNodeCopy(stubNode, stubNode)).toBeFalse();
+    });
   });
 });
