@@ -61,15 +61,15 @@ export class UnweightedAlgorithms {
 
     while (!queue.isEmpty()) {
       const currentNode = queue.dequeue();
+      if (currentNode.isWall()) {
+        continue;
+      }
+
       currentNode.setAsVisited();
       visitedNodes.push(currentNode);
 
       if (Utils.isEndNode(currentNode, endNode)) {
         break;
-      }
-
-      if (currentNode.isWall()) {
-        continue;
       }
 
       const neighbors = UnweightedAlgorithms.getNeighbors({
