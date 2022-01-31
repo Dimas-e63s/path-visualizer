@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Node, NodeWeights} from './models/Node.class';
+import {Node, NodeInterface, NodeWeights} from './models/Node.class';
 import {Dijkstra} from './algorithms/dijkstra/dijkstra';
-import {Grid, GridMap, GridRow} from './models/grid.types';
+import {Grid, GridMap, GridRow, GridSize} from './models/grid.types';
 import {distinctUntilChanged, fromEvent, map, Subject, takeUntil} from 'rxjs';
 import {Backtracking} from './algorithms/maze-generation/backtracking/backtracking';
 import {MazeGenerationEnum, PathAlgorithmEnum} from './header/header.component';
@@ -9,6 +9,11 @@ import {Kruskal} from './algorithms/maze-generation/kruskal/kruskal';
 import {Prim} from './algorithms/maze-generation/prim/prim';
 import {AStar} from './algorithms/a-star/a-star';
 import {UnweightedAlgorithms} from './algorithms/unweighted/unweighted-algorithms';
+import {Utils} from './algorithms/utils/utils.class';
+
+// TODO: - to get rid of duplicated node gen logic
+//          - create init grid method
+//          - call destication with start and end
 
 @Component({
   selector: 'app-root',
@@ -16,11 +21,11 @@ import {UnweightedAlgorithms} from './algorithms/unweighted/unweighted-algorithm
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  private startNode = {colIdx: 2, rowIdx: 20};
-  private finishNode = {colIdx: 11, rowIdx: 0};
+  private startNode = {colIdx: 2, rowIdx: 25};
+  private finishNode = {colIdx: 55, rowIdx: 0};
   private destroy$ = new Subject<void>();
-  private selectedPathAlgo: PathAlgorithmEnum = PathAlgorithmEnum.DIJKSTRA;
-  nodes = this.generateGrid();
+  private selectedPathAlgo: PathAlgorithmEnum = PathAlgorithmEnum.BFS;
+  nodes = this.generateGrid(this.getGridSize());
   buildWalls = false;
   prevNode = {col: null, row: null};
   prevHead = {col: null, row: null};
@@ -33,81 +38,29 @@ export class AppComponent implements OnInit, OnDestroy {
     fromEvent(window, 'resize')
       .pipe(
         map(({target}) => target as Window),
-        map(target => ({cols: this.calculateAmountOfColumns(target), rows: this.calculateAmountOfRows(target)})),
-        distinctUntilChanged((a, b) => {
-          return a.cols === b.cols && a.rows === b.rows
-        }),
-        takeUntil(this.destroy$)
+        map(target => ({
+          totalCol: this.calculateAmountOfColumns(target.innerWidth),
+          totalRow: this.calculateAmountOfRows(target.innerHeight),
+        })),
+        distinctUntilChanged(this.isGridSizeFixed),
+        takeUntil(this.destroy$),
       )
-      .subscribe(val => {
-        const currentAmountOfRows = this.nodes.length
-        const currentAmountOfCols = this.nodes[0].length
-        const newStartNode = this.getStartNode().clone({
-          rowIdx: this.startNode.rowIdx > val.rows - 1 ? val.rows - 1 : this.startNode.rowIdx,
-          colIdx: this.startNode.colIdx > val.cols - 1 ? val.cols - 1 : this.startNode.colIdx
-        });
-
-        const newEndNode = this.getEndNode().clone({
-          rowIdx: this.finishNode.rowIdx > val.rows - 1 ? val.rows - 1 : this.finishNode.rowIdx,
-          colIdx: this.finishNode.colIdx > val.cols - 1 ? val.cols - 1 : this.finishNode.colIdx
-        });
-
-
-        // adopt rows
-        if (currentAmountOfRows > val.rows) {
-          this.nodes.length = val.rows;
-        } else if (currentAmountOfRows < val.rows) {
-          const newGrid = this.generateEmptyGrid({row: val.rows - currentAmountOfRows, col: currentAmountOfCols});
-          for (let rowIdx = 0; rowIdx < newGrid.length; rowIdx++) {
-            for (let colIdx = 0; colIdx < newGrid[0].length; colIdx++) {
-              newGrid[rowIdx][colIdx] = this.generateGridNode({row: currentAmountOfRows + rowIdx, col: colIdx})
-            }
-          }
-          this.nodes.push(...newGrid);
-        }
-
-        // adopt columns
-        if (currentAmountOfCols < val.cols) {
-          for(let i = 0; i < val.cols - currentAmountOfCols; i++) {
-            this.nodes.forEach((row, idx) => {
-              row.push(
-                this.generateGridNode({
-                  row: idx,
-                  col: currentAmountOfCols + i
-                })
-              )
-            });
-          }
-        } else if (currentAmountOfCols > val.cols) {
-          this.nodes.forEach(row => {
-            row.length = val.cols
-          })
-        }
-
-        if (this.finishNode.rowIdx > val.rows - 1 || this.finishNode.colIdx > val.cols - 1) {
-          this.nodes[newEndNode.getRowIdx()][newEndNode.getColumnIdx()] = newEndNode;
-          this.finishNode = {colIdx: newEndNode.getColumnIdx(), rowIdx: newEndNode.getRowIdx()};
-        }
-
-        if (this.startNode.rowIdx > val.rows - 1 || this.startNode.colIdx > val.cols - 1) {
-          this.nodes[newStartNode.getRowIdx()][newStartNode.getColumnIdx()] = newStartNode;
-          this.startNode = {colIdx: newStartNode.getColumnIdx(), rowIdx: newStartNode.getRowIdx()};
-        }
-      })
+      .subscribe(({totalCol, totalRow}) => {
+        this.updateGridAfterResize({totalCol, totalRow});
+      });
   }
 
   ngOnDestroy() {
     this.destroy$.next();
-    this.destroy$.complete()
+    this.destroy$.complete();
   }
 
-  generateGrid(): Grid {
-    const {row, col} = this.getGridSize();
+  generateGrid({row, col}: {row: number, col: number}): Grid {
     const nodes = this.generateEmptyGrid({row, col});
 
     for (let rowIdx = 0; rowIdx < row; rowIdx++) {
       for (let colIdx = 0; colIdx < col; colIdx++) {
-        nodes[rowIdx][colIdx] = this.generateGridNode({row: rowIdx, col: colIdx})
+        nodes[rowIdx][colIdx] = this.generateGridNode({row: rowIdx, col: colIdx});
       }
     }
 
@@ -154,10 +107,10 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     const timeout = (index: number) =>
-      setTimeout(() =>  {
-        if (index === visitedNodesInOrder.length){
+      setTimeout(() => {
+        if (index === visitedNodesInOrder.length) {
           if (shortestPath.length > 0) {
-            timeout2(0)
+            timeout2(0);
           }
           return;
         }
@@ -171,8 +124,8 @@ export class AppComponent implements OnInit, OnDestroy {
     timeout(0);
 
     const timeout2 = (index: number) =>
-      setTimeout(() =>  {
-        if (index === shortestPath.length){
+      setTimeout(() => {
+        if (index === shortestPath.length) {
           this.isButtonsDisabled = false;
           return;
         }
@@ -183,7 +136,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   onAddedWall({col, row}: {col: number, row: number}) {
-    if (this.isButtonsDisabled) return;
+    if (this.isButtonsDisabled) {
+      return;
+    }
 
     const selectedNode = this.nodes[row][col];
     if (selectedNode.getIsStartNode()) {
@@ -245,7 +200,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   clearBoard() {
-    this.nodes = this.generateGrid();
+    this.nodes = this.generateGrid(this.getGridSize());
   }
 
   trackByRow(index: number, row: GridRow) {
@@ -257,11 +212,11 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   clearWalls() {
-    this.isButtonsDisabled = true;
-    for(const row of this.nodes) {
+    this.disableButtons();
+    for (const row of this.nodes) {
       for (const column of row) {
         if (column.isWall()) {
-          this.nodes[column.getRowIdx()][column.getColumnIdx()] = column.clone({weight: NodeWeights.EMPTY, previousNode: null})
+          this.nodes[column.getRowIdx()][column.getColumnIdx()] = column.clone({weight: NodeWeights.EMPTY, previousNode: null});
         }
       }
     }
@@ -273,7 +228,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   onAlgorithmSelected(algo: PathAlgorithmEnum) {
-    this.selectedPathAlgo = algo
+    this.selectedPathAlgo = algo;
   }
 
   onMazeAlgoSelected(mazeAlgo: string) {
@@ -300,8 +255,8 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     const timeout = (index: number) =>
-      setTimeout(() =>  {
-        if (index === nodesToAnimate.length){
+      setTimeout(() => {
+        if (index === nodesToAnimate.length) {
           return;
         }
         const node = nodesToAnimate[index] as Node;
@@ -316,19 +271,19 @@ export class AppComponent implements OnInit, OnDestroy {
     console.log(animSpeed);
   }
 
-  private calculateAmountOfColumns(element: Window) {
-    return Math.floor(element.innerWidth / 30);
+  calculateAmountOfColumns(width: number) {
+    return Math.floor(width / 30);
   }
 
-  private calculateAmountOfRows(element: Window) {
-    return Math.floor((element.innerHeight * .8) / 30);
+  calculateAmountOfRows(height: number) {
+    return Math.floor((height * .8) / 30);
   }
 
   private getGridSize(): {row: number, col: number} {
     return {
-      row: this.calculateAmountOfRows(window),
-      col: this.calculateAmountOfColumns(window)
-    }
+      row: this.calculateAmountOfRows(window.innerHeight),
+      col: this.calculateAmountOfColumns(window.innerWidth),
+    };
   }
 
   private generateGridNode({row, col}: {row: number, col: number}): Node {
@@ -350,6 +305,116 @@ export class AppComponent implements OnInit, OnDestroy {
     return Array(row)
       .fill(0)
       .map(() => Array(col).fill(null));
+  }
+
+  isGridSizeFixed(a: GridSize, b: GridSize): boolean {
+    return a.totalCol === b.totalCol && a.totalRow === b.totalRow;
+  }
+
+  isIdxOutOfGrid({oldIdx, newIdx}: {oldIdx: number, newIdx: number}): boolean {
+    return oldIdx > newIdx;
+  }
+
+  getNodeIdxAfterResize({oldIdx, newIdx}: {oldIdx: number, newIdx: number}): number {
+    return this.isIdxOutOfGrid({oldIdx, newIdx}) ? newIdx : oldIdx;
+  }
+
+  updateGridAfterResize({totalCol, totalRow}: GridSize) {
+    this.updateGridSize({totalCol, totalRow});
+    this.updateDestinationNodesAfterResize({newRowIdx: totalRow - 1, newColIdx: totalCol - 1});
+  }
+
+  setDestinationNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
+    this.nodes[rowIdx][colIdx] = this._generateGridNode({
+      rowIdx: rowIdx,
+      colIdx: colIdx,
+      isStartNode: rowIdx === this.startNode.rowIdx && this.startNode.colIdx === colIdx,
+      isFinishNode: rowIdx === this.finishNode.rowIdx && this.finishNode.colIdx === colIdx,
+    });
+  }
+
+  updateDestinationNodesAfterResize({newRowIdx, newColIdx}: {newRowIdx: number, newColIdx: number}) {
+    const newStartNode = this._generateGridNode({
+      rowIdx: this.getNodeIdxAfterResize({oldIdx: this.startNode.rowIdx, newIdx: newRowIdx}),
+      colIdx: this.getNodeIdxAfterResize({oldIdx: this.startNode.colIdx, newIdx: newColIdx}),
+      isStartNode: true,
+    });
+
+    const newEndNode = this._generateGridNode({
+      rowIdx: this.getNodeIdxAfterResize({oldIdx: this.finishNode.rowIdx, newIdx: newRowIdx}),
+      colIdx: this.getNodeIdxAfterResize({oldIdx: this.finishNode.colIdx, newIdx: newColIdx}),
+      isFinishNode: true,
+    });
+
+    this.finishNode = Utils.getNodeCoordinates(newEndNode);
+    this.startNode = Utils.getNodeCoordinates(newStartNode);
+
+    this.setDestinationNode(this.finishNode);
+    this.setDestinationNode(this.startNode);
+  }
+
+  disableButtons(): void {
+    this.isButtonsDisabled = true;
+  }
+
+  decreaseGridHeight(newRowCount: number): void {
+    this.nodes.length = newRowCount;
+  }
+
+  decreaseGridLength(newColCount: number): void {
+    this.nodes.forEach(row => {
+      row.length = newColCount;
+    });
+  }
+
+  increaseGridHeight({
+                       totalRow,
+                       currentAmountOfRows,
+                       currentAmountOfCols,
+                     }: {totalRow: number, currentAmountOfRows: number, currentAmountOfCols: number}) {
+    const newGrid = this.generateEmptyGrid({row: totalRow - currentAmountOfRows, col: currentAmountOfCols});
+
+    for (let rowIdx = 0; rowIdx < newGrid.length; rowIdx++) {
+      for (let colIdx = 0; colIdx < newGrid[0].length; colIdx++) {
+        newGrid[rowIdx][colIdx] = this.generateGridNode({row: currentAmountOfRows + rowIdx, col: colIdx});
+      }
+    }
+
+    return newGrid;
+  }
+
+  increaseGridLength({totalCol, currentAmountOfCols}: {totalCol: number, currentAmountOfCols: number}) {
+    for (let i = 0; i < totalCol - currentAmountOfCols; i++) {
+      this.nodes.forEach((row, idx) => {
+        row.push(
+          this.generateGridNode({
+            row: idx,
+            col: currentAmountOfCols + i,
+          }),
+        );
+      });
+    }
+  }
+
+  updateGridSize({totalCol, totalRow}: GridSize) {
+    const {
+      totalCol: currentAmountOfCols,
+      totalRow: currentAmountOfRows,
+    } = Utils.getGridSize(this.nodes);
+
+    if (currentAmountOfRows > totalRow) {
+      this.decreaseGridHeight(totalRow);
+    } else if (currentAmountOfRows < totalRow) {
+      this.nodes.push(
+        ...this.increaseGridHeight({totalRow, currentAmountOfCols, currentAmountOfRows}),
+      );
+    }
+
+    if (currentAmountOfCols < totalCol) {
+      this.increaseGridLength({totalCol, currentAmountOfCols});
+    } else if (currentAmountOfCols > totalCol) {
+      this.decreaseGridLength(totalCol);
+    }
   }
 
   private getStartNode(): Node {
