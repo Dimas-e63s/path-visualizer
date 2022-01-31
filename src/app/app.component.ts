@@ -10,10 +10,15 @@ import {Prim} from './algorithms/maze-generation/prim/prim';
 import {AStar} from './algorithms/a-star/a-star';
 import {UnweightedAlgorithms} from './algorithms/unweighted/unweighted-algorithms';
 import {Utils} from './algorithms/utils/utils.class';
+import {GridBuilder} from './grid-builder';
 
 // TODO: - to get rid of duplicated node gen logic
 //          - create init grid method
 //          - call destication with start and end
+
+// generateEmptyGrid
+// generateNode
+// generateGrid
 
 @Component({
   selector: 'app-root',
@@ -25,7 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private finishNode = {colIdx: 55, rowIdx: 0};
   private destroy$ = new Subject<void>();
   private selectedPathAlgo: PathAlgorithmEnum = PathAlgorithmEnum.BFS;
-  nodes = this.generateGrid(this.getGridSize());
+  nodes!: Grid;
   buildWalls = false;
   prevNode = {col: null, row: null};
   prevHead = {col: null, row: null};
@@ -35,12 +40,13 @@ export class AppComponent implements OnInit, OnDestroy {
   isButtonsDisabled = false;
 
   ngOnInit(): void {
+    this.initGrid();
     fromEvent(window, 'resize')
       .pipe(
         map(({target}) => target as Window),
         map(target => ({
-          totalCol: this.calculateAmountOfColumns(target.innerWidth),
-          totalRow: this.calculateAmountOfRows(target.innerHeight),
+          totalCol: GridBuilder.calculateAmountOfColumns(target.innerWidth),
+          totalRow: GridBuilder.calculateAmountOfRows(target.innerHeight),
         })),
         distinctUntilChanged(this.isGridSizeFixed),
         takeUntil(this.destroy$),
@@ -60,11 +66,17 @@ export class AppComponent implements OnInit, OnDestroy {
 
     for (let rowIdx = 0; rowIdx < row; rowIdx++) {
       for (let colIdx = 0; colIdx < col; colIdx++) {
-        nodes[rowIdx][colIdx] = this.generateGridNode({row: rowIdx, col: colIdx});
+        nodes[rowIdx][colIdx] = GridBuilder.generateGridNode({rowIdx, colIdx});
       }
     }
 
     return nodes;
+  }
+
+  initGrid() {
+    this.nodes = this.generateGrid(this.getGridSize());
+    this.setDestinationNode(this.startNode);
+    this.setDestinationNode(this.finishNode);
   }
 
   runAlgo() {
@@ -265,33 +277,11 @@ export class AppComponent implements OnInit, OnDestroy {
     console.log(animSpeed);
   }
 
-  calculateAmountOfColumns(width: number) {
-    return Math.floor(width / 30);
-  }
-
-  calculateAmountOfRows(height: number) {
-    return Math.floor((height * .8) / 30);
-  }
-
   private getGridSize(): {row: number, col: number} {
     return {
-      row: this.calculateAmountOfRows(window.innerHeight),
-      col: this.calculateAmountOfColumns(window.innerWidth),
+      row: GridBuilder.calculateAmountOfRows(window.innerHeight),
+      col: GridBuilder.calculateAmountOfColumns(window.innerWidth),
     };
-  }
-
-  private generateGridNode({row, col}: {row: number, col: number}): Node {
-    return new Node({
-      rowIdx: row,
-      colIdx: col,
-      isStartNode: row === this.startNode.rowIdx && col === this.startNode.colIdx,
-      isFinishNode: row === this.finishNode.rowIdx && col === this.finishNode.colIdx,
-    });
-  }
-
-  _generateGridNode(metaData: NodeInterface) {
-    // TODO: - should become one version
-    return new Node(metaData);
   }
 
   generateEmptyGrid({row, col}: {row: number, col: number}) {
@@ -302,7 +292,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   setDestinationNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
-    this.nodes[rowIdx][colIdx] = this._generateGridNode({
+    this.nodes[rowIdx][colIdx] = GridBuilder.generateGridNode({
       rowIdx: rowIdx,
       colIdx: colIdx,
       isStartNode: rowIdx === this.startNode.rowIdx && this.startNode.colIdx === colIdx,
@@ -332,13 +322,13 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   updateDestinationNodesAfterResize({newRowIdx, newColIdx}: {newRowIdx: number, newColIdx: number}) {
-    const newStartNode = this._generateGridNode({
+    const newStartNode = GridBuilder.generateGridNode({
       rowIdx: this.getNodeIdxAfterResize({oldIdx: this.startNode.rowIdx, newIdx: newRowIdx}),
       colIdx: this.getNodeIdxAfterResize({oldIdx: this.startNode.colIdx, newIdx: newColIdx}),
       isStartNode: true,
     });
 
-    const newEndNode = this._generateGridNode({
+    const newEndNode = GridBuilder.generateGridNode({
       rowIdx: this.getNodeIdxAfterResize({oldIdx: this.finishNode.rowIdx, newIdx: newRowIdx}),
       colIdx: this.getNodeIdxAfterResize({oldIdx: this.finishNode.colIdx, newIdx: newColIdx}),
       isFinishNode: true,
@@ -370,7 +360,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     for (let rowIdx = 0; rowIdx < newGrid.length; rowIdx++) {
       for (let colIdx = 0; colIdx < newGrid[0].length; colIdx++) {
-        newGrid[rowIdx][colIdx] = this.generateGridNode({row: currentAmountOfRows + rowIdx, col: colIdx});
+        newGrid[rowIdx][colIdx] = GridBuilder.generateGridNode({rowIdx: currentAmountOfRows + rowIdx, colIdx});
       }
     }
 
@@ -381,9 +371,9 @@ export class AppComponent implements OnInit, OnDestroy {
     for (let i = 0; i < totalCol - currentAmountOfCols; i++) {
       this.nodes.forEach((row, idx) => {
         row.push(
-          this.generateGridNode({
-            row: idx,
-            col: currentAmountOfCols + i,
+          GridBuilder.generateGridNode({
+            rowIdx: idx,
+            colIdx: currentAmountOfCols + i,
           }),
         );
       });

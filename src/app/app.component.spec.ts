@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {AppComponent} from './app.component';
-import {Node} from './models/Node.class';
+import {GridBuilder} from './grid-builder';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -33,27 +33,6 @@ describe('AppComponent', () => {
           [null, null],
         ],
       );
-    });
-  });
-
-  describe('_generateGridNode', () => {
-    it('should generate Node class', () => {
-      const result = component._generateGridNode({rowIdx: 0, colIdx: 0});
-      expect(result).toBeInstanceOf(Node);
-      expect(result.getRowIdx()).toEqual(0);
-      expect(result.getColumnIdx()).toEqual(0);
-    });
-  });
-
-  describe('calculateAmountOfColumns', () => {
-    it('should return column amount', () => {
-      expect(component.calculateAmountOfColumns(800)).toEqual(26);
-    });
-  });
-
-  describe('calculateAmountOfRows', () => {
-    it('should return amount of rows', () => {
-      expect(component.calculateAmountOfRows(800)).toEqual(21);
     });
   });
 
@@ -99,7 +78,7 @@ describe('AppComponent', () => {
 
   describe('trackByNode', () => {
     it('should return Node id', () => {
-      const stubNode = component._generateGridNode({rowIdx: 0, colIdx: 0});
+      const stubNode = GridBuilder.generateGridNode({rowIdx: 0, colIdx: 0});
       expect(component.trackByNode(0, stubNode)).toEqual(stubNode.id);
     });
   });
