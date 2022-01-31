@@ -340,7 +340,8 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
-  private generateEmptyGrid({row, col}: {row: number, col: number}) {
+  generateEmptyGrid({row, col}: {row: number, col: number}) {
+    // TODO: - add validation for passed params
     return Array(row)
       .fill(0)
       .map(() => Array(col).fill(null));

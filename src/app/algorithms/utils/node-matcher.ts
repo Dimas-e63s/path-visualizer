@@ -1,4 +1,3 @@
-import {Node} from '../../models/Node.class';
 import MatchersUtil = jasmine.MatchersUtil;
 import CustomMatcherFactories = jasmine.CustomMatcherFactories;
 import CustomMatcher = jasmine.CustomMatcher;
