@@ -150,9 +150,7 @@ export class AppComponent implements OnInit, OnDestroy {
       // @ts-ignore
       this.prevEnd = {col, row};
     } else {
-      const copy = selectedNode.clone();
-      copy.setAsWall();
-      this.nodes[row][col] = copy;
+      this.nodes[row][col] = selectedNode.clone({weight: NodeWeights.WALL});
     }
   }
 
@@ -173,29 +171,25 @@ export class AppComponent implements OnInit, OnDestroy {
       //@ts-ignore
       let oldHead = this.nodes[this.prevHead.row][this.prevHead.col];
       oldHead = oldHead.clone({isStartNode: false});
-      // debugger
-      this.prevHead = $event;
-      const selectedNode = this.nodes[$event.row][$event.col];
-      const copy = selectedNode.clone({isStartNode: true});
       this.nodes[oldHead.getRowIdx()][oldHead.getColumnIdx()] = oldHead;
-      this.nodes[$event.row][$event.col] = copy;
+
+
       this.startNode = {colIdx: $event.col, rowIdx: $event.row};
+      this.prevHead = $event;
+      this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
     } else if (this.moveEnd && (this.prevEnd.row !== $event.row || this.prevEnd.col !== $event.col)) {
       //@ts-ignore
       let oldEnd = this.nodes[this.prevEnd.row][this.prevEnd.col];
       oldEnd = oldEnd.clone({isFinishNode: false});
-      this.prevEnd = $event;
-      const selectedNode = this.nodes[$event.row][$event.col];
-      const copy = selectedNode.clone({isFinishNode: true});
       this.nodes[oldEnd.getRowIdx()][oldEnd.getColumnIdx()] = oldEnd;
-      this.nodes[$event.row][$event.col] = copy;
+
+      this.prevEnd = $event;
       this.finishNode = {colIdx: $event.col, rowIdx: $event.row};
+      this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
     } else if (this.isSameNode($event) && this.buildWalls) {
       this.prevNode = $event;
       const selectedNode = this.nodes[$event.row][$event.col];
-      const copy = selectedNode.clone();
-      copy.setAsWall();
-      this.nodes[$event.row][$event.col] = copy;
+      this.nodes[$event.row][$event.col] = selectedNode.clone({weight: NodeWeights.WALL});
     }
   }
 
@@ -307,6 +301,19 @@ export class AppComponent implements OnInit, OnDestroy {
       .map(() => Array(col).fill(null));
   }
 
+  setDestinationNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
+    this.nodes[rowIdx][colIdx] = this._generateGridNode({
+      rowIdx: rowIdx,
+      colIdx: colIdx,
+      isStartNode: rowIdx === this.startNode.rowIdx && this.startNode.colIdx === colIdx,
+      isFinishNode: rowIdx === this.finishNode.rowIdx && this.finishNode.colIdx === colIdx,
+    });
+  }
+
+  disableButtons(): void {
+    this.isButtonsDisabled = true;
+  }
+
   isGridSizeFixed(a: GridSize, b: GridSize): boolean {
     return a.totalCol === b.totalCol && a.totalRow === b.totalRow;
   }
@@ -322,15 +329,6 @@ export class AppComponent implements OnInit, OnDestroy {
   updateGridAfterResize({totalCol, totalRow}: GridSize) {
     this.updateGridSize({totalCol, totalRow});
     this.updateDestinationNodesAfterResize({newRowIdx: totalRow - 1, newColIdx: totalCol - 1});
-  }
-
-  setDestinationNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
-    this.nodes[rowIdx][colIdx] = this._generateGridNode({
-      rowIdx: rowIdx,
-      colIdx: colIdx,
-      isStartNode: rowIdx === this.startNode.rowIdx && this.startNode.colIdx === colIdx,
-      isFinishNode: rowIdx === this.finishNode.rowIdx && this.finishNode.colIdx === colIdx,
-    });
   }
 
   updateDestinationNodesAfterResize({newRowIdx, newColIdx}: {newRowIdx: number, newColIdx: number}) {
@@ -351,10 +349,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     this.setDestinationNode(this.finishNode);
     this.setDestinationNode(this.startNode);
-  }
-
-  disableButtons(): void {
-    this.isButtonsDisabled = true;
   }
 
   decreaseGridHeight(newRowCount: number): void {
