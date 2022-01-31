@@ -15,4 +15,13 @@ describe('AppComponent', () => {
     const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
+
+  describe('_generateGridNode', () => {
+    it('should generate Node class', () => {
+      const result = component._generateGridNode({rowIdx: 0, colIdx: 0});
+      expect(result).toBeInstanceOf(Node);
+      expect(result.getRowIdx()).toEqual(0);
+      expect(result.getColumnIdx()).toEqual(0);
+    });
+  });
 });

@@ -340,6 +340,11 @@ export class AppComponent implements OnInit, OnDestroy {
     });
   }
 
+  _generateGridNode(metaData: NodeInterface) {
+    // TODO: - should become one version
+    return new Node(metaData);
+  }
+
   generateEmptyGrid({row, col}: {row: number, col: number}) {
     // TODO: - add validation for passed params
     return Array(row)
