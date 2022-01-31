@@ -3,27 +3,7 @@ import {Utils} from '../../utils/utils.class';
 import {NodeWeights, Node} from '../../../models/Node.class';
 import {Stack} from '@datastructures-js/stack';
 import {AlgorithmBase} from '../../algorithm-base/algorithm-base';
-
-enum DirectionsEnum {
-  N = 1,
-  S = 2,
-  E = 4,
-  W = 8,
-}
-
-const DX = new Map<DirectionsEnum, number>([
-  [DirectionsEnum.E, 1],
-  [DirectionsEnum.W, -1],
-  [DirectionsEnum.N, 0],
-  [DirectionsEnum.S, 0],
-]);
-
-const DY = new Map<DirectionsEnum, number>([
-  [DirectionsEnum.E, 0],
-  [DirectionsEnum.W, 0],
-  [DirectionsEnum.N, -1],
-  [DirectionsEnum.S, 1],
-]);
+import {DirectionsEnum, DX, DY} from '../../../models/maze-generation.enum';
 
 export class Backtracking extends AlgorithmBase {
   private readonly totalCol: number;
@@ -106,6 +86,7 @@ export class Backtracking extends AlgorithmBase {
         stack.push(currNode);
 
         let wallX = +currNode.split('-')[1] + DX.get(unvisitedNodes[0])!;
+
         let wallY = +currNode.split('-')[0] + DY.get(unvisitedNodes[0])!;
 
         let newX = wallX + DX.get(unvisitedNodes[0])!;

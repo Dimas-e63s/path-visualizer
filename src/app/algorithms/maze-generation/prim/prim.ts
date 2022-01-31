@@ -2,29 +2,7 @@ import {Grid, GridMap} from '../../../models/grid.types';
 import {Utils} from '../../utils/utils.class';
 import {Node, NodeWeights} from '../../../models/Node.class';
 import {AlgorithmBase} from '../../algorithm-base/algorithm-base';
-
-enum DirectionsEnum {
-  N = 1,
-  S = 2,
-  E = 4,
-  W = 8,
-}
-
-const DX = new Map<DirectionsEnum, number>([
-  [DirectionsEnum.E, 1],
-  [DirectionsEnum.W, -1],
-  [DirectionsEnum.N, 0],
-  [DirectionsEnum.S, 0],
-]);
-
-const DY = new Map<DirectionsEnum, number>([
-  [DirectionsEnum.E, 0],
-  [DirectionsEnum.W, 0],
-  [DirectionsEnum.N, -1],
-  [DirectionsEnum.S, 1],
-]);
-
-const directions = [DirectionsEnum.N, DirectionsEnum.S, DirectionsEnum.W, DirectionsEnum.E];
+import {directions, DX, DY} from '../../../models/maze-generation.enum';
 
 export class Prim extends AlgorithmBase {
   private readonly gridMap: GridMap;
