@@ -171,9 +171,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
     } else if (this.moveEnd && (this.prevEnd.row !== $event.row || this.prevEnd.col !== $event.col)) {
       //@ts-ignore
-      let oldEnd = this.nodes[this.prevEnd.row][this.prevEnd.col];
-      oldEnd = oldEnd.clone({isFinishNode: false});
-      this.nodes[oldEnd.getRowIdx()][oldEnd.getColumnIdx()] = oldEnd;
+      this.removeEndNode(this.nodes[this.prevEnd.row][this.prevEnd.col])
 
       this.prevEnd = $event;
       this.finishNode = {colIdx: $event.col, rowIdx: $event.row};
@@ -204,6 +202,14 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     }
     this.activateButtons();
+  }
+
+  removeEndNode(node: Node): void {
+    if (node.getIsFinishNode()) {
+      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+        isFinishNode: false
+      })
+    }
   }
 
   addWall(node: Node): void {
