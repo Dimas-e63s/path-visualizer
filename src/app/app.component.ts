@@ -209,37 +209,40 @@ export class AppComponent implements OnInit, OnDestroy {
 
   removeWall(node: Node): void {
     if (node.isWall()) {
-      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({weight: NodeWeights.EMPTY, previousNode: null});
+      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+        weight: NodeWeights.EMPTY,
+        previousNode: null,
+      });
     }
   }
 
-  clearPath() {
+  clearPath(): void {
     this.clearBoard();
   }
 
-  onAlgorithmSelected(algo: PathAlgorithmEnum) {
+  onAlgorithmSelected(algo: PathAlgorithmEnum): void {
     this.selectedPathAlgo = algo;
   }
 
-  onMazeAlgoSelected(mazeAlgo: string) {
-    let maze: GridMap;
+  onMazeAlgoSelected(mazeAlgo: MazeGenerationEnum): void {
+    this.animateMazeBuilding(this.getMaze(mazeAlgo));
+  }
 
+  getMaze(mazeAlgo: MazeGenerationEnum): GridMap {
     switch (mazeAlgo) {
       case MazeGenerationEnum.BACKTRACKING_ITR:
-        maze = new Backtracking(this.nodes, this.getStartNode(), this.getEndNode()).getMazeIterative();
-        break;
+        return new Backtracking(this.nodes, this.getStartNode(), this.getEndNode()).getMazeIterative();
       case MazeGenerationEnum.BACKTRACKING_REC:
-        maze = new Backtracking(this.nodes, this.getStartNode(), this.getEndNode()).getMazeRecursive();
-        break;
+        return new Backtracking(this.nodes, this.getStartNode(), this.getEndNode()).getMazeRecursive();
       case MazeGenerationEnum.KRUSKAL:
-        maze = new Kruskal(this.nodes, this.getStartNode(), this.getEndNode()).helper();
-        break;
+        return new Kruskal(this.nodes, this.getStartNode(), this.getEndNode()).helper();
       case MazeGenerationEnum.PRIM:
-        maze = new Prim(this.nodes, this.getStartNode(), this.getEndNode()).helper();
-        break;
+        return new Prim(this.nodes, this.getStartNode(), this.getEndNode()).helper();
     }
+  }
 
-    from(maze!.values()).pipe(
+  animateMazeBuilding(maze: GridMap): void {
+    from(maze.values()).pipe(
       filter(node => node.isWall()),
       concatMap(node => of(node).pipe(delay(5))),
     ).subscribe(node => {
