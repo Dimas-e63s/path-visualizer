@@ -2,7 +2,22 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Node, NodeWeights} from './models/Node.class';
 import {Dijkstra} from './algorithms/dijkstra/dijkstra';
 import {Grid, GridMap, GridRow, GridSize} from './models/grid.types';
-import {concatMap, delay, distinctUntilChanged, filter, from, fromEvent, map, of, Subject, takeUntil} from 'rxjs';
+import {
+  concat,
+  concatMap,
+  delay,
+  distinctUntilChanged,
+  filter,
+  finalize,
+  from,
+  fromEvent,
+  map,
+  Observable,
+  of,
+  Subject,
+  takeUntil,
+  tap,
+} from 'rxjs';
 import {Backtracking} from './algorithms/maze-generation/backtracking/backtracking';
 import {MazeGenerationEnum, PathAlgorithmEnum} from './header/header.component';
 import {Kruskal} from './algorithms/maze-generation/kruskal/kruskal';
@@ -63,8 +78,8 @@ export class AppComponent implements OnInit, OnDestroy {
     const algorithmData = {
       grid: this.nodes,
       startNode: this.getStartNode(),
-      endNode: this.getEndNode()
-    }
+      endNode: this.getEndNode(),
+    };
 
     switch (this.selectedPathAlgo) {
       case PathAlgorithmEnum.DIJKSTRA:
@@ -72,9 +87,9 @@ export class AppComponent implements OnInit, OnDestroy {
       case PathAlgorithmEnum.A_STAR:
         return new AStar(algorithmData).traverse();
       case PathAlgorithmEnum.BFS:
-        return  new UnweightedAlgorithms(algorithmData).bfs();
+        return new UnweightedAlgorithms(algorithmData).bfs();
       case PathAlgorithmEnum.DFS:
-        return  new UnweightedAlgorithms(algorithmData).dfs();
+        return new UnweightedAlgorithms(algorithmData).dfs();
     }
   }
 
@@ -83,33 +98,26 @@ export class AppComponent implements OnInit, OnDestroy {
 
     const [visitedNodesInOrder, shortestPath] = this.getShortestPath();
 
-    const timeout = (index: number) =>
-      setTimeout(() => {
-        if (index === visitedNodesInOrder.length) {
-          if (shortestPath.length > 0) {
-            timeout2(0);
-          }
-          return;
-        }
-        const node = visitedNodesInOrder[index] as Node;
-        const copy = this.nodes[node.getRowIdx()][node.getColumnIdx()].clone();
-        copy.setAsVisited();
-        this.nodes[node.getRowIdx()][node.getColumnIdx()] = copy;
-        timeout(index + 1);
-      }, 15);
-
-    timeout(0);
-
-    const timeout2 = (index: number) =>
-      setTimeout(() => {
-        if (index === shortestPath.length) {
-          this.activateButtons();
-          return;
-        }
-        const node = (shortestPath[index] as Node).clone({isShortestPath: true});
+    concat(
+      this.getAnimationObservable(visitedNodesInOrder, (node) => {
         this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
-        timeout2(index + 1);
-      }, 40);
+      }),
+      this.getAnimationObservable(shortestPath, (node) => {
+        this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({isShortestPath: true});
+      })
+    )
+      .pipe(
+        finalize(() => this.activateButtons()),
+      )
+      .subscribe();
+  }
+
+  getAnimationObservable(nodeArray: Node[], callback: (node: Node) => void): Observable<Node> {
+    return from(nodeArray)
+      .pipe(
+        concatMap((node) => of(node).pipe(delay(10))),
+        tap(callback),
+      );
   }
 
   onAddedWall({col, row}: {col: number, row: number}) {
@@ -127,7 +135,7 @@ export class AppComponent implements OnInit, OnDestroy {
       // @ts-ignore
       this.prevEnd = {col, row};
     } else {
-      this.addWall(this.nodes[row][col])
+      this.addWall(this.nodes[row][col]);
     }
   }
 
@@ -150,8 +158,8 @@ export class AppComponent implements OnInit, OnDestroy {
       this.addHeadNode($event);
     } else if (this.moveEnd && (this.prevEnd.row !== $event.row || this.prevEnd.col !== $event.col)) {
       //@ts-ignore
-      this.removeEndNode(this.nodes[this.prevEnd.row][this.prevEnd.col])
-      this.addEndNode($event)
+      this.removeEndNode(this.nodes[this.prevEnd.row][this.prevEnd.col]);
+      this.addEndNode($event);
     } else if (this.isSameNode($event) && this.buildWalls) {
       this.prevNode = $event;
       this.addWall(this.nodes[$event.row][$event.col]);
@@ -189,8 +197,8 @@ export class AppComponent implements OnInit, OnDestroy {
   removeHeadNode(node: Node): void {
     if (node.getIsStartNode()) {
       this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
-        isStartNode: false
-      })
+        isStartNode: false,
+      });
     }
   }
 
@@ -203,8 +211,8 @@ export class AppComponent implements OnInit, OnDestroy {
   removeEndNode(node: Node): void {
     if (node.getIsFinishNode()) {
       this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
-        isFinishNode: false
-      })
+        isFinishNode: false,
+      });
     }
   }
 
@@ -284,7 +292,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   isEndNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
-    return rowIdx === this.finishNode.rowIdx && this.finishNode.colIdx === colIdx
+    return rowIdx === this.finishNode.rowIdx && this.finishNode.colIdx === colIdx;
   }
 
   disableButtons(): void {
