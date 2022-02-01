@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Node, NodeWeights} from './models/Node.class';
 import {Dijkstra} from './algorithms/dijkstra/dijkstra';
 import {Grid, GridMap, GridRow, GridSize} from './models/grid.types';
-import {distinctUntilChanged, fromEvent, map, Subject, takeUntil} from 'rxjs';
+import {concatMap, delay, distinctUntilChanged, filter, from, fromEvent, map, of, Subject, takeUntil} from 'rxjs';
 import {Backtracking} from './algorithms/maze-generation/backtracking/backtracking';
 import {MazeGenerationEnum, PathAlgorithmEnum} from './header/header.component';
 import {Kruskal} from './algorithms/maze-generation/kruskal/kruskal';
@@ -239,22 +239,12 @@ export class AppComponent implements OnInit, OnDestroy {
         break;
     }
 
-    const nodesToAnimate: GridRow = [];
-    for (const node of maze!.values()) {
-      nodesToAnimate.push(node);
-    }
-
-    const timeout = (index: number) =>
-      setTimeout(() => {
-        if (index === nodesToAnimate.length) {
-          return;
-        }
-        const node = nodesToAnimate[index] as Node;
-        this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
-        timeout(index + 1);
-      }, 0);
-
-    timeout(0);
+    from(maze!.values()).pipe(
+      filter(node => node.isWall()),
+      concatMap(node => of(node).pipe(delay(5))),
+    ).subscribe(node => {
+      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
+    });
   }
 
   onAnimSpeedSelected(animSpeed: string) {
