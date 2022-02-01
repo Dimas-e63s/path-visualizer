@@ -130,7 +130,7 @@ export class Utils {
 
     let currentNode = endNode;
     while (Utils.isPreviousNodeExist(currentNode)) {
-      shortestPath.unshift(currentNode);
+      shortestPath.unshift(currentNode.clone({isShortestPath: true}));
       currentNode = currentNode.previousNode;
     }
 

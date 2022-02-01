@@ -95,16 +95,15 @@ export class AppComponent implements OnInit, OnDestroy {
 
   runAlgo() {
     this.disableButtons();
+    this.animatePathfindingAlgo();
+  }
 
+  animatePathfindingAlgo() {
     const [visitedNodesInOrder, shortestPath] = this.getShortestPath();
 
     concat(
-      this.getAnimationObservable(visitedNodesInOrder, (node) => {
-        this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
-      }),
-      this.getAnimationObservable(shortestPath, (node) => {
-        this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({isShortestPath: true});
-      })
+      this.getAnimationObservable(visitedNodesInOrder),
+      this.getAnimationObservable(shortestPath)
     )
       .pipe(
         finalize(() => this.activateButtons()),
@@ -112,11 +111,13 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe();
   }
 
-  getAnimationObservable(nodeArray: Node[], callback: (node: Node) => void): Observable<Node> {
+  getAnimationObservable(nodeArray: Node[]): Observable<Node> {
     return from(nodeArray)
       .pipe(
-        concatMap((node) => of(node).pipe(delay(10))),
-        tap(callback),
+        concatMap((node) => of(node).pipe(delay(15))),
+        tap((node) => {
+          this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
+        }),
       );
   }
 
