@@ -142,7 +142,7 @@ export class AppComponent implements OnInit, OnDestroy {
       // @ts-ignore
       this.prevEnd = {col, row};
     } else {
-      this.nodes[row][col] = selectedNode.clone({weight: NodeWeights.WALL});
+      this.addWall(this.nodes[row][col])
     }
   }
 
@@ -161,21 +161,12 @@ export class AppComponent implements OnInit, OnDestroy {
   onDraw($event: any) {
     if (this.moveHead && (this.prevHead.row !== $event.row || this.prevHead.col !== $event.col)) {
       //@ts-ignore
-      let oldHead = this.nodes[this.prevHead.row][this.prevHead.col];
-      oldHead = oldHead.clone({isStartNode: false});
-      this.nodes[oldHead.getRowIdx()][oldHead.getColumnIdx()] = oldHead;
-
-
-      this.startNode = {colIdx: $event.col, rowIdx: $event.row};
-      this.prevHead = $event;
-      this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
+      this.removeHeadNode(this.nodes[this.prevHead.row][this.prevHead.col]);
+      this.addHeadNode($event);
     } else if (this.moveEnd && (this.prevEnd.row !== $event.row || this.prevEnd.col !== $event.col)) {
       //@ts-ignore
       this.removeEndNode(this.nodes[this.prevEnd.row][this.prevEnd.col])
-
-      this.prevEnd = $event;
-      this.finishNode = {colIdx: $event.col, rowIdx: $event.row};
-      this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
+      this.addEndNode($event)
     } else if (this.isSameNode($event) && this.buildWalls) {
       this.prevNode = $event;
       this.addWall(this.nodes[$event.row][$event.col]);
@@ -202,6 +193,26 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     }
     this.activateButtons();
+  }
+
+  addHeadNode($event: any) {
+    this.startNode = {colIdx: $event.col, rowIdx: $event.row};
+    this.prevHead = $event;
+    this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
+  }
+
+  removeHeadNode(node: Node): void {
+    if (node.getIsStartNode()) {
+      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+        isStartNode: false
+      })
+    }
+  }
+
+  addEndNode($event: any) {
+    this.prevEnd = $event;
+    this.finishNode = {colIdx: $event.col, rowIdx: $event.row};
+    this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
   }
 
   removeEndNode(node: Node): void {
