@@ -60,7 +60,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   runAlgo() {
-    this.isButtonsDisabled = true;
+    this.disableButtons();
     const startNode = this.getStartNode();
     const endNode = this.getEndNode();
 
@@ -118,7 +118,7 @@ export class AppComponent implements OnInit, OnDestroy {
     const timeout2 = (index: number) =>
       setTimeout(() => {
         if (index === shortestPath.length) {
-          this.isButtonsDisabled = false;
+          this.activateButtons();
           return;
         }
         const node = (shortestPath[index] as Node).clone({isShortestPath: true});
@@ -206,7 +206,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
       }
     }
-    this.isButtonsDisabled = false;
+    this.activateButtons();
   }
 
   clearPath() {
@@ -275,6 +275,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
   disableButtons(): void {
     this.isButtonsDisabled = true;
+  }
+
+  activateButtons(): void {
+    this.isButtonsDisabled = false;
   }
 
   isGridSizeFixed(a: GridSize, b: GridSize): boolean {
