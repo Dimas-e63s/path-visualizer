@@ -201,12 +201,16 @@ export class AppComponent implements OnInit, OnDestroy {
     this.disableButtons();
     for (const row of this.nodes) {
       for (const column of row) {
-        if (column.isWall()) {
-          this.nodes[column.getRowIdx()][column.getColumnIdx()] = column.clone({weight: NodeWeights.EMPTY, previousNode: null});
-        }
+        this.removeWall(column);
       }
     }
     this.activateButtons();
+  }
+
+  removeWall(node: Node): void {
+    if (node.isWall()) {
+      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({weight: NodeWeights.EMPTY, previousNode: null});
+    }
   }
 
   clearPath() {
