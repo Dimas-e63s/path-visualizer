@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Node, NodeInterface, NodeWeights} from './models/Node.class';
+import {Node, NodeWeights} from './models/Node.class';
 import {Dijkstra} from './algorithms/dijkstra/dijkstra';
 import {Grid, GridMap, GridRow, GridSize} from './models/grid.types';
 import {distinctUntilChanged, fromEvent, map, Subject, takeUntil} from 'rxjs';
@@ -11,14 +11,6 @@ import {AStar} from './algorithms/a-star/a-star';
 import {UnweightedAlgorithms} from './algorithms/unweighted/unweighted-algorithms';
 import {Utils} from './algorithms/utils/utils.class';
 import {GridBuilder} from './grid-builder';
-
-// TODO: - to get rid of duplicated node gen logic
-//          - create init grid method
-//          - call destication with start and end
-
-// generateEmptyGrid
-// generateNode
-// generateGrid
 
 @Component({
   selector: 'app-root',
@@ -61,20 +53,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  generateGrid({row, col}: {row: number, col: number}): Grid {
-    const nodes = this.generateEmptyGrid({row, col});
-
-    for (let rowIdx = 0; rowIdx < row; rowIdx++) {
-      for (let colIdx = 0; colIdx < col; colIdx++) {
-        nodes[rowIdx][colIdx] = GridBuilder.generateGridNode({rowIdx, colIdx});
-      }
-    }
-
-    return nodes;
-  }
-
   initGrid() {
-    this.nodes = this.generateGrid(this.getGridSize());
+    this.nodes = GridBuilder.generateGrid(this.getGridSize());
     this.setDestinationNode(this.startNode);
     this.setDestinationNode(this.finishNode);
   }
@@ -206,7 +186,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   clearBoard() {
-    this.nodes = this.generateGrid(this.getGridSize());
+    this.initGrid();
   }
 
   trackByRow(index: number, row: GridRow) {
@@ -284,13 +264,6 @@ export class AppComponent implements OnInit, OnDestroy {
     };
   }
 
-  generateEmptyGrid({row, col}: {row: number, col: number}) {
-    // TODO: - add validation for passed params
-    return Array(row)
-      .fill(0)
-      .map(() => Array(col).fill(null));
-  }
-
   setDestinationNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
     this.nodes[rowIdx][colIdx] = GridBuilder.generateGridNode({
       rowIdx: rowIdx,
@@ -356,7 +329,7 @@ export class AppComponent implements OnInit, OnDestroy {
                        currentAmountOfRows,
                        currentAmountOfCols,
                      }: {totalRow: number, currentAmountOfRows: number, currentAmountOfCols: number}) {
-    const newGrid = this.generateEmptyGrid({row: totalRow - currentAmountOfRows, col: currentAmountOfCols});
+    const newGrid = GridBuilder.generateEmptyGrid({row: totalRow - currentAmountOfRows, col: currentAmountOfCols});
 
     for (let rowIdx = 0; rowIdx < newGrid.length; rowIdx++) {
       for (let colIdx = 0; colIdx < newGrid[0].length; colIdx++) {
