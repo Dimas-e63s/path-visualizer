@@ -59,44 +59,29 @@ export class AppComponent implements OnInit, OnDestroy {
     this.setDestinationNode(this.finishNode);
   }
 
-  runAlgo() {
-    this.disableButtons();
-    const startNode = this.getStartNode();
-    const endNode = this.getEndNode();
-
-    let visitedNodesInOrder: GridRow;
-    let shortestPath: GridRow;
+  getShortestPath(): [Node[], Node[]] {
+    const algorithmData = {
+      grid: this.nodes,
+      startNode: this.getStartNode(),
+      endNode: this.getEndNode()
+    }
 
     switch (this.selectedPathAlgo) {
       case PathAlgorithmEnum.DIJKSTRA:
-        [visitedNodesInOrder, shortestPath] = new Dijkstra({
-          grid: this.nodes,
-          startNode,
-          endNode,
-        }).traverse();
-        break;
+        return new Dijkstra(algorithmData).traverse();
       case PathAlgorithmEnum.A_STAR:
-        [visitedNodesInOrder, shortestPath] = new AStar({
-          grid: this.nodes,
-          startNode,
-          endNode,
-        }).traverse();
-        break;
+        return new AStar(algorithmData).traverse();
       case PathAlgorithmEnum.BFS:
-        [visitedNodesInOrder, shortestPath] = new UnweightedAlgorithms({
-          grid: this.nodes,
-          startNode,
-          endNode,
-        }).bfs();
-        break;
+        return  new UnweightedAlgorithms(algorithmData).bfs();
       case PathAlgorithmEnum.DFS:
-        [visitedNodesInOrder, shortestPath] = new UnweightedAlgorithms({
-          grid: this.nodes,
-          startNode,
-          endNode,
-        }).dfs();
-        break;
+        return  new UnweightedAlgorithms(algorithmData).dfs();
     }
+  }
+
+  runAlgo() {
+    this.disableButtons();
+
+    const [visitedNodesInOrder, shortestPath] = this.getShortestPath();
 
     const timeout = (index: number) =>
       setTimeout(() => {

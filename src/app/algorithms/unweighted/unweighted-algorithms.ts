@@ -11,7 +11,7 @@ export class UnweightedAlgorithms extends AlgorithmBase {
     super({grid, startNode, endNode});
   }
 
-  dfs() {
+  dfs(): [Node[], Node[]] {
     const stack = new Stack<Node>();
     const gridMap = Utils.getNodesCopy(this.grid);
 
@@ -56,7 +56,7 @@ export class UnweightedAlgorithms extends AlgorithmBase {
     return [visitedNodes, shortestPath]
   }
 
-  bfs() {
+  bfs(): [Node[], Node[]] {
     const queue = new Queue<Node>();
     const gridMap = Utils.getNodesCopy(this.grid);
     const exploredNodes = new Set().add(Utils.getNodeKey(this.startNode));
