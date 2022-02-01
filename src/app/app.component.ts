@@ -180,8 +180,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
     } else if (this.isSameNode($event) && this.buildWalls) {
       this.prevNode = $event;
-      const selectedNode = this.nodes[$event.row][$event.col];
-      this.nodes[$event.row][$event.col] = selectedNode.clone({weight: NodeWeights.WALL});
+      this.addWall(this.nodes[$event.row][$event.col]);
     }
   }
 
@@ -205,6 +204,14 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     }
     this.activateButtons();
+  }
+
+  addWall(node: Node): void {
+    if (!node.isWall()) {
+      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+        weight: NodeWeights.WALL,
+      });
+    }
   }
 
   removeWall(node: Node): void {
@@ -265,9 +272,17 @@ export class AppComponent implements OnInit, OnDestroy {
     this.nodes[rowIdx][colIdx] = GridBuilder.generateGridNode({
       rowIdx: rowIdx,
       colIdx: colIdx,
-      isStartNode: rowIdx === this.startNode.rowIdx && this.startNode.colIdx === colIdx,
-      isFinishNode: rowIdx === this.finishNode.rowIdx && this.finishNode.colIdx === colIdx,
+      isStartNode: this.isStartNode({rowIdx, colIdx}),
+      isFinishNode: this.isEndNode({rowIdx, colIdx}),
     });
+  }
+
+  isStartNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
+    return rowIdx === this.startNode.rowIdx && this.startNode.colIdx === colIdx;
+  }
+
+  isEndNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
+    return rowIdx === this.finishNode.rowIdx && this.finishNode.colIdx === colIdx
   }
 
   disableButtons(): void {
