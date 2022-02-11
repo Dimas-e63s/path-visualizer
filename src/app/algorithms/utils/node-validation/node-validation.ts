@@ -48,7 +48,6 @@ export class NodeValidation {
       && NodeValidation.weightEquals(a, b)
       && NodeValidation.visitedNodesEqual(a, b)
       && NodeValidation.isShortestNodesEquals(a, b)
-      && NodeValidation.isDistanceEquals(a, b)
       && !NodeValidation.isHasSameId(a, b)
   }
 
@@ -59,7 +58,6 @@ export class NodeValidation {
       && NodeValidation.isStartNodeEquals(a, b)
       && NodeValidation.isEndNodeEquals(a, b)
       && NodeValidation.isShortestNodesEquals(a, b)
-      && NodeValidation.isDistanceEquals(a, b)
       && !NodeValidation.isHasSameId(a, b);
   }
 }
