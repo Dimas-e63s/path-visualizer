@@ -34,7 +34,7 @@ import {GridBuilder} from './grid-builder';
 })
 export class AppComponent implements OnInit, OnDestroy {
   private startNode = {colIdx: 2, rowIdx: 25};
-  private finishNode = {colIdx: 55, rowIdx: 0};
+  private finishNode = {colIdx: 25, rowIdx: 0};
   private destroy$ = new Subject<void>();
   private selectedPathAlgo: PathAlgorithmEnum = PathAlgorithmEnum.BFS;
   nodes!: Grid;
@@ -164,6 +164,20 @@ export class AppComponent implements OnInit, OnDestroy {
     } else if (this.isSameNode($event) && this.buildWalls) {
       this.prevNode = $event;
       this.addWall(this.nodes[$event.row][$event.col]);
+    }
+  }
+
+  generateStartNode(gridSize: GridSize): {rowIdx: number, colIdx: number} {
+    return {
+      colIdx: 0,
+      rowIdx: gridSize.totalRow / 2
+    }
+  }
+
+  generateEndNode(gridSize: GridSize): {rowIdx: number, colIdx: number} {
+    return {
+      colIdx: gridSize.totalCol - 1,
+      rowIdx: gridSize.totalRow / 2
     }
   }
 

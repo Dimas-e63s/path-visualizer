@@ -1,8 +1,15 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {AppComponent} from './app.component';
 import {GridBuilder} from './grid-builder';
+import {Component} from '@angular/core';
 
-describe('AppComponent', () => {
+@Component({selector: 'tui-root', template: ''})
+class StubRootComponent {}
+
+@Component({selector: 'app-header', template: ''})
+class StubHeaderComponent {}
+
+fdescribe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
 
@@ -10,6 +17,8 @@ describe('AppComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         AppComponent,
+        StubRootComponent,
+        StubHeaderComponent
       ],
     }).compileComponents();
 
@@ -81,6 +90,22 @@ describe('AppComponent', () => {
 
       component.disableButtons();
       expect(component.isButtonsDisabled).toBeTrue();
-    })
+    });
+  });
+
+  describe('generateStartNode', () => {
+    it('should return startNode based on size of the frid', () => {
+      expect(
+        component.generateStartNode({totalRow: 20, totalCol: 20}),
+      ).toEqual({colIdx: 0, rowIdx: 10});
+    });
+  });
+
+  describe('generateEndNode', () => {
+    it('should return endNode based on size of the frid', () => {
+      expect(
+        component.generateEndNode({totalRow: 20, totalCol: 34}),
+      ).toEqual({colIdx: 33, rowIdx: 10});
+    });
   });
 });
