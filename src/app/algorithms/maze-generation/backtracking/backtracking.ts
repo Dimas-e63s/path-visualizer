@@ -6,9 +6,9 @@ import {AlgorithmBase} from '../../algorithm-base/algorithm-base';
 import {DirectionsEnum, DX, DY} from '../../../models/maze-generation.enum';
 
 export class Backtracking extends AlgorithmBase {
-  private readonly totalCol: number;
-  private readonly totalRow: number;
-  private readonly visitedNodes = new Set<string>();
+  protected readonly totalCol: number;
+  protected readonly totalRow: number;
+  protected readonly visitedNodes = new Set<string>();
   private readonly gridMap: GridMap;
   private nodesToAnimate: GridRow = [];
 
@@ -21,91 +21,47 @@ export class Backtracking extends AlgorithmBase {
     this.transformToWalls();
   }
 
-  getMazeIterative() {
-    this.generateMazeIterative({cx: 0, cy: 0, grid: this.gridMap});
+  getMaze() {
+    this.generateMaze({cx: 0, cy: 0, grid: this.gridMap});
 
     this.gridMap.set(Utils.getNodeKey(this.startNode), this.startNode);
     this.gridMap.set(Utils.getNodeKey(this.endNode), this.endNode);
     return this.gridMap;
   }
 
-  getMazeRecursive() {
-    this.generateMazeRecursive({cx: 0, cy: 0, grid: this.gridMap});
-
-    this.gridMap.set(Utils.getNodeKey(this.startNode), this.startNode);
-    this.gridMap.set(Utils.getNodeKey(this.endNode), this.endNode);
-    return this.gridMap;
+  generateMaze({cx, cy, grid}: {cx: number, cy: number, grid: GridMap}) {
+    throw new Error('The method wasn\'t implemented.');
   }
 
-  private transformToWalls() {
+  protected transformToWalls() {
     for (const node of this.gridMap.values()) {
       this.gridMap.set(Utils.getNodeKey(node), node.clone({weight: NodeWeights.WALL}));
     }
   }
 
-  private getNodeKey(row: number, col: number): string {
+  protected getNodeKey(row: number, col: number): string {
     return `${row}-${col}`;
   }
 
-  private generateMazeIterative({cx, cy, grid}: {cx: number, cy: number, grid: GridMap}) {
-    // 1. Choose the initial cell, mark it as visited and push it to the stack
-    // 2. While the stack is not empty
-    //    1. Pop a cell from the stack and make it a current cell
-    //    2. If the current cell has any neighbours which have not been visited
-    //        1. Push the current cell to the stack
-    //        2. Choose one of the unvisited neighbours
-    //        3. Remove the wall between the current cell and the chosen cell
-    //        4. Mark the chosen cell as visited and push it to the stack
-    const stack = new Stack<string>();
-    const initialNodeKey = this.getNodeKey(cy, cx);
-    stack.push(initialNodeKey);
-
-    this.visitedNodes.add(initialNodeKey);
-    const initialNode = grid.get(initialNodeKey)!.clone({weight: NodeWeights.EMPTY});
-    grid.set(initialNodeKey, initialNode);
-
-    while (!stack.isEmpty()) {
-      const currNode = stack.pop();
-
-      const direction = this.randomSort([DirectionsEnum.N, DirectionsEnum.S, DirectionsEnum.E, DirectionsEnum.W]);
-
-      const unvisitedNodes = direction.filter(direction => {
-        let wallX = +currNode.split('-')[1] + DX.get(direction)!;
-        let wallY = +currNode.split('-')[0] + DY.get(direction)!;
-
-        let newX = wallX + DX.get(direction)!;
-        let newY = wallY + DY.get(direction)!;
-
-        return (newY >= 0 && newY < this.totalRow)
-          && (newX >= 0 && newX < this.totalCol)
-          && !this.visitedNodes.has(this.getNodeKey(newY, newX))
-          && !this.visitedNodes.has(this.getNodeKey(wallY, wallX));
-      });
-
-      if (unvisitedNodes.length > 0) {
-        stack.push(currNode);
-
-        let wallX = +currNode.split('-')[1] + DX.get(unvisitedNodes[0])!;
-
-        let wallY = +currNode.split('-')[0] + DY.get(unvisitedNodes[0])!;
-
-        let newX = wallX + DX.get(unvisitedNodes[0])!;
-        let newY = wallY + DY.get(unvisitedNodes[0])!;
-
-        this.visitedNodes.add(this.getNodeKey(wallY, wallX));
-        const oldWall = grid.get(this.getNodeKey(wallY, wallX))!.clone({weight: NodeWeights.EMPTY});
-        grid.set(this.getNodeKey(wallY, wallX), oldWall);
-
-        this.visitedNodes.add(this.getNodeKey(newY, newX));
-        const neighbor = grid.get(this.getNodeKey(newY, newX))!.clone({weight: NodeWeights.EMPTY});
-        grid.set(this.getNodeKey(newY, newX), neighbor);
-
-        stack.push(this.getNodeKey(newY, newX));
-      }
-    }
+  protected randomSort(array: DirectionsEnum[]) {
+    return array.slice().sort(() => Math.random() - 0.5);
   }
 
-  private generateMazeRecursive({cx, cy, grid}: {cx: number, cy: number, grid: GridMap}) {
+  protected getRandomDirections(): DirectionsEnum[] {
+    return this.randomSort([DirectionsEnum.N, DirectionsEnum.S, DirectionsEnum.E, DirectionsEnum.W]);
+  }
+
+  protected removeWall(nodeKey: string): Node {
+    return this.gridMap.get(nodeKey)!.clone({weight: NodeWeights.EMPTY});
+  }
+}
+
+export class BacktrackingRecursive extends Backtracking {
+  constructor(grid: Grid, startNode: Node, endNode: Node) {
+    super(grid, startNode, endNode);
+  }
+
+  override generateMaze({cx, cy, grid}: {cx: number, cy: number, grid: GridMap}) {
     // 1. Given a current cell as a parameter,
     // 2. Mark the current cell as visited
     // 3. While the current cell has any unvisited neighbour cells
@@ -135,23 +91,86 @@ export class Backtracking extends AlgorithmBase {
         this.visitedNodes.add(this.getNodeKey(wallY, wallX));
         const oldWall = grid.get(this.getNodeKey(wallY, wallX))!.clone({weight: NodeWeights.EMPTY});
         grid.set(this.getNodeKey(wallY, wallX), oldWall);
-        this.generateMazeRecursive({cx: newX, cy: newY, grid});
+        this.generateMaze({cx: newX, cy: newY, grid});
       }
     });
   }
+}
 
-  private randomSort(array: DirectionsEnum[]) {
-    let currentIndex = array.length;
-    let randomIndex;
+export class BacktrackingIterative extends Backtracking {
+  override generateMaze({cx, cy, grid}: {cx: number, cy: number, grid: GridMap}) {
+    // 1. Choose the initial cell, mark it as visited and push it to the stack
+    // 2. While the stack is not empty
+    //    1. Pop a cell from the stack and make it a current cell
+    //    2. If the current cell has any neighbours which have not been visited
+    //        1. Push the current cell to the stack
+    //        2. Choose one of the unvisited neighbours
+    //        3. Remove the wall between the current cell and the chosen cell
+    //        4. Mark the chosen cell as visited and push it to the stack
+    const stack = new Stack<Node>();
+    const initialNodeKey = this.getNodeKey(cy, cx);
+    stack.push(grid.get(initialNodeKey)!);
+    this.visitedNodes.add(initialNodeKey);
 
-    while (currentIndex != 0) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
+    grid.set(initialNodeKey, this.removeWall(initialNodeKey));
 
-      [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex], array[currentIndex]];
+    while (!stack.isEmpty()) {
+      const currNode = stack.pop();
+
+      const unvisitedNodes = this.getUnvisitedNodeDirection(currNode);
+
+      if (unvisitedNodes) {
+        stack.push(currNode);
+
+        let wallX = currNode.getColumnIdx() + DX.get(unvisitedNodes)!;
+
+        let wallY = currNode.getRowIdx() + DY.get(unvisitedNodes)!;
+
+        let newX = wallX + DX.get(unvisitedNodes)!;
+        let newY = wallY + DY.get(unvisitedNodes)!;
+
+        this.visitedNodes.add(this.getNodeKey(wallY, wallX));
+        grid.set(this.getNodeKey(wallY, wallX), this.removeWall(this.getNodeKey(wallY, wallX)));
+
+        this.visitedNodes.add(this.getNodeKey(newY, newX));
+        grid.set(this.getNodeKey(newY, newX), this.removeWall(this.getNodeKey(newY, newX)));
+
+        stack.push(grid.get(this.getNodeKey(newY, newX))!);
+      }
     }
+  }
 
-    return array;
+  private getUnvisitedNodeDirection(currNode: Node): DirectionsEnum | undefined {
+    return this.getRandomDirections().find(direction => {
+      const wallX = this.getNeighborColIdx(currNode.getColumnIdx(), direction);
+      const wallY = this.getNeighborRowIdx(currNode.getRowIdx(), direction);
+
+      const newX = this.getNeighborColIdx(wallX, direction);
+      const newY = this.getNeighborRowIdx(wallY, direction);
+
+      return this.isNodeInsideOfGridBounds(newY, newX)
+        && !this.visitedNodes.has(this.getNodeKey(newY, newX))
+        && !this.visitedNodes.has(this.getNodeKey(wallY, wallX));
+    });
+  }
+
+  private getNeighborColIdx(colIdx: number, direction: DirectionsEnum): number {
+    return colIdx + DX.get(direction)!;
+  }
+
+  private getNeighborRowIdx(rowIdx: number, direction: DirectionsEnum): number {
+    return rowIdx + DY.get(direction)!;
+  }
+
+  private isNodeInsideOfGridBounds(newY: number, newX: number): boolean {
+    return this.isRowInGridBounds(newY) && this.isColInGridBounds(newX)
+  }
+
+  private isRowInGridBounds(rowIdx: number): boolean {
+    return rowIdx >= 0 && rowIdx < this.totalRow
+  };
+
+  private isColInGridBounds(colIdx: number): boolean {
+    return colIdx >= 0 && colIdx < this.totalCol
   }
 }
