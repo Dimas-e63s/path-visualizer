@@ -96,7 +96,7 @@ fdescribe('AppComponent', () => {
   describe('generateStartNode', () => {
     it('should return startNode based on size of the frid', () => {
       expect(
-        component.generateStartNode({totalRow: 20, totalCol: 20}),
+        component.generateStartNode({row: 20, col: 20}),
       ).toEqual({colIdx: 0, rowIdx: 10});
     });
   });
@@ -104,7 +104,7 @@ fdescribe('AppComponent', () => {
   describe('generateEndNode', () => {
     it('should return endNode based on size of the frid', () => {
       expect(
-        component.generateEndNode({totalRow: 20, totalCol: 34}),
+        component.generateEndNode({row: 20, col: 34}),
       ).toEqual({colIdx: 33, rowIdx: 10});
     });
   });

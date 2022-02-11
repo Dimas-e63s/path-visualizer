@@ -70,6 +70,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   initGrid() {
     this.nodes = GridBuilder.generateGrid(this.getGridSize());
+    this.startNode = this.generateStartNode(this.getGridSize());
+    this.finishNode = this.generateEndNode(this.getGridSize());
     this.setDestinationNode(this.startNode);
     this.setDestinationNode(this.finishNode);
   }
@@ -167,17 +169,17 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  generateStartNode(gridSize: GridSize): {rowIdx: number, colIdx: number} {
+  generateStartNode(gridSize: {row: number, col: number}): {rowIdx: number, colIdx: number} {
     return {
       colIdx: 0,
-      rowIdx: gridSize.totalRow / 2
+      rowIdx: gridSize.row / 2
     }
   }
 
-  generateEndNode(gridSize: GridSize): {rowIdx: number, colIdx: number} {
+  generateEndNode(gridSize: {row: number, col: number}): {rowIdx: number, colIdx: number} {
     return {
-      colIdx: gridSize.totalCol - 1,
-      rowIdx: gridSize.totalRow / 2
+      colIdx: gridSize.col - 1,
+      rowIdx: gridSize.row / 2
     }
   }
 
