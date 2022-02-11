@@ -86,6 +86,9 @@ describe('Dijkstra Class', () => {
       nodeCopy.setAsVisited();
       return nodeCopy;
     });
+
+    const mapNodeToShortestPath = (grid: GridRow) => grid.map(node => node.clone({isShortestPath: true}));
+
     beforeEach(() => {
       jasmine.addMatchers(SomeCustomMatchers);
       grid = new Array(6)
@@ -207,8 +210,8 @@ describe('Dijkstra Class', () => {
         grid[0][5],
       ];
 
-      expect(shortestPath).toReallyEqualVisitedNode(
-        mapNodesToVisited(shortestPathStub),
+      expect(shortestPath).toReallyEqualAnimationNode(
+        mapNodeToShortestPath(shortestPathStub),
       );
       expect(nodesToAnimate).toReallyEqualVisitedNode(
         mapNodesToVisited(nodesToAnimateStub),

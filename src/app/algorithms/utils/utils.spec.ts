@@ -1,12 +1,17 @@
 import {Utils} from './utils.class';
 import {Node, NodeInterface} from '../../models/Node.class';
 import {Grid, GridMap, GridRow} from '../../models/grid.types';
+import {SomeCustomMatchers} from './node-matcher';
 
 // TODO: - empty GridMap, no node in GridMap (getNodeBelow etc.)
 
 describe('Utils Class', () => {
   let emptyGrid: Grid;
   let createNode: (metaData: NodeInterface) => Node;
+
+  beforeEach(() => {
+    jasmine.addMatchers(SomeCustomMatchers);
+  });
 
   beforeEach(() => {
     emptyGrid = [];
@@ -171,7 +176,8 @@ describe('Utils Class', () => {
     it('should return shortest path array', () => {
       let startNode = createNode({rowIdx: 22, colIdx: 12});
       let endNode = createNode({rowIdx: 12, colIdx: 12, previousNode: startNode});
-      expect(Utils.getNodesInShortestPathOrder( endNode)).toEqual([endNode]);
+      expect(
+        Utils.getNodesInShortestPathOrder(endNode)).toReallyEqualAnimationNode([endNode.clone({isShortestPath: true})]);
     })
   });
 

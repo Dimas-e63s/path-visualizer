@@ -166,7 +166,7 @@ describe('AStar', () => {
 
       gScore = new Map<string, number>([
         [Utils.getNodeKey(startNode), 0],
-        [Utils.getNodeKey(stubNode), Infinity]
+        [Utils.getNodeKey(stubNode), Infinity],
       ]);
     });
 
@@ -243,7 +243,7 @@ describe('AStar', () => {
         const nodeCopy = node.clone({});
         nodeCopy.setAsVisited();
         return nodeCopy;
-      })
+      });
 
       let shortestPathStub = [
         grid[4][2],
@@ -256,13 +256,10 @@ describe('AStar', () => {
         grid[0][5],
       ];
 
-      shortestPathStub = shortestPathStub.map(node => {
-        const nodeCopy = node.clone({});
-        nodeCopy.setAsVisited();
-        return nodeCopy;
-      })
+      shortestPathStub = shortestPathStub.map(node => node.clone({isShortestPath: true}));
+
       expect(nodesToAnimate).toReallyEqualVisitedNode(nodesToAnimateStub);
-      expect(shortestPath).toReallyEqualVisitedNode(shortestPathStub);
+      expect(shortestPath).toReallyEqualAnimationNode(shortestPathStub);
     });
 
     it('should return empty closest path', () => {
@@ -281,7 +278,7 @@ describe('AStar', () => {
         {colIdx: 5, rowIdx: 2},
         {colIdx: 5, rowIdx: 3},
         {colIdx: 5, rowIdx: 4},
-        {colIdx: 5, rowIdx: 5}
+        {colIdx: 5, rowIdx: 5},
       ];
 
       for (let row = 0; row < 6; row++) {
@@ -320,14 +317,14 @@ describe('AStar', () => {
         grid[5][1],
         grid[3][0],
         grid[4][0],
-        grid[5][0]
+        grid[5][0],
       ];
 
       nodesToAnimateStub = nodesToAnimateStub.map(node => {
         const nodeCopy = node.clone({});
         nodeCopy.setAsVisited();
         return nodeCopy;
-      })
+      });
 
       expect(nodesToAnimate).toReallyEqualVisitedNode(nodesToAnimateStub);
       expect(shortestPath).toReallyEqualVisitedNode([]);

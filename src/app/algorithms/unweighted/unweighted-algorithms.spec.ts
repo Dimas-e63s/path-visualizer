@@ -2,17 +2,20 @@ import {Grid, GridRow} from '../../models/grid.types';
 import {SomeCustomMatchers} from '../utils/node-matcher';
 import {Node} from '../../models/Node.class';
 import {UnweightedAlgorithms} from './unweighted-algorithms';
-import {Utils} from '../utils/utils.class';
 
 describe('UnweightedAlgorithms', () => {
   let grid: Grid;
   let startNode: any;
   const endNode = {colIdx: 5, rowIdx: 0};
+
   const mapNodesToVisited = (grid: GridRow) => grid.map(node => {
     const nodeCopy = node.clone({});
     nodeCopy.setAsVisited();
     return nodeCopy;
   });
+
+  const mapNodesToShortestPath = (grid: GridRow) => grid.map(node => node.clone({isShortestPath: true}));
+
   beforeEach(() => {
     jasmine.addMatchers(SomeCustomMatchers);
     startNode = {colIdx: 2, rowIdx: 5};
@@ -114,8 +117,8 @@ describe('UnweightedAlgorithms', () => {
         grid[0][5],
       ];
 
-      expect(shortestPath).toReallyEqualVisitedNode(
-        mapNodesToVisited(shortestPathStub),
+      expect(shortestPath).toReallyEqualAnimationNode(
+        mapNodesToShortestPath(shortestPathStub),
       );
       expect(nodesToAnimate).toReallyEqualVisitedNode(
         mapNodesToVisited(nodesToAnimateStub),
@@ -228,12 +231,8 @@ describe('UnweightedAlgorithms', () => {
         grid[0][5],
       ];
 
-      shortestPath.forEach(node => {
-        console.log(Utils.getNodeKey(node));
-      })
-
-      expect(shortestPath).toReallyEqualVisitedNode(
-        mapNodesToVisited(shortestPathStub),
+      expect(shortestPath).toReallyEqualAnimationNode(
+        mapNodesToShortestPath(shortestPathStub),
       );
       expect(nodesToAnimate).toReallyEqualVisitedNode(
         mapNodesToVisited(nodesToAnimateStub),

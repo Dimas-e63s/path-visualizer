@@ -5,17 +5,23 @@ import CustomMatcherResult = jasmine.CustomMatcherResult;
 import CustomEqualityTester = jasmine.CustomEqualityTester;
 import {NodeValidation} from './node-validation/node-validation';
 import {GridRow} from '../../models/grid.types';
+import {Node} from '../../models/Node.class';
 
-export const SomeCustomMatchers: CustomMatcherFactories = {
-  // @ts-ignore
-  toReallyEqualVisitedNode: (util: MatchersUtil, customEqualityTester: CustomEqualityTester[]): CustomMatcher => {
+type comparatorFn = (a: Node, b: Node) => boolean;
+
+class NodeMatcherUtil {
+  constructor(private readonly comparator: comparatorFn) {
+  }
+
+  nodeMatcher(): CustomMatcher {
     return {
-      compare: function(expected: GridRow, actual: GridRow, anotherCustomArg: any): CustomMatcherResult {
+      compare: (expected: GridRow, actual: GridRow, anotherCustomArg: any): CustomMatcherResult => {
         let passes = true;
         let message = '';
+
         if (NodeValidation.isEqualSize(actual, expected)) {
           for (let i = 0; i < actual.length; i++) {
-            if (!NodeValidation.isVisitedNodeCopy(actual[i], expected[i])) {
+            if (!this.comparator(actual[i], expected[i])) {
               passes = false;
               break;
             }
@@ -27,9 +33,18 @@ export const SomeCustomMatchers: CustomMatcherFactories = {
 
         return {
           pass: passes,
-          message
+          message,
         };
       },
     };
-  },
+  }
+}
+
+export const SomeCustomMatchers: CustomMatcherFactories = {
+  toReallyEqualVisitedNode:
+    (util: MatchersUtil, customEqualityTester: Readonly<CustomEqualityTester[]>): CustomMatcher =>
+      new NodeMatcherUtil(NodeValidation.isVisitedNodeCopy).nodeMatcher(),
+  toReallyEqualAnimationNode:
+    (util: MatchersUtil, customEqualityTester: Readonly<CustomEqualityTester[]>): CustomMatcher =>
+      new NodeMatcherUtil(NodeValidation.isNodeCopy).nodeMatcher(),
 };

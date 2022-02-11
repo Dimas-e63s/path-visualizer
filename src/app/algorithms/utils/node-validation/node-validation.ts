@@ -38,11 +38,17 @@ export class NodeValidation {
     return a.distance === b.distance;
   }
 
+  static isShortestNodesEquals(a: Node, b: Node): boolean {
+    return a.isShortestPath === b.isShortestPath;
+  }
+
   static isVisitedNodeCopy(a: Node, b: Node) {
     return NodeValidation.rowEquals(a, b)
       && NodeValidation.colEquals(a, b)
       && NodeValidation.weightEquals(a, b)
       && NodeValidation.visitedNodesEqual(a, b)
+      && NodeValidation.isShortestNodesEquals(a, b)
+      && NodeValidation.isDistanceEquals(a, b)
       && !NodeValidation.isHasSameId(a, b)
   }
 
@@ -52,6 +58,7 @@ export class NodeValidation {
       && NodeValidation.weightEquals(a, b)
       && NodeValidation.isStartNodeEquals(a, b)
       && NodeValidation.isEndNodeEquals(a, b)
+      && NodeValidation.isShortestNodesEquals(a, b)
       && NodeValidation.isDistanceEquals(a, b)
       && !NodeValidation.isHasSameId(a, b);
   }
