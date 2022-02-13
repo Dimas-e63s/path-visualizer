@@ -277,9 +277,11 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   animateMazeBuilding(maze: GridMap): void {
+    this.disableButtons();
     from(maze.values()).pipe(
       filter(node => node.isWall()),
       concatMap(node => of(node).pipe(delay(5))),
+      finalize(() => this.activateButtons())
     ).subscribe(node => {
       this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
     });
