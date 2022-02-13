@@ -12,10 +12,11 @@
   &__nav {
     display: flex;
     align-items: center;
-
-    & > *:not(:last-child) {
-      margin-right: 90px;
-    }
+    justify-content: space-between;
+    flex-wrap: wrap;
+    flex: 1;
+    margin-left: 40px;
+    max-width: 1370px;
   }
 
   .button--error tui-wrapper[data-appearance='secondary'] {
