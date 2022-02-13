@@ -1,5 +1,12 @@
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {TuiButtonModule, TuiDataListModule, TuiHostedDropdownModule, TuiRootModule, TuiSvgModule} from '@taiga-ui/core';
+import {
+  TuiButtonModule,
+  TuiDataListModule,
+  TuiHostedDropdownModule,
+  TuiNotificationModule,
+  TuiRootModule,
+  TuiSvgModule,
+} from '@taiga-ui/core';
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
@@ -24,6 +31,7 @@ import { LegendComponent } from './legend/legend.component';
     TuiButtonModule,
     TuiDataListModule,
     TuiHostedDropdownModule,
+    TuiNotificationModule,
     TuiSvgModule
   ],
   providers: [],
