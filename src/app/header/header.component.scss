@@ -17,6 +17,10 @@
     flex: 1;
     margin-left: 40px;
     max-width: 1370px;
+
+    @media (max-width: 1276px) {
+      display: none;
+    }
   }
 
   .button--error tui-wrapper[data-appearance='secondary'] {
@@ -43,9 +47,13 @@
 
   &__title {
     letter-spacing: .5px;
-    font: 800 28px/56px 'Manrope', sans-serif;
+    font: 800 24px/56px 'Manrope', sans-serif;
     font-feature-settings: 'liga' off;
     color: #fbeded;
     margin: 0;
+
+    @media (min-width: 500px) {
+      font-size: 28px;
+    }
   }
 }
