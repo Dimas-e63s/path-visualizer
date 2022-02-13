@@ -1,100 +1,62 @@
-import {Grid, GridMap} from '../../../models/grid.types';
-import {Utils} from '../../utils/utils.class';
-import {Node, NodeWeights} from '../../../models/Node.class';
-import {AlgorithmBase} from '../../algorithm-base/algorithm-base';
-import {directions, DX, DY} from '../../../models/maze-generation.enum';
+import {Grid} from '../../../models/grid.types';
+import {Node} from '../../../models/Node.class';
+import {directions} from '../../../models/maze-generation.enum';
+import {MazeGeneration} from '../maze-generation';
 
-export class Prim extends AlgorithmBase {
-  private readonly gridMap: GridMap;
-  private readonly totalCol: number;
-  private readonly totalRow: number;
-
+export class Prim extends MazeGeneration {
   constructor(grid: Grid, startNode: Node, endNode: Node) {
-    super({grid, startNode, endNode});
-    this.gridMap = Utils.getNodesCopy(grid);
-    const {totalRow, totalCol} = Utils.getGridSize(grid);
-    this.totalCol = totalCol;
-    this.totalRow = totalRow;
+    super(grid, startNode, endNode);
   }
 
-  helper() {
-    for (const node of this.gridMap.values()) {
-      this.gridMap.set(`${node.getRowIdx()}-${node.getColumnIdx()}`, node.clone({weight: NodeWeights.WALL}));
-    }
-    this.generateMaze();
-
-    this.gridMap.set(Utils.getNodeKey(this.startNode), this.startNode);
-    this.gridMap.set(Utils.getNodeKey(this.endNode), this.endNode);
-
-    return this.gridMap;
-  }
-
-  private generateMaze() {
+  override generateMaze() {
     const frontierArr: any = {};
 
-    const randomCell = `${this.getRandomIdx(0, this.totalRow - 1)}-${this.getRandomIdx(0, this.totalCol - 1)}`;
+    this.mark(
+      `${this.getRandomIdx(0, this.totalRow - 1)}-${this.getRandomIdx(0, this.totalCol - 1)}`,
+      frontierArr
+    );
 
-    let initialCell = this.gridMap.get(randomCell)!;
-    initialCell = initialCell.clone({weight: NodeWeights.EMPTY});
-    this.gridMap.set(randomCell, initialCell);
+    while (Object.keys(frontierArr).length > 0) {
+      const randomKey = this.randomKey(frontierArr);
+      delete frontierArr[randomKey];
 
-    const {rowIdx, colIdx} = Utils.getNodeCoordinates(initialCell);
+      this.mark(randomKey, frontierArr)
 
+      const neighbourKey = this.randomKey(this.getNeighbors(randomKey));
+      this.gridMap.set(neighbourKey, this.getEmptyNode(neighbourKey));
+    }
+  }
+
+  private mark(currNode: string, frontierArr: any) {
     directions.forEach(direction => {
-      const r = rowIdx + DY.get(direction)!;
-      const c = colIdx + DX.get(direction)!;
-      const wr = r + DY.get(direction)!;
-      const wc = c + DX.get(direction)!;
+      const neighborKey = this.getNeighborKey(
+        this.getNeighborKey(currNode, direction),
+        direction,
+      );
 
-      if (
-        wr >= 0
-        && wr <= this.totalRow -1
-        && wc >= 0
-        && wc <= this.totalCol - 1
-      ) {
-        frontierArr[`${wr}-${wc}`] = `${wr}-${wc}`;
+      if (this.gridMap.has(neighborKey) && this.gridMap.get(neighborKey)!.isWall()) {
+        frontierArr[neighborKey] = neighborKey;
       }
     });
 
-    while (Object.keys(frontierArr).length > 0) {
-      const neighborKey = this.randomKey(frontierArr);
-      delete frontierArr[neighborKey];
-      const {colIdx, rowIdx} = Utils.getNodeCoordinates(this.gridMap.get(neighborKey)!);
+    this.gridMap.set(currNode, this.getEmptyNode(currNode));
+  }
 
-      const neighbours: any = {};
-      directions.forEach(direction => {
-        const r = rowIdx + DY.get(direction)!;
-        const c = colIdx + DX.get(direction)!;
-        const wr = r + DY.get(direction)!;
-        const wc = c + DX.get(direction)!;
-        if (
-          wr >= 0
-          && wr <= this.totalRow -1
-          && wc >= 0
-          && wc <= this.totalCol - 1
-          && !this.gridMap.get(`${wr}-${wc}`)!.isWall()
-        ) {
-          neighbours[`${r}-${c}`] = `${r}-${c}`;
-        }
+  private getNeighbors(nodeKey: string) {
+    const neighbours: any = {};
+    directions.forEach(direction => {
+      const wallKey = this.getNeighborKey(nodeKey, direction);
+      const neighborKey = this.getNeighborKey(wallKey, direction);
 
-        if (
-          wr >= 0
-          && wr <= this.totalRow -1
-          && wc >= 0
-          && wc <= this.totalCol - 1
-          && this.gridMap.get(`${wr}-${wc}`)!.isWall()
-        ) {
-          frontierArr[`${wr}-${wc}`] = `${wr}-${wc}`;
-        }
-      });
+      if (
+        this.gridMap.has(neighborKey)
+        && !this.gridMap.get(neighborKey)!.isWall()
+      ) {
+        neighbours[wallKey] = wallKey;
+      }
+    });
 
-      const randNeighbour = this.randomKey(neighbours);
-      const randNeighborCopy = this.gridMap.get(randNeighbour)!.clone({weight: NodeWeights.EMPTY});
-      const randFCopy = this.gridMap.get(neighborKey)!.clone({weight: NodeWeights.EMPTY});
-
-      this.gridMap.set(randNeighbour, randNeighborCopy);
-      this.gridMap.set(neighborKey, randFCopy);
-    }
+    return neighbours;
   }
 
   private getRandomIdx(min: number, max: number): number {
