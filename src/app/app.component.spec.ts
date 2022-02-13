@@ -9,7 +9,7 @@ class StubRootComponent {}
 @Component({selector: 'app-header', template: ''})
 class StubHeaderComponent {}
 
-fdescribe('AppComponent', () => {
+describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
 
