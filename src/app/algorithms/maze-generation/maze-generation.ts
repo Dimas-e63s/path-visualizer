@@ -20,14 +20,14 @@ export class MazeGeneration extends AlgorithmBase {
   getMaze() {
     this.transformToWalls()
 
-    this.generateMaze();
+    this.generateMaze({nodeKey: '0-0'});
 
     this.gridMap.set(Utils.getNodeKey(this.startNode), this.startNode);
     this.gridMap.set(Utils.getNodeKey(this.endNode), this.endNode);
     return this.gridMap;
   }
 
-  protected generateMaze() {
+  generateMaze({nodeKey}: {nodeKey?: string} = {}) {
     throw new Error('The method wasn\'t implemented.');
   }
 

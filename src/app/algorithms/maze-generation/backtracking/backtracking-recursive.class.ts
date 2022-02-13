@@ -1,4 +1,4 @@
-import {Grid, GridMap} from '../../../models/grid.types';
+import {Grid} from '../../../models/grid.types';
 import {Node} from '../../../models/Node.class';
 import {Backtracking} from './backtracking';
 
@@ -7,7 +7,7 @@ export class BacktrackingRecursive extends Backtracking {
     super(grid, startNode, endNode);
   }
 
-  override generateMaze({nodeKey, grid}: {nodeKey: string, grid: GridMap}) {
+  override generateMaze({nodeKey}: {nodeKey: string}) {
     // 1. Given a current cell as a parameter,
     // 2. Mark the current cell as visited
     // 3. While the current cell has any unvisited neighbour cells
@@ -23,7 +23,7 @@ export class BacktrackingRecursive extends Backtracking {
 
       if (this.isUnvisitedNode({neighborKey, wallKey})) {
         this.makePassage(wallKey)
-        this.generateMaze({nodeKey: neighborKey, grid});
+        this.generateMaze({nodeKey: neighborKey});
       }
     });
   }

@@ -1,9 +1,8 @@
-import {GridMap} from '../../../models/grid.types';
 import {Stack} from '@datastructures-js/stack';
 import {Backtracking} from './backtracking';
 
 export class BacktrackingIterative extends Backtracking {
-  override generateMaze({nodeKey, grid}: {nodeKey: string, grid: GridMap}) {
+  override generateMaze({nodeKey}: {nodeKey: string}) {
     // 1. Choose the initial cell, mark it as visited and push it to the stack
     // 2. While the stack is not empty
     //    1. Pop a cell from the stack and make it a current cell
