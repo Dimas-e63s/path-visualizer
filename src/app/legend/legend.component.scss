@@ -50,15 +50,15 @@
       height: 32px;
 
       &--wall {
-        background-color: $node-wall;
+        background-color: $primary-color;
       }
 
       &--path {
-        background-color: $node-short-path;
+        background-color: $gold-color;
       }
 
       &--visited {
-        background-color: $node-visited;
+        background-color: $secondary-color;
       }
 
       &--unvisited {

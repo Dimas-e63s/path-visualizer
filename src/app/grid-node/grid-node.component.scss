@@ -1,3 +1,5 @@
+@use '../_variables.scss' as *;
+
 :host {
   display: flex;
   flex: 1;
@@ -6,21 +8,27 @@
 }
 .node {
   width: 100%;
-  border-right: 1px solid #595959;
-  border-left: 1px solid #595959;
+  border-right: 1px solid $node-border-color;
+  border-bottom: 1px solid $node-border-color;
+
+  //border-right: 1px solid #95AAF8;
+  //border-left: 1px solid #95AAF8;
 
   &--visited {
-    background-color: rgb(53, 219, 231);
+    background-color: $secondary-color;
     animation: visitAnimation 1.5s ease-out 0s 1 alternate forwards running;
 
-    border-right: 1px solid rgb(175, 216, 248);
-    border-left: 1px solid rgb(175, 216, 248);
+    border-right: 1px solid $node-border-color;
+    border-bottom: 1px solid $node-border-color;
+    //border-right: 1px solid #95AAF8;
+    //border-left: 1px solid #95AAF8;
   }
 
   &--wall,
   &--start,
   &--finish,
   &--path {
+    border-color: transparent;
     animation: scaleAnimation .4s ease-out;
   }
 
@@ -56,7 +64,7 @@
   }
   100% {
     transform: scale(1.0);
-    background-color: rgb(53, 219, 231);
+    background-color: $primary-color;
   }
 }
 

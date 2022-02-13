@@ -4,7 +4,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: $node-wall;
+  background: $primary-color;
   height: 100px;
   padding: 22px 23px;
   box-shadow: 0px 4px 21px rgba(24, 31, 72, 0.52);
@@ -25,15 +25,15 @@
 
   tui-wrapper[data-appearance='primary'] {
     background-color: #30d8cc;
-    color: $node-wall;
+    color: $primary-color;
     width: 210px;
 
     &[data-state='hovered'] {
-      background: $node-visited;
+      background: $secondary-color;
     }
 
     &[data-state='pressed'] {
-      background: $node-visited;
+      background: $secondary-color;
     }
 
     &[data-state='disabled'] {
