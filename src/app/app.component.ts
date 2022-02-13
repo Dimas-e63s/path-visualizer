@@ -236,9 +236,9 @@ export class AppComponent implements OnInit, OnDestroy {
 
   addWall(node: Node): void {
     if (!node.isWall()) {
-      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
-        weight: NodeWeights.WALL,
-      });
+      const nodeClone = node.clone();
+      nodeClone.setAsWall();
+      this.nodes[node.getRowIdx()][node.getColumnIdx()] = nodeClone;
     }
   }
 
