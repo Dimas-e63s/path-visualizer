@@ -7,6 +7,7 @@ import {AppComponent} from './app.component';
 import {GridNodeComponent} from './grid-node/grid-node.component';
 import {HeaderComponent} from './header/header.component';
 import {DropdownComponent} from './dropdown/dropdown.component';
+import { LegendComponent } from './legend/legend.component';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import {DropdownComponent} from './dropdown/dropdown.component';
     GridNodeComponent,
     HeaderComponent,
     DropdownComponent,
+    LegendComponent,
   ],
   imports: [
     BrowserModule,
