@@ -173,14 +173,14 @@ export class AppComponent implements OnInit, OnDestroy {
   generateStartNode(gridSize: {row: number, col: number}): {rowIdx: number, colIdx: number} {
     return {
       colIdx: 0,
-      rowIdx: gridSize.row / 2
+      rowIdx: Math.floor(gridSize.row / 2)
     }
   }
 
   generateEndNode(gridSize: {row: number, col: number}): {rowIdx: number, colIdx: number} {
     return {
       colIdx: gridSize.col - 1,
-      rowIdx: gridSize.row / 2
+      rowIdx: Math.floor(gridSize.row / 2)
     }
   }
 
