@@ -1,0 +1,73 @@
+@use '../_variables.scss' as *;
+
+.legend {
+  padding: 32px 0 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  &__item {
+    display: flex;
+    align-items: center;
+
+    &-text {
+      font: 500 18px/56px 'Manrope', sans-serif;
+      color: #181F48;
+    }
+
+    &-icon {
+      display: inline flow-root;
+      margin-right: 9px;
+
+      &--success {
+        color: #00a743;
+      }
+
+      &--target {
+        width: 28px;
+        height: 28px;
+        background-image: url('../../assets/target.svg');
+      }
+
+      &--bomb {
+        width: 26px;
+        height: 26px;
+        background-image: url('../../assets/bomb.svg');
+      }
+
+      &--weight {
+        width: 28px;
+        height: 20px;
+        background-image: url('../../assets/weight.svg');
+      }
+    }
+
+    &-node {
+      display: inline flow-root;
+      margin-right: 9px;
+      width: 32px;
+      height: 32px;
+
+      &--wall {
+        background-color: $node-wall;
+      }
+
+      &--path {
+        background-color: $node-short-path;
+      }
+
+      &--visited {
+        background-color: $node-visited;
+      }
+
+      &--unvisited {
+        border: 0.8px solid #95AAF8;
+      }
+    }
+  }
+}
+
+tui-notification[data-tui-host-status=info] {
+  display: inline-block;
+}
