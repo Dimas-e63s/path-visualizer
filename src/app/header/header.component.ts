@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
 
 export enum MazeGenerationEnum {
   BACKTRACKING_ITR = 'Backtracking Iterative',
@@ -19,6 +19,7 @@ export enum PathAlgorithmEnum {
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None
 })
 export class HeaderComponent {
   @Input() isButtonsDisabled!: boolean;

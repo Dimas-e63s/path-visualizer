@@ -7,15 +7,45 @@
   padding: 22px 23px;
   box-shadow: 0px 4px 21px rgba(24, 31, 72, 0.52);
 
-  &__nav > *:not(:last-child) {
-    margin-right: 90px;
+  &__nav {
+    display: flex;
+    align-items: center;
+
+    & > *:not(:last-child) {
+      margin-right: 90px;
+    }
+  }
+
+  .button--error tui-wrapper[data-appearance='secondary'] {
+    color: #eb002b;
+  }
+
+  tui-wrapper[data-appearance='primary'] {
+    background-color: #30d8cc;
+    color: #181f48;
+
+    &[data-state='hovered'] {
+      background: #20c4b6;
+    }
+
+    &[data-state='pressed'] {
+      background: #1fc4b8;
+    }
+
+    &[data-state='disabled'] {
+      background: #eaecee;
+    }
+  }
+
+  button[data-tui-host-size='l'] {
+    width: 210px;
   }
 
   &__title {
     letter-spacing: .5px;
     font: 800 28px/56px 'Manrope', sans-serif;
     font-feature-settings: 'liga' off;
-    color: #FBEDED;
+    color: #fbeded;
     margin: 0;
   }
 }
