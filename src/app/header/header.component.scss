@@ -2,14 +2,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #34495e;
-  height: 75px;
-  padding: 0 15px;
+  background: #181f48;
+  height: 100px;
+  padding: 22px 23px;
+  box-shadow: 0px 4px 21px rgba(24, 31, 72, 0.52);
+
+  &__nav > *:not(:last-child) {
+    margin-right: 90px;
+  }
 
   &__title {
-    font-family: 'Roboto', sans-serif;
-    color: #fff;
     letter-spacing: .5px;
-    font-size: 20px;
+    font: 800 28px/56px 'Manrope', sans-serif;
+    font-feature-settings: 'liga' off;
+    color: #FBEDED;
+    margin: 0;
   }
 }

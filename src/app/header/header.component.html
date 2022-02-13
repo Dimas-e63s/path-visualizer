@@ -1,50 +1,53 @@
 <header class="header">
   <h1 class="header__title">Pathfinding Visualizer</h1>
-  <app-dropdown
-    buttonText="Algorithms"
-    [items]="algorithmsOptions"
-    [canOpen]="!isButtonsDisabled"
-    (itemSelected)="onAlgorithmSelected($event)"
-  ></app-dropdown>
-  <app-dropdown
-    buttonText="Mazes"
-    [items]="mazesOptions"
-    [canOpen]="!isButtonsDisabled"
-    (itemSelected)="onMazeAlgorithmSelected($event)"
-  ></app-dropdown>
-  <button
-    tuiButton
-    [disabled]="isButtonsDisabled"
-    size="m"
-    type="button"
-    (click)="onAlgoClick()"
-  >
-    Run Algo
-  </button>
-  <button
-    tuiButton
-    [disabled]="isButtonsDisabled"
-    size="m"
-    type="button"
-    appearance="secondary"
-    (click)="onClearPath()"
-  >
-    Clear Path
-  </button>
-  <button
-    tuiButton
-    [disabled]="isButtonsDisabled"
-    size="m"
-    type="button"
-    appearance="secondary"
-    (click)="onClearWalls()"
-  >
-    Clear Walls
-  </button>
-  <app-dropdown
-    buttonText="Speed"
-    [items]="animationSpeedOptions"
-    [canOpen]="!isButtonsDisabled"
-    (itemSelected)="onAnimationSpeedSelected($event)"
-  ></app-dropdown>
+  <section class="header__nav">
+    <app-dropdown
+      buttonText="Algorithms"
+      [items]="algorithmsOptions"
+      [canOpen]="!isButtonsDisabled"
+      (itemSelected)="onAlgorithmSelected($event)"
+    ></app-dropdown>
+    <app-dropdown
+      buttonText="Mazes"
+      [items]="mazesOptions"
+      [canOpen]="!isButtonsDisabled"
+      (itemSelected)="onMazeAlgorithmSelected($event)"
+    ></app-dropdown>
+    <button
+      tuiButton
+      [disabled]="isButtonsDisabled"
+      size="m"
+      type="button"
+      (click)="onAlgoClick()"
+    >
+      Run Algo
+    </button>
+    <button
+      tuiButton
+      [disabled]="isButtonsDisabled"
+      size="m"
+      type="button"
+      appearance="secondary"
+      (click)="onClearPath()"
+    >
+      Clear Path
+    </button>
+    <button
+      tuiButton
+      [disabled]="isButtonsDisabled"
+      size="m"
+      type="button"
+      appearance="secondary"
+      (click)="onClearWalls()"
+    >
+      Clear Walls
+    </button>
+    <app-dropdown
+      buttonText="Speed"
+      [items]="animationSpeedOptions"
+      [canOpen]="!isButtonsDisabled"
+      (itemSelected)="onAnimationSpeedSelected($event)"
+    ></app-dropdown>
+
+  </section>
 </header>
