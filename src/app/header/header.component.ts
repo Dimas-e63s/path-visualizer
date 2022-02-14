@@ -30,6 +30,7 @@ export class HeaderComponent {
   @Output() onMazeAlgorithmWasClicked = new EventEmitter<MazeGenerationEnum>();
   @Output() onAnimSpeedWasClicked = new EventEmitter<string>();
 
+  active = false;
   readonly animationSpeedOptions = ['Fast', 'Average', 'Slow'];
   readonly algorithmsOptions = [
     PathAlgorithmEnum.DIJKSTRA,
@@ -46,25 +47,35 @@ export class HeaderComponent {
 
   onAlgoClick() {
     this.onAlgoRunButtonWasClicked.emit();
+    this.closeNavbar();
   }
 
   onClearPath() {
     this.onClearPathWasClicked.emit();
+    this.closeNavbar();
   }
 
   onClearWalls() {
     this.onClearWallsWasClicked.emit();
+    this.closeNavbar();
   }
 
   onAlgorithmSelected(algo: PathAlgorithmEnum) {
     this.onAlgorithmSelectedWasClicked.emit(algo);
+    this.closeNavbar()
   }
 
   onMazeAlgorithmSelected(mazeAlgo: MazeGenerationEnum) {
     this.onMazeAlgorithmWasClicked.emit(mazeAlgo);
+    this.closeNavbar()
   }
 
   onAnimationSpeedSelected(animationSpeed: string) {
     this.onAnimSpeedWasClicked.emit(animationSpeed);
+    this.closeNavbar();
+  }
+
+  closeNavbar(): void {
+    this.active = false;
   }
 }

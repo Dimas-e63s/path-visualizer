@@ -1,5 +1,10 @@
-<header class="header">
+<header class="header" [ngClass]="{'header--active': active}">
   <h1 class="header__title">Pathfinding Visualizer</h1>
+  <div class="header__toggle" [ngClass]="{'header__toggle--active': active}" (click)="active = !active">
+    <span class="header__toggle-line"></span>
+    <span class="header__toggle-line"></span>
+    <span class="header__toggle-line"></span>
+  </div>
   <section class="header__nav">
     <app-dropdown
       buttonText="Algorithms"
