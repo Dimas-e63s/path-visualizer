@@ -4,24 +4,14 @@
   display: flex;
   flex: 1;
   pointer-events: auto;
-
+  border-right: 1px solid #95aaf8;
+  border-bottom: 1px solid #95aaf8;
 }
 .node {
   width: 100%;
-  border-right: 1px solid $node-border-color;
-  border-bottom: 1px solid $node-border-color;
-
-  //border-right: 1px solid #95AAF8;
-  //border-left: 1px solid #95AAF8;
 
   &--visited {
-    background-color: $secondary-color;
     animation: visitAnimation 1.5s ease-out 0s 1 alternate forwards running;
-
-    border-right: 1px solid $node-border-color;
-    border-bottom: 1px solid $node-border-color;
-    //border-right: 1px solid #95AAF8;
-    //border-left: 1px solid #95AAF8;
   }
 
   &--wall,
@@ -37,15 +27,15 @@
   }
 
   &--start {
-    background-color: green;
+    background-image: url('../../assets/star.svg');
   }
 
   &--finish {
-    background-color: red;
+    background-image: url('../../assets/target.svg');
   }
 
   &--path {
-    background-color: yellow;
+    background-color: $gold-color;
   }
 }
 
@@ -64,7 +54,7 @@
   }
   100% {
     transform: scale(1.0);
-    background-color: $primary-color;
+    background-color: $secondary-color;
   }
 }
 
@@ -74,7 +64,7 @@
   }
 
   50% {
-    transform: scale(1.1);
+    transform: scale(1.05);
   }
 
   100% {
