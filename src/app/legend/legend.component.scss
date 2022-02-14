@@ -1,7 +1,7 @@
 @use '../_variables.scss' as *;
 
 .legend {
-  padding: 32px 0 20px;
+  padding: 110px 0 20px;
   display: grid;
   column-gap: 10px;
   grid-template-columns: repeat(2, auto);
@@ -14,7 +14,11 @@
     grid-template-columns: repeat(4, auto);
   }
 
-  @media (min-width: 1300px) {
+  @media (min-width: 1280px) {
+    padding: 32px 0 20px;
+  }
+
+  @media (min-width: 1310px) {
     grid-template-rows: 1fr;
     grid-template-columns: repeat(8, auto);
   }
