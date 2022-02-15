@@ -9,7 +9,7 @@
     (onAnimSpeedWasClicked)="onAnimSpeedSelected($event)"
   ></app-header>
   <main>
-    <app-legend></app-legend>
+    <app-legend [selectedAlgorithm]="this.selectedPathAlgo"></app-legend>
     <section
       (mousedown)="startEditing()"
       (mouseup)="breakEdit()"
