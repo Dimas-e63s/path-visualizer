@@ -37,7 +37,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private startNode = {colIdx: 2, rowIdx: 25};
   private finishNode = {colIdx: 25, rowIdx: 0};
   private destroy$ = new Subject<void>();
-  private selectedPathAlgo: PathAlgorithmEnum = PathAlgorithmEnum.BFS;
+  selectedPathAlgo: PathAlgorithmEnum | null = null;
   nodes!: Grid;
   buildWalls = false;
   prevNode = {col: null, row: null};
@@ -93,12 +93,16 @@ export class AppComponent implements OnInit, OnDestroy {
         return new UnweightedAlgorithms(algorithmData).bfs();
       case PathAlgorithmEnum.DFS:
         return new UnweightedAlgorithms(algorithmData).dfs();
+      default:
+        throw new Error(`Unknown algorithm type. Given ${this.selectedPathAlgo}`);
     }
   }
 
   runAlgo() {
-    this.disableButtons();
-    this.animatePathfindingAlgo();
+    if (this.selectedPathAlgo) {
+      this.disableButtons();
+      this.animatePathfindingAlgo();
+    }
   }
 
   animatePathfindingAlgo() {
@@ -106,7 +110,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     concat(
       this.getAnimationObservable(visitedNodesInOrder),
-      this.getAnimationObservable(shortestPath)
+      this.getAnimationObservable(shortestPath),
     )
       .pipe(
         finalize(() => this.activateButtons()),
