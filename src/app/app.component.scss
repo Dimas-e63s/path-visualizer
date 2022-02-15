@@ -1,22 +1,14 @@
 @use '_variables.scss' as *;
 
 main {
-  padding: 0 23px 19px;
+  padding: 0 23px 23px;
 }
 
 .row {
-  // GRID
-
-  //display: grid;
-  //justify-content: center;
-  //grid-template-columns: repeat(auto-fill, 30px);
-  //grid-template-rows: repeat(auto-fill, 30px);
-
   display: flex;
   flex-grow: 1;
   height: 30px;
   border-left: 1px solid $node-border-color;
-  //border-bottom: 1px solid #95AAF8;
   flex-direction: row;
   pointer-events: none;
 
