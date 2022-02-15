@@ -3,7 +3,7 @@ import {Grid} from './models/grid.types';
 
 export class GridBuilder {
   static calculateAmountOfRows(height: number) {
-    return Math.floor((height * .8) / 30);
+    return Math.floor((height * .7) / 30);
   }
 
   static calculateAmountOfColumns(width: number) {
