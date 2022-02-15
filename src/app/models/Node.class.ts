@@ -9,6 +9,7 @@ export interface NodeInterface {
   weight?: NodeWeights;
   previousNode?: Node | null;
   isShortestPath?: boolean;
+  isVisitedNode?: boolean;
 }
 
 export enum NodeWeights {

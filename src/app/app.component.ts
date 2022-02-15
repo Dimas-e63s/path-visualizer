@@ -256,7 +256,13 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   clearPath(): void {
-    this.clearBoard();
+    for (const row of this.nodes) {
+      for (const node of row) {
+        if (node.isVisitedNode() || node.getIsShortestPath()) {
+          this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({isShortestPath: false, previousNode: null, isVisitedNode: false, distance: Infinity});
+        }
+      }
+    }
   }
 
   onAlgorithmSelected(algo: PathAlgorithmEnum): void {
