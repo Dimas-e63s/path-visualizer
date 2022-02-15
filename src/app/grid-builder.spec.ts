@@ -14,7 +14,7 @@ describe('GridBuilder', () => {
 
   describe('calculateAmountOfRows', () => {
     it('should return amount of rows', () => {
-      expect(GridBuilder.calculateAmountOfRows(800)).toEqual(21);
+      expect(GridBuilder.calculateAmountOfRows(800)).toEqual(18);
     });
   });
 

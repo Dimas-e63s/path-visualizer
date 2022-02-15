@@ -177,15 +177,15 @@ export class AppComponent implements OnInit, OnDestroy {
   generateStartNode(gridSize: {row: number, col: number}): {rowIdx: number, colIdx: number} {
     return {
       colIdx: 0,
-      rowIdx: Math.floor(gridSize.row / 2)
-    }
+      rowIdx: Math.floor(gridSize.row / 2),
+    };
   }
 
   generateEndNode(gridSize: {row: number, col: number}): {rowIdx: number, colIdx: number} {
     return {
       colIdx: gridSize.col - 1,
-      rowIdx: Math.floor(gridSize.row / 2)
-    }
+      rowIdx: Math.floor(gridSize.row / 2),
+    };
   }
 
   clearBoard() {
@@ -258,8 +258,13 @@ export class AppComponent implements OnInit, OnDestroy {
   clearPath(): void {
     for (const row of this.nodes) {
       for (const node of row) {
-        if (node.isVisitedNode() || node.getIsShortestPath()) {
-          this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({isShortestPath: false, previousNode: null, isVisitedNode: false, distance: Infinity});
+        if (!node.isWall() || node.isVisitedNode() || node.isShortestPath) {
+          this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+            isShortestPath: false,
+            previousNode: null,
+            isVisitedNode: false,
+            distance: Infinity,
+          });
         }
       }
     }
@@ -291,7 +296,7 @@ export class AppComponent implements OnInit, OnDestroy {
     from(maze.values()).pipe(
       filter(node => node.isWall()),
       concatMap(node => of(node).pipe(delay(5))),
-      finalize(() => this.activateButtons())
+      finalize(() => this.activateButtons()),
     ).subscribe(node => {
       this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
     });
