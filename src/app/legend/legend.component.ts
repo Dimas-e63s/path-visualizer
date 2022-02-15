@@ -34,19 +34,23 @@ export class LegendComponent {
   icons = [
     {
       className: '--start',
-      description: 'Start Node'
+      description: 'Start Node',
+      disabled: false
     },
     {
       className: '--target',
-      description: 'Target Node'
+      description: 'Target Node',
+      disabled: false
     },
     {
       className: '--weight',
-      description: 'Weight Node'
+      description: 'Weight Node',
+      disabled: true
     },
     {
       className: '--bomb',
-      description: 'Bomb Node'
+      description: 'Bomb Node',
+      disabled: true
     }
   ];
 

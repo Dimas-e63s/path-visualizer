@@ -42,6 +42,11 @@
       color: #181F48;
     }
 
+    &--disabled {
+      filter: opacity(.2);
+    }
+
+
     &-icon,
     &-node {
       display: inline-block;
@@ -99,7 +104,7 @@
 
 tui-notification[data-tui-host-status=info] {
   display: inline-block;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .notification__text {
