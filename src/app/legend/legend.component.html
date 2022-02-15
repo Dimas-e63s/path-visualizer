@@ -1,40 +1,20 @@
+<script src="notification.ts"></script>
 <section class="legend">
-  <div class="legend__item">
-  <span class="material-icons legend__item-icon legend__item-icon--success">start</span>
-    <span class="legend__item-text">Start Node</span>
-  </div>
-  <div class="legend__item">
-  <span class="legend__item-icon legend__item-icon--target"></span>
-    <span class="legend__item-text">Target Node</span>
-  </div>
-  <div class="legend__item">
-  <span class="legend__item-icon legend__item-icon--bomb"></span>
-    <span class="legend__item-text">Bomb Node</span>
-  </div>
-  <div class="legend__item">
-  <span class="legend__item-icon legend__item-icon--weight"></span>
-    <span class="legend__item-text">Weight Node</span>
-  </div>
-  <div class="legend__item">
-    <span class="legend__item-node legend__item-node--path"></span>
-    <span class="legend__item-text">Shortest-path Node</span>
+  <div class="legend__item" *ngFor="let icon of icons">
+    <div class="legend__item-icon" [ngClass]="'legend__item-icon' + icon.className"></div>
+    <span class="legend__item-text">{{icon.description}}</span>
   </div>
 
-  <div class="legend__item">
-    <span class="legend__item-node legend__item-node--wall"></span>
-    <span class="legend__item-text">Wall Node</span>
+  <div class="legend__item" *ngFor="let item of legendItems">
+  <span
+    class="legend__item-node"
+    [ngClass]="'legend__item-node' + item.className"
+  ></span>
+    <span class="legend__item-text">{{item.description}}</span>
   </div>
 
-  <div class="legend__item">
-    <span class="legend__item-node legend__item-node--visited"></span>
-    <span class="legend__item-text">Visited Node</span>
-  </div>
-
-  <div class="legend__item">
-    <span class="legend__item-node legend__item-node--unvisited"></span>
-    <span class="legend__item-text">Unvisited Node</span>
-  </div>
 </section>
-<tui-notification [hasIcon]="false">
-  Pick an algorithm and run algo!
+<tui-notification class="notification" [hasIcon]="false">
+  <p class="notification__text" [innerHTML]="getNotificationDescription()"></p>
 </tui-notification>
+
