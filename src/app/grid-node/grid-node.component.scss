@@ -4,11 +4,11 @@
   display: flex;
   flex: 1;
   pointer-events: auto;
-  border-right: 1px solid #95aaf8;
-  border-bottom: 1px solid #95aaf8;
 }
 .node {
   width: 100%;
+  border-right: 1px solid #95aaf8;
+  border-bottom: 1px solid #95aaf8;
 
   &--visited {
     animation: visitAnimation 1.5s ease-out 0s 1 alternate forwards running;
@@ -27,10 +27,12 @@
   }
 
   &--start {
-    background-image: url('../../assets/star.svg');
+    height: 100%;
+    background-image: url('../../assets/start.svg');
   }
 
   &--finish {
+    height: 100%;
     background-image: url('../../assets/target.svg');
   }
 

@@ -45,8 +45,6 @@ export class GridNodeComponent implements OnChanges{
   classNames() {
     const BASE_CLASS = 'node';
     return {
-      [`${BASE_CLASS}--start`]: this.vm.getIsStartNode(),
-      [`${BASE_CLASS}--finish`]: this.vm.getIsFinishNode(),
       [`${BASE_CLASS}--visited`]: this.vm.isVisitedNode(),
       [`${BASE_CLASS}--wall`]: this.vm.isWall(),
       [`${BASE_CLASS}--path`]: this.vm.getIsShortestPath()
