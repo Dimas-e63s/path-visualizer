@@ -30,22 +30,6 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('isGridSizeFixed', () => {
-    it('should return true if size the same', () => {
-      expect(component.isGridSizeFixed(
-        {totalCol: 10, totalRow: 10},
-        {totalCol: 10, totalRow: 10},
-      )).toBeTrue();
-    });
-
-    it('should return false changed', () => {
-      expect(component.isGridSizeFixed(
-        {totalCol: 10, totalRow: 10},
-        {totalCol: 10, totalRow: 11},
-      )).toBeFalse();
-    });
-  });
-
   describe('isIdxOutOfGrid', () => {
     it('should return true if Node oldIdx grater than newIdx', () => {
       expect(component.isIdxOutOfGrid({oldIdx: 10, newIdx: 9})).toBeTrue();

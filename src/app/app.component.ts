@@ -52,9 +52,9 @@ export class AppComponent implements OnInit, OnDestroy {
     fromEvent(window, 'resize')
       .pipe(
         map(({target}) => target as Window),
-        map(target => ({
-          totalCol: GridBuilder.calculateAmountOfColumns(target.innerWidth),
-          totalRow: GridBuilder.calculateAmountOfRows(target.innerHeight),
+        map(({innerHeight, innerWidth}) => ({
+          totalCol: GridBuilder.calculateAmountOfColumns(innerWidth),
+          totalRow: GridBuilder.calculateAmountOfRows(innerHeight),
         })),
         distinctUntilChanged(this.isGridSizeFixed),
         takeUntil(this.destroy$),
