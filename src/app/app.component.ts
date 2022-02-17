@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {Node, NodeWeights} from './models/Node.class';
-import {Dijkstra} from './algorithms/dijkstra/dijkstra';
 import {Grid, GridMap, GridRow} from './models/grid.types';
 import {
   concat,
@@ -14,8 +13,6 @@ import {
   tap,
 } from 'rxjs';
 import {MazeGenerationEnum, PathAlgorithmEnum} from './header/header.component';
-import {AStar} from './algorithms/a-star/a-star';
-import {UnweightedAlgorithms} from './algorithms/unweighted/unweighted-algorithms';
 import {GridService} from './services/grid.service';
 import {GridResizeService} from './services/grid-resize.service';
 
@@ -48,27 +45,6 @@ export class AppComponent implements OnInit {
     return this.gridService.nodes;
   }
 
-  getShortestPath(): [Node[], Node[]] {
-    const algorithmData = {
-      grid: this.gridService.nodes,
-      startNode: this.getStartNode(),
-      endNode: this.getEndNode(),
-    };
-
-    switch (this.selectedPathAlgo) {
-      case PathAlgorithmEnum.DIJKSTRA:
-        return new Dijkstra(algorithmData).traverse();
-      case PathAlgorithmEnum.A_STAR:
-        return new AStar(algorithmData).traverse();
-      case PathAlgorithmEnum.BFS:
-        return new UnweightedAlgorithms(algorithmData).bfs();
-      case PathAlgorithmEnum.DFS:
-        return new UnweightedAlgorithms(algorithmData).dfs();
-      default:
-        throw new Error(`Unknown algorithm type. Given ${this.selectedPathAlgo}`);
-    }
-  }
-
   runAlgo() {
     if (this.selectedPathAlgo) {
       this.disableButtons();
@@ -77,7 +53,7 @@ export class AppComponent implements OnInit {
   }
 
   animatePathfindingAlgo() {
-    const [visitedNodesInOrder, shortestPath] = this.getShortestPath();
+    const [visitedNodesInOrder, shortestPath] = this.gridService.getShortestPath();
 
     concat(
       this.getAnimationObservable(visitedNodesInOrder),
@@ -256,14 +232,6 @@ export class AppComponent implements OnInit {
 
   activateButtons(): void {
     this.isButtonsDisabled = false;
-  }
-
-  private getStartNode(): Node {
-    return this.gridService.nodes[this.gridService.startNode.rowIdx][this.gridService.startNode.colIdx];
-  }
-
-  private getEndNode(): Node {
-    return this.gridService.nodes[this.gridService.finishNode.rowIdx][this.gridService.finishNode.colIdx];
   }
 
   private isSameNode(node: any): boolean {

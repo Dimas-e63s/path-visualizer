@@ -8,6 +8,9 @@ import {BacktrackingRecursive} from '../algorithms/maze-generation/backtracking/
 import {Kruskal} from '../algorithms/maze-generation/kruskal/kruskal';
 import {Prim} from '../algorithms/maze-generation/prim/prim';
 import {Node} from '../models/Node.class';
+import {Dijkstra} from '../algorithms/dijkstra/dijkstra';
+import {AStar} from '../algorithms/a-star/a-star';
+import {UnweightedAlgorithms} from '../algorithms/unweighted/unweighted-algorithms';
 
 @Injectable({
   providedIn: 'root'
@@ -97,5 +100,26 @@ export class GridService {
 
   private getEndNode(): Node {
     return this.nodes[this.finishNode.rowIdx][this.finishNode.colIdx];
+  }
+
+  getShortestPath(): [Node[], Node[]] {
+    const algorithmData = {
+      grid: this.nodes,
+      startNode: this.getStartNode(),
+      endNode: this.getEndNode(),
+    };
+
+    switch (this.selectedPathAlgo) {
+      case PathAlgorithmEnum.DIJKSTRA:
+        return new Dijkstra(algorithmData).traverse();
+      case PathAlgorithmEnum.A_STAR:
+        return new AStar(algorithmData).traverse();
+      case PathAlgorithmEnum.BFS:
+        return new UnweightedAlgorithms(algorithmData).bfs();
+      case PathAlgorithmEnum.DFS:
+        return new UnweightedAlgorithms(algorithmData).dfs();
+      default:
+        throw new Error(`Unknown algorithm type. Given ${this.selectedPathAlgo}`);
+    }
   }
 }
