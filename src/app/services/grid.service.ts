@@ -8,8 +8,8 @@ import {GridBuilder} from '../grid-builder';
   providedIn: 'root'
 })
 export class GridService {
-  private startNode = {colIdx: 2, rowIdx: 25};
-  private finishNode = {colIdx: 25, rowIdx: 0};
+   startNode = {colIdx: 2, rowIdx: 25};
+   finishNode = {colIdx: 25, rowIdx: 0};
   private destroy$ = new Subject<void>();
   selectedPathAlgo: PathAlgorithmEnum | null = null;
   nodes: Grid = [];

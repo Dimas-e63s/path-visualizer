@@ -35,11 +35,8 @@ import {GridService} from './services/grid.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  private startNode = {colIdx: 2, rowIdx: 25};
-  private finishNode = {colIdx: 25, rowIdx: 0};
   private destroy$ = new Subject<void>();
   selectedPathAlgo: PathAlgorithmEnum | null = null;
-  nodes!: Grid;
   buildWalls = false;
   prevNode = {col: null, row: null};
   prevHead = {col: null, row: null};
@@ -79,7 +76,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   getShortestPath(): [Node[], Node[]] {
     const algorithmData = {
-      grid: this.nodes,
+      grid: this.gridService.nodes,
       startNode: this.getStartNode(),
       endNode: this.getEndNode(),
     };
@@ -123,7 +120,7 @@ export class AppComponent implements OnInit, OnDestroy {
       .pipe(
         concatMap((node) => of(node).pipe(delay(15))),
         tap((node) => {
-          this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
+          this.gridService.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
         }),
       );
   }
@@ -133,7 +130,7 @@ export class AppComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const selectedNode = this.nodes[row][col];
+    const selectedNode = this.gridService.nodes[row][col];
     if (selectedNode.getIsStartNode()) {
       this.moveHead = true;
       // @ts-ignore
@@ -143,7 +140,7 @@ export class AppComponent implements OnInit, OnDestroy {
       // @ts-ignore
       this.prevEnd = {col, row};
     } else {
-      this.addWall(this.nodes[row][col]);
+      this.addWall(this.gridService.nodes[row][col]);
     }
   }
 
@@ -162,15 +159,15 @@ export class AppComponent implements OnInit, OnDestroy {
   onDraw($event: any) {
     if (this.moveHead && (this.prevHead.row !== $event.row || this.prevHead.col !== $event.col)) {
       //@ts-ignore
-      this.removeHeadNode(this.nodes[this.prevHead.row][this.prevHead.col]);
+      this.removeHeadNode(this.gridService.nodes[this.prevHead.row][this.prevHead.col]);
       this.addHeadNode($event);
     } else if (this.moveEnd && (this.prevEnd.row !== $event.row || this.prevEnd.col !== $event.col)) {
       //@ts-ignore
-      this.removeEndNode(this.nodes[this.prevEnd.row][this.prevEnd.col]);
+      this.removeEndNode(this.gridService.nodes[this.prevEnd.row][this.prevEnd.col]);
       this.addEndNode($event);
     } else if (this.isSameNode($event) && this.buildWalls) {
       this.prevNode = $event;
-      this.addWall(this.nodes[$event.row][$event.col]);
+      this.addWall(this.gridService.nodes[$event.row][$event.col]);
     }
   }
 
@@ -188,7 +185,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   clearWalls() {
     this.disableButtons();
-    for (const row of this.nodes) {
+    for (const row of this.gridService.nodes) {
       for (const column of row) {
         this.removeWall(column);
       }
@@ -197,14 +194,14 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   addHeadNode($event: any) {
-    this.startNode = {colIdx: $event.col, rowIdx: $event.row};
+    this.gridService.startNode = {colIdx: $event.col, rowIdx: $event.row};
     this.prevHead = $event;
     this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
   }
 
   removeHeadNode(node: Node): void {
     if (node.getIsStartNode()) {
-      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+      this.gridService.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
         isStartNode: false,
       });
     }
@@ -212,13 +209,13 @@ export class AppComponent implements OnInit, OnDestroy {
 
   addEndNode($event: any) {
     this.prevEnd = $event;
-    this.finishNode = {colIdx: $event.col, rowIdx: $event.row};
+    this.gridService.finishNode = {colIdx: $event.col, rowIdx: $event.row};
     this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
   }
 
   removeEndNode(node: Node): void {
     if (node.getIsFinishNode()) {
-      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+      this.gridService.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
         isFinishNode: false,
       });
     }
@@ -228,13 +225,13 @@ export class AppComponent implements OnInit, OnDestroy {
     if (!node.isWall()) {
       const nodeClone = node.clone();
       nodeClone.setAsWall();
-      this.nodes[node.getRowIdx()][node.getColumnIdx()] = nodeClone;
+      this.gridService.nodes[node.getRowIdx()][node.getColumnIdx()] = nodeClone;
     }
   }
 
   removeWall(node: Node): void {
     if (node.isWall()) {
-      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+      this.gridService.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
         weight: NodeWeights.EMPTY,
         previousNode: null,
       });
@@ -242,10 +239,10 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   clearPath(): void {
-    for (const row of this.nodes) {
+    for (const row of this.gridService.nodes) {
       for (const node of row) {
         if (!node.isWall() || node.isVisitedNode() || node.isShortestPath) {
-          this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+          this.gridService.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
             isShortestPath: false,
             previousNode: null,
             isVisitedNode: false,
@@ -267,13 +264,13 @@ export class AppComponent implements OnInit, OnDestroy {
   getMaze(mazeAlgo: MazeGenerationEnum): GridMap {
     switch (mazeAlgo) {
       case MazeGenerationEnum.BACKTRACKING_ITR:
-        return new BacktrackingIterative(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
+        return new BacktrackingIterative(this.gridService.nodes, this.getStartNode(), this.getEndNode()).getMaze();
       case MazeGenerationEnum.BACKTRACKING_REC:
-        return new BacktrackingRecursive(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
+        return new BacktrackingRecursive(this.gridService.nodes, this.getStartNode(), this.getEndNode()).getMaze();
       case MazeGenerationEnum.KRUSKAL:
-        return new Kruskal(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
+        return new Kruskal(this.gridService.nodes, this.getStartNode(), this.getEndNode()).getMaze();
       case MazeGenerationEnum.PRIM:
-        return new Prim(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
+        return new Prim(this.gridService.nodes, this.getStartNode(), this.getEndNode()).getMaze();
     }
   }
 
@@ -284,7 +281,7 @@ export class AppComponent implements OnInit, OnDestroy {
       concatMap(node => of(node).pipe(delay(5))),
       finalize(() => this.activateButtons()),
     ).subscribe(node => {
-      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
+      this.gridService.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
     });
   }
 
@@ -293,7 +290,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   setDestinationNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
-    this.nodes[rowIdx][colIdx] = GridBuilder.generateGridNode({
+    this.gridService.nodes[rowIdx][colIdx] = GridBuilder.generateGridNode({
       rowIdx: rowIdx,
       colIdx: colIdx,
       isStartNode: this.isStartNode({rowIdx, colIdx}),
@@ -302,11 +299,11 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   isStartNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
-    return rowIdx === this.startNode.rowIdx && this.startNode.colIdx === colIdx;
+    return rowIdx === this.gridService.startNode.rowIdx && this.gridService.startNode.colIdx === colIdx;
   }
 
   isEndNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
-    return rowIdx === this.finishNode.rowIdx && this.finishNode.colIdx === colIdx;
+    return rowIdx === this.gridService.finishNode.rowIdx && this.gridService.finishNode.colIdx === colIdx;
   }
 
   disableButtons(): void {
@@ -336,30 +333,30 @@ export class AppComponent implements OnInit, OnDestroy {
 
   updateDestinationNodesAfterResize({newRowIdx, newColIdx}: {newRowIdx: number, newColIdx: number}) {
     const newStartNode = GridBuilder.generateGridNode({
-      rowIdx: this.getNodeIdxAfterResize({oldIdx: this.startNode.rowIdx, newIdx: newRowIdx}),
-      colIdx: this.getNodeIdxAfterResize({oldIdx: this.startNode.colIdx, newIdx: newColIdx}),
+      rowIdx: this.getNodeIdxAfterResize({oldIdx: this.gridService.startNode.rowIdx, newIdx: newRowIdx}),
+      colIdx: this.getNodeIdxAfterResize({oldIdx: this.gridService.startNode.colIdx, newIdx: newColIdx}),
       isStartNode: true,
     });
 
     const newEndNode = GridBuilder.generateGridNode({
-      rowIdx: this.getNodeIdxAfterResize({oldIdx: this.finishNode.rowIdx, newIdx: newRowIdx}),
-      colIdx: this.getNodeIdxAfterResize({oldIdx: this.finishNode.colIdx, newIdx: newColIdx}),
+      rowIdx: this.getNodeIdxAfterResize({oldIdx: this.gridService.finishNode.rowIdx, newIdx: newRowIdx}),
+      colIdx: this.getNodeIdxAfterResize({oldIdx: this.gridService.finishNode.colIdx, newIdx: newColIdx}),
       isFinishNode: true,
     });
 
-    this.finishNode = Utils.getNodeCoordinates(newEndNode);
-    this.startNode = Utils.getNodeCoordinates(newStartNode);
+    this.gridService.finishNode = Utils.getNodeCoordinates(newEndNode);
+    this.gridService.startNode = Utils.getNodeCoordinates(newStartNode);
 
-    this.setDestinationNode(this.finishNode);
-    this.setDestinationNode(this.startNode);
+    this.setDestinationNode(this.gridService.finishNode);
+    this.setDestinationNode(this.gridService.startNode);
   }
 
   decreaseGridHeight(newRowCount: number): void {
-    this.nodes.length = newRowCount;
+    this.gridService.nodes.length = newRowCount;
   }
 
   decreaseGridLength(newColCount: number): void {
-    this.nodes.forEach(row => {
+    this.gridService.nodes.forEach(row => {
       row.length = newColCount;
     });
   }
@@ -382,7 +379,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   increaseGridLength({totalCol, currentAmountOfCols}: {totalCol: number, currentAmountOfCols: number}) {
     for (let i = 0; i < totalCol - currentAmountOfCols; i++) {
-      this.nodes.forEach((row, idx) => {
+      this.gridService.nodes.forEach((row, idx) => {
         row.push(
           GridBuilder.generateGridNode({
             rowIdx: idx,
@@ -397,12 +394,12 @@ export class AppComponent implements OnInit, OnDestroy {
     const {
       totalCol: currentAmountOfCols,
       totalRow: currentAmountOfRows,
-    } = Utils.getGridSize(this.nodes);
+    } = Utils.getGridSize(this.gridService.nodes);
 
     if (currentAmountOfRows > totalRow) {
       this.decreaseGridHeight(totalRow);
     } else if (currentAmountOfRows < totalRow) {
-      this.nodes.push(
+      this.gridService.nodes.push(
         ...this.increaseGridHeight({totalRow, currentAmountOfCols, currentAmountOfRows}),
       );
     }
@@ -415,11 +412,11 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private getStartNode(): Node {
-    return this.nodes[this.startNode.rowIdx][this.startNode.colIdx];
+    return this.gridService.nodes[this.gridService.startNode.rowIdx][this.gridService.startNode.colIdx];
   }
 
   private getEndNode(): Node {
-    return this.nodes[this.finishNode.rowIdx][this.finishNode.colIdx];
+    return this.gridService.nodes[this.gridService.finishNode.rowIdx][this.gridService.finishNode.colIdx];
   }
 
   private isSameNode(node: any): boolean {
