@@ -1,8 +1,13 @@
 import { Injectable } from '@angular/core';
 import {Subject} from 'rxjs';
-import {PathAlgorithmEnum} from '../header/header.component';
-import {Grid} from '../models/grid.types';
+import {MazeGenerationEnum, PathAlgorithmEnum} from '../header/header.component';
+import {Grid, GridMap} from '../models/grid.types';
 import {GridBuilder} from '../grid-builder';
+import {BacktrackingIterative} from '../algorithms/maze-generation/backtracking/backtracking-iterative.class';
+import {BacktrackingRecursive} from '../algorithms/maze-generation/backtracking/backtracking-recursive.class';
+import {Kruskal} from '../algorithms/maze-generation/kruskal/kruskal';
+import {Prim} from '../algorithms/maze-generation/prim/prim';
+import {Node} from '../models/Node.class';
 
 @Injectable({
   providedIn: 'root'
@@ -71,5 +76,26 @@ export class GridService {
 
   isEndNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
     return rowIdx === this.finishNode.rowIdx && this.finishNode.colIdx === colIdx;
+  }
+
+  getMaze(mazeAlgo: MazeGenerationEnum): GridMap {
+    switch (mazeAlgo) {
+      case MazeGenerationEnum.BACKTRACKING_ITR:
+        return new BacktrackingIterative(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
+      case MazeGenerationEnum.BACKTRACKING_REC:
+        return new BacktrackingRecursive(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
+      case MazeGenerationEnum.KRUSKAL:
+        return new Kruskal(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
+      case MazeGenerationEnum.PRIM:
+        return new Prim(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
+    }
+  }
+
+  private getStartNode(): Node {
+    return this.nodes[this.startNode.rowIdx][this.startNode.colIdx];
+  }
+
+  private getEndNode(): Node {
+    return this.nodes[this.finishNode.rowIdx][this.finishNode.colIdx];
   }
 }

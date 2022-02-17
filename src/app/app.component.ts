@@ -14,12 +14,8 @@ import {
   tap,
 } from 'rxjs';
 import {MazeGenerationEnum, PathAlgorithmEnum} from './header/header.component';
-import {Kruskal} from './algorithms/maze-generation/kruskal/kruskal';
-import {Prim} from './algorithms/maze-generation/prim/prim';
 import {AStar} from './algorithms/a-star/a-star';
 import {UnweightedAlgorithms} from './algorithms/unweighted/unweighted-algorithms';
-import {BacktrackingIterative} from './algorithms/maze-generation/backtracking/backtracking-iterative.class';
-import {BacktrackingRecursive} from './algorithms/maze-generation/backtracking/backtracking-recursive.class';
 import {GridService} from './services/grid.service';
 import {GridResizeService} from './services/grid-resize.service';
 
@@ -236,20 +232,7 @@ export class AppComponent implements OnInit {
   }
 
   onMazeAlgoSelected(mazeAlgo: MazeGenerationEnum): void {
-    this.animateMazeBuilding(this.getMaze(mazeAlgo));
-  }
-
-  getMaze(mazeAlgo: MazeGenerationEnum): GridMap {
-    switch (mazeAlgo) {
-      case MazeGenerationEnum.BACKTRACKING_ITR:
-        return new BacktrackingIterative(this.gridService.nodes, this.getStartNode(), this.getEndNode()).getMaze();
-      case MazeGenerationEnum.BACKTRACKING_REC:
-        return new BacktrackingRecursive(this.gridService.nodes, this.getStartNode(), this.getEndNode()).getMaze();
-      case MazeGenerationEnum.KRUSKAL:
-        return new Kruskal(this.gridService.nodes, this.getStartNode(), this.getEndNode()).getMaze();
-      case MazeGenerationEnum.PRIM:
-        return new Prim(this.gridService.nodes, this.getStartNode(), this.getEndNode()).getMaze();
-    }
+    this.animateMazeBuilding(this.gridService.getMaze(mazeAlgo));
   }
 
   animateMazeBuilding(maze: GridMap): void {
