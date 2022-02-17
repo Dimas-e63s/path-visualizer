@@ -1,21 +1,16 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Node, NodeWeights} from './models/Node.class';
 import {Dijkstra} from './algorithms/dijkstra/dijkstra';
-import {Grid, GridMap, GridRow, GridSize} from './models/grid.types';
+import {Grid, GridMap, GridRow} from './models/grid.types';
 import {
   concat,
   concatMap,
   delay,
-  distinctUntilChanged,
   filter,
   finalize,
   from,
-  fromEvent,
-  map,
   Observable,
   of,
-  Subject,
-  takeUntil,
   tap,
 } from 'rxjs';
 import {MazeGenerationEnum, PathAlgorithmEnum} from './header/header.component';
@@ -23,19 +18,17 @@ import {Kruskal} from './algorithms/maze-generation/kruskal/kruskal';
 import {Prim} from './algorithms/maze-generation/prim/prim';
 import {AStar} from './algorithms/a-star/a-star';
 import {UnweightedAlgorithms} from './algorithms/unweighted/unweighted-algorithms';
-import {Utils} from './algorithms/utils/utils.class';
-import {GridBuilder} from './grid-builder';
 import {BacktrackingIterative} from './algorithms/maze-generation/backtracking/backtracking-iterative.class';
 import {BacktrackingRecursive} from './algorithms/maze-generation/backtracking/backtracking-recursive.class';
 import {GridService} from './services/grid.service';
+import {GridResizeService} from './services/grid-resize.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>();
+export class AppComponent implements OnInit {
   selectedPathAlgo: PathAlgorithmEnum | null = null;
   buildWalls = false;
   prevNode = {col: null, row: null};
@@ -45,29 +38,14 @@ export class AppComponent implements OnInit, OnDestroy {
   moveEnd = false;
   isButtonsDisabled = false;
 
-  constructor(private gridService: GridService) {
-  }
+  constructor(
+    private gridService: GridService,
+    private gridResizeService: GridResizeService
+  ) {}
 
   ngOnInit(): void {
     this.gridService.initGrid();
-    fromEvent(window, 'resize')
-      .pipe(
-        map(({target}) => target as Window),
-        map(({innerHeight, innerWidth}) => ({
-          totalCol: GridBuilder.calculateAmountOfColumns(innerWidth),
-          totalRow: GridBuilder.calculateAmountOfRows(innerHeight),
-        })),
-        distinctUntilChanged(this.isGridSizeFixed),
-        takeUntil(this.destroy$),
-      )
-      .subscribe(({totalCol, totalRow}) => {
-        this.updateGridAfterResize({totalCol, totalRow});
-      });
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.gridResizeService.getResizeObservable().subscribe();
   }
 
   getNodes(): Grid {
@@ -196,7 +174,7 @@ export class AppComponent implements OnInit, OnDestroy {
   addHeadNode($event: any) {
     this.gridService.startNode = {colIdx: $event.col, rowIdx: $event.row};
     this.prevHead = $event;
-    this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
+    this.gridService.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
   }
 
   removeHeadNode(node: Node): void {
@@ -210,7 +188,7 @@ export class AppComponent implements OnInit, OnDestroy {
   addEndNode($event: any) {
     this.prevEnd = $event;
     this.gridService.finishNode = {colIdx: $event.col, rowIdx: $event.row};
-    this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
+    this.gridService.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
   }
 
   removeEndNode(node: Node): void {
@@ -289,126 +267,12 @@ export class AppComponent implements OnInit, OnDestroy {
     console.log(animSpeed);
   }
 
-  setDestinationNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
-    this.gridService.nodes[rowIdx][colIdx] = GridBuilder.generateGridNode({
-      rowIdx: rowIdx,
-      colIdx: colIdx,
-      isStartNode: this.isStartNode({rowIdx, colIdx}),
-      isFinishNode: this.isEndNode({rowIdx, colIdx}),
-    });
-  }
-
-  isStartNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
-    return rowIdx === this.gridService.startNode.rowIdx && this.gridService.startNode.colIdx === colIdx;
-  }
-
-  isEndNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
-    return rowIdx === this.gridService.finishNode.rowIdx && this.gridService.finishNode.colIdx === colIdx;
-  }
-
   disableButtons(): void {
     this.isButtonsDisabled = true;
   }
 
   activateButtons(): void {
     this.isButtonsDisabled = false;
-  }
-
-  isGridSizeFixed(a: GridSize, b: GridSize): boolean {
-    return a.totalCol === b.totalCol && a.totalRow === b.totalRow;
-  }
-
-  isIdxOutOfGrid({oldIdx, newIdx}: {oldIdx: number, newIdx: number}): boolean {
-    return oldIdx > newIdx;
-  }
-
-  getNodeIdxAfterResize({oldIdx, newIdx}: {oldIdx: number, newIdx: number}): number {
-    return this.isIdxOutOfGrid({oldIdx, newIdx}) ? newIdx : oldIdx;
-  }
-
-  updateGridAfterResize({totalCol, totalRow}: GridSize) {
-    this.updateGridSize({totalCol, totalRow});
-    this.updateDestinationNodesAfterResize({newRowIdx: totalRow - 1, newColIdx: totalCol - 1});
-  }
-
-  updateDestinationNodesAfterResize({newRowIdx, newColIdx}: {newRowIdx: number, newColIdx: number}) {
-    const newStartNode = GridBuilder.generateGridNode({
-      rowIdx: this.getNodeIdxAfterResize({oldIdx: this.gridService.startNode.rowIdx, newIdx: newRowIdx}),
-      colIdx: this.getNodeIdxAfterResize({oldIdx: this.gridService.startNode.colIdx, newIdx: newColIdx}),
-      isStartNode: true,
-    });
-
-    const newEndNode = GridBuilder.generateGridNode({
-      rowIdx: this.getNodeIdxAfterResize({oldIdx: this.gridService.finishNode.rowIdx, newIdx: newRowIdx}),
-      colIdx: this.getNodeIdxAfterResize({oldIdx: this.gridService.finishNode.colIdx, newIdx: newColIdx}),
-      isFinishNode: true,
-    });
-
-    this.gridService.finishNode = Utils.getNodeCoordinates(newEndNode);
-    this.gridService.startNode = Utils.getNodeCoordinates(newStartNode);
-
-    this.setDestinationNode(this.gridService.finishNode);
-    this.setDestinationNode(this.gridService.startNode);
-  }
-
-  decreaseGridHeight(newRowCount: number): void {
-    this.gridService.nodes.length = newRowCount;
-  }
-
-  decreaseGridLength(newColCount: number): void {
-    this.gridService.nodes.forEach(row => {
-      row.length = newColCount;
-    });
-  }
-
-  increaseGridHeight({
-                       totalRow,
-                       currentAmountOfRows,
-                       currentAmountOfCols,
-                     }: {totalRow: number, currentAmountOfRows: number, currentAmountOfCols: number}) {
-    const newGrid = GridBuilder.generateEmptyGrid({row: totalRow - currentAmountOfRows, col: currentAmountOfCols});
-
-    for (let rowIdx = 0; rowIdx < newGrid.length; rowIdx++) {
-      for (let colIdx = 0; colIdx < newGrid[0].length; colIdx++) {
-        newGrid[rowIdx][colIdx] = GridBuilder.generateGridNode({rowIdx: currentAmountOfRows + rowIdx, colIdx});
-      }
-    }
-
-    return newGrid;
-  }
-
-  increaseGridLength({totalCol, currentAmountOfCols}: {totalCol: number, currentAmountOfCols: number}) {
-    for (let i = 0; i < totalCol - currentAmountOfCols; i++) {
-      this.gridService.nodes.forEach((row, idx) => {
-        row.push(
-          GridBuilder.generateGridNode({
-            rowIdx: idx,
-            colIdx: currentAmountOfCols + i,
-          }),
-        );
-      });
-    }
-  }
-
-  updateGridSize({totalCol, totalRow}: GridSize) {
-    const {
-      totalCol: currentAmountOfCols,
-      totalRow: currentAmountOfRows,
-    } = Utils.getGridSize(this.gridService.nodes);
-
-    if (currentAmountOfRows > totalRow) {
-      this.decreaseGridHeight(totalRow);
-    } else if (currentAmountOfRows < totalRow) {
-      this.gridService.nodes.push(
-        ...this.increaseGridHeight({totalRow, currentAmountOfCols, currentAmountOfRows}),
-      );
-    }
-
-    if (currentAmountOfCols < totalCol) {
-      this.increaseGridLength({totalCol, currentAmountOfCols});
-    } else if (currentAmountOfCols > totalCol) {
-      this.decreaseGridLength(totalCol);
-    }
   }
 
   private getStartNode(): Node {
