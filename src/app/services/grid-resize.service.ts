@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {GridSize} from './models/grid.types';
+import {GridSize} from '../models/grid.types';
 
 @Injectable({
   providedIn: 'root'
