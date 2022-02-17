@@ -27,6 +27,7 @@ import {Utils} from './algorithms/utils/utils.class';
 import {GridBuilder} from './grid-builder';
 import {BacktrackingIterative} from './algorithms/maze-generation/backtracking/backtracking-iterative.class';
 import {BacktrackingRecursive} from './algorithms/maze-generation/backtracking/backtracking-recursive.class';
+import {GridService} from './services/grid.service';
 
 @Component({
   selector: 'app-root',
@@ -47,8 +48,11 @@ export class AppComponent implements OnInit, OnDestroy {
   moveEnd = false;
   isButtonsDisabled = false;
 
+  constructor(private gridService: GridService) {
+  }
+
   ngOnInit(): void {
-    this.initGrid();
+    this.gridService.initGrid();
     fromEvent(window, 'resize')
       .pipe(
         map(({target}) => target as Window),
@@ -69,12 +73,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  initGrid() {
-    this.nodes = GridBuilder.generateGrid(this.getGridSize());
-    this.startNode = this.generateStartNode(this.getGridSize());
-    this.finishNode = this.generateEndNode(this.getGridSize());
-    this.setDestinationNode(this.startNode);
-    this.setDestinationNode(this.finishNode);
+  getNodes(): Grid {
+    return this.gridService.nodes;
   }
 
   getShortestPath(): [Node[], Node[]] {
@@ -174,22 +174,8 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  generateStartNode(gridSize: {row: number, col: number}): {rowIdx: number, colIdx: number} {
-    return {
-      colIdx: 0,
-      rowIdx: Math.floor(gridSize.row / 2),
-    };
-  }
-
-  generateEndNode(gridSize: {row: number, col: number}): {rowIdx: number, colIdx: number} {
-    return {
-      colIdx: gridSize.col - 1,
-      rowIdx: Math.floor(gridSize.row / 2),
-    };
-  }
-
   clearBoard() {
-    this.initGrid();
+    this.gridService.initGrid();
   }
 
   trackByRow(index: number, row: GridRow) {
@@ -304,13 +290,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   onAnimSpeedSelected(animSpeed: string) {
     console.log(animSpeed);
-  }
-
-  private getGridSize(): {row: number, col: number} {
-    return {
-      row: GridBuilder.calculateAmountOfRows(window.innerHeight),
-      col: GridBuilder.calculateAmountOfColumns(window.innerWidth),
-    };
   }
 
   setDestinationNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {

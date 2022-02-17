@@ -18,10 +18,10 @@
     >
       <div
         class="row"
-        *ngFor="let row of nodes; let rowIdx = index; trackBy: trackByRow"
+        *ngFor="let row of getNodes(); trackBy: trackByRow"
       >
         <app-grid-node
-          *ngFor="let column of nodes[rowIdx]; trackBy: trackByNode"
+          *ngFor="let column of row; trackBy: trackByNode"
           [vm]="column"
           (addedWall)="onAddedWall($event)"
           (mouseEnter)="onDraw($event)"
