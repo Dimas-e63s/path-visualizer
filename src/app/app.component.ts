@@ -8,9 +8,7 @@ import {
   filter,
   finalize,
   from,
-  Observable,
   of,
-  tap,
 } from 'rxjs';
 import {MazeGenerationEnum, PathAlgorithmEnum} from './header/header.component';
 import {GridService} from './services/grid.service';
@@ -30,6 +28,17 @@ export class AppComponent implements OnInit {
   moveHead = false;
   moveEnd = false;
   isButtonsDisabled = false;
+
+  // runAlgo
+  // clearPath
+  // clearWalls
+  // onAlgoSelected
+  // onMazeAlgoSelected
+  // onAnimSpeedSelected
+  // startEditing
+  // breakEdit
+  // onAddedWall
+  // onDraw
 
   constructor(
     private gridService: GridService,
@@ -53,26 +62,16 @@ export class AppComponent implements OnInit {
   }
 
   animatePathfindingAlgo() {
-    const [visitedNodesInOrder, shortestPath] = this.gridService.getShortestPath();
+    const [visitedNodesInOrder, shortestPath] = this.gridService.getShortestPath(this.selectedPathAlgo);
 
     concat(
-      this.getAnimationObservable(visitedNodesInOrder),
-      this.getAnimationObservable(shortestPath),
+      this.gridService.getAnimationObservable(visitedNodesInOrder),
+      this.gridService.getAnimationObservable(shortestPath),
     )
       .pipe(
         finalize(() => this.activateButtons()),
       )
       .subscribe();
-  }
-
-  getAnimationObservable(nodeArray: Node[]): Observable<Node> {
-    return from(nodeArray)
-      .pipe(
-        concatMap((node) => of(node).pipe(delay(15))),
-        tap((node) => {
-          this.gridService.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
-        }),
-      );
   }
 
   onAddedWall({col, row}: {col: number, row: number}) {
@@ -109,12 +108,12 @@ export class AppComponent implements OnInit {
   onDraw($event: any) {
     if (this.moveHead && (this.prevHead.row !== $event.row || this.prevHead.col !== $event.col)) {
       //@ts-ignore
-      this.removeHeadNode(this.gridService.nodes[this.prevHead.row][this.prevHead.col]);
-      this.addHeadNode($event);
+      this.gridService.removeHeadNode(this.gridService.nodes[this.prevHead.row][this.prevHead.col]);
+      this.gridService.addHeadNode($event);
     } else if (this.moveEnd && (this.prevEnd.row !== $event.row || this.prevEnd.col !== $event.col)) {
       //@ts-ignore
-      this.removeEndNode(this.gridService.nodes[this.prevEnd.row][this.prevEnd.col]);
-      this.addEndNode($event);
+      this.gridService.removeEndNode(this.gridService.nodes[this.prevEnd.row][this.prevEnd.col]);
+      this.gridService.addEndNode($event);
     } else if (this.isSameNode($event) && this.buildWalls) {
       this.prevNode = $event;
       this.addWall(this.gridService.nodes[$event.row][$event.col]);
@@ -141,34 +140,6 @@ export class AppComponent implements OnInit {
       }
     }
     this.activateButtons();
-  }
-
-  addHeadNode($event: any) {
-    this.gridService.startNode = {colIdx: $event.col, rowIdx: $event.row};
-    this.prevHead = $event;
-    this.gridService.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
-  }
-
-  removeHeadNode(node: Node): void {
-    if (node.getIsStartNode()) {
-      this.gridService.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
-        isStartNode: false,
-      });
-    }
-  }
-
-  addEndNode($event: any) {
-    this.prevEnd = $event;
-    this.gridService.finishNode = {colIdx: $event.col, rowIdx: $event.row};
-    this.gridService.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
-  }
-
-  removeEndNode(node: Node): void {
-    if (node.getIsFinishNode()) {
-      this.gridService.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
-        isFinishNode: false,
-      });
-    }
   }
 
   addWall(node: Node): void {

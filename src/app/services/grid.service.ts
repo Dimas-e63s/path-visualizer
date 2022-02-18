@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {Subject} from 'rxjs';
+import {concatMap, delay, from, Observable, of, Subject, tap} from 'rxjs';
 import {MazeGenerationEnum, PathAlgorithmEnum} from '../header/header.component';
 import {Grid, GridMap} from '../models/grid.types';
 import {GridBuilder} from '../grid-builder';
@@ -102,14 +102,14 @@ export class GridService {
     return this.nodes[this.finishNode.rowIdx][this.finishNode.colIdx];
   }
 
-  getShortestPath(): [Node[], Node[]] {
+  getShortestPath(selectedPathAlgo: PathAlgorithmEnum | null): [Node[], Node[]] {
     const algorithmData = {
       grid: this.nodes,
       startNode: this.getStartNode(),
       endNode: this.getEndNode(),
     };
 
-    switch (this.selectedPathAlgo) {
+    switch (selectedPathAlgo) {
       case PathAlgorithmEnum.DIJKSTRA:
         return new Dijkstra(algorithmData).traverse();
       case PathAlgorithmEnum.A_STAR:
@@ -120,6 +120,44 @@ export class GridService {
         return new UnweightedAlgorithms(algorithmData).dfs();
       default:
         throw new Error(`Unknown algorithm type. Given ${this.selectedPathAlgo}`);
+    }
+  }
+
+  getAnimationObservable(nodeArray: Node[]): Observable<Node> {
+    return from(nodeArray)
+      .pipe(
+        concatMap((node) => of(node).pipe(delay(15))),
+        tap((node) => {
+          this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
+        }),
+      );
+  }
+
+  addEndNode($event: any) {
+    this.prevEnd = $event;
+    this.finishNode = {colIdx: $event.col, rowIdx: $event.row};
+    this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
+  }
+
+  removeEndNode(node: Node): void {
+    if (node.getIsFinishNode()) {
+      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+        isFinishNode: false,
+      });
+    }
+  }
+
+  addHeadNode($event: any) {
+    this.startNode = {colIdx: $event.col, rowIdx: $event.row};
+    this.prevHead = $event;
+    this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
+  }
+
+  removeHeadNode(node: Node): void {
+    if (node.getIsStartNode()) {
+      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+        isStartNode: false,
+      });
     }
   }
 }
