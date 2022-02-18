@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {concatMap, delay, from, Observable, of, Subject, tap} from 'rxjs';
+import {concat, concatMap, delay, finalize, from, Observable, of, Subject, tap} from 'rxjs';
 import {MazeGenerationEnum, PathAlgorithmEnum} from '../header/header.component';
 import {Grid, GridMap} from '../models/grid.types';
 import {GridBuilder} from '../grid-builder';
@@ -159,5 +159,14 @@ export class GridService {
         isStartNode: false,
       });
     }
+  }
+
+  animatePathfindingAlgo(selectedPathAlgo: PathAlgorithmEnum | null): Observable<any> {
+    const [visitedNodesInOrder, shortestPath] = this.getShortestPath(selectedPathAlgo);
+
+    return concat(
+      this.getAnimationObservable(visitedNodesInOrder),
+      this.getAnimationObservable(shortestPath),
+    )
   }
 }

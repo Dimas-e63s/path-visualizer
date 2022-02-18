@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {Node, NodeWeights} from './models/Node.class';
 import {Grid, GridMap, GridRow} from './models/grid.types';
 import {
-  concat,
   concatMap,
   delay,
   filter,
@@ -42,8 +41,9 @@ export class AppComponent implements OnInit {
 
   constructor(
     private gridService: GridService,
-    private gridResizeService: GridResizeService
-  ) {}
+    private gridResizeService: GridResizeService,
+  ) {
+  }
 
   ngOnInit(): void {
     this.gridService.initGrid();
@@ -57,21 +57,12 @@ export class AppComponent implements OnInit {
   runAlgo() {
     if (this.selectedPathAlgo) {
       this.disableButtons();
-      this.animatePathfindingAlgo();
+      this.gridService.animatePathfindingAlgo(this.selectedPathAlgo).pipe(
+        finalize(() => {
+          this.activateButtons();
+        }),
+      ).subscribe();
     }
-  }
-
-  animatePathfindingAlgo() {
-    const [visitedNodesInOrder, shortestPath] = this.gridService.getShortestPath(this.selectedPathAlgo);
-
-    concat(
-      this.gridService.getAnimationObservable(visitedNodesInOrder),
-      this.gridService.getAnimationObservable(shortestPath),
-    )
-      .pipe(
-        finalize(() => this.activateButtons()),
-      )
-      .subscribe();
   }
 
   onAddedWall({col, row}: {col: number, row: number}) {
