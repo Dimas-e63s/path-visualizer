@@ -5,6 +5,9 @@ import {GridBuilder} from '../grid-builder';
 import {Utils} from '../algorithms/utils/utils.class';
 import {GridService} from './grid.service';
 
+// TODO:
+// - refactor to use Resize Observer API
+
 @Injectable({
   providedIn: 'root'
 })
@@ -16,10 +19,6 @@ export class GridResizeService {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  isGridSizeFixed(a: GridSize, b: GridSize): boolean {
-    return a.totalCol === b.totalCol && a.totalRow === b.totalRow;
   }
 
   getResizeObservable(): Observable<GridSize> {
@@ -38,12 +37,16 @@ export class GridResizeService {
       )
   }
 
-  updateGridAfterResize({totalCol, totalRow}: GridSize) {
+  private isGridSizeFixed(a: GridSize, b: GridSize): boolean {
+    return a.totalCol === b.totalCol && a.totalRow === b.totalRow;
+  }
+
+  private updateGridAfterResize({totalCol, totalRow}: GridSize) {
     this.updateGridSize({totalCol, totalRow});
     this.updateDestinationNodesAfterResize({newRowIdx: totalRow - 1, newColIdx: totalCol - 1});
   }
 
-  updateGridSize({totalCol, totalRow}: GridSize) {
+  private updateGridSize({totalCol, totalRow}: GridSize) {
     const {
       totalCol: currentAmountOfCols,
       totalRow: currentAmountOfRows,
@@ -64,17 +67,17 @@ export class GridResizeService {
     }
   }
 
-  decreaseGridHeight(newRowCount: number): void {
+  private decreaseGridHeight(newRowCount: number): void {
     this.gridService.nodes.length = newRowCount;
   }
 
-  decreaseGridLength(newColCount: number): void {
+  private decreaseGridLength(newColCount: number): void {
     this.gridService.nodes.forEach(row => {
       row.length = newColCount;
     });
   }
 
-  increaseGridHeight({
+  private increaseGridHeight({
                        totalRow,
                        currentAmountOfRows,
                        currentAmountOfCols,
@@ -90,7 +93,7 @@ export class GridResizeService {
     return newGrid;
   }
 
-  increaseGridLength({totalCol, currentAmountOfCols}: {totalCol: number, currentAmountOfCols: number}) {
+  private increaseGridLength({totalCol, currentAmountOfCols}: {totalCol: number, currentAmountOfCols: number}) {
     for (let i = 0; i < totalCol - currentAmountOfCols; i++) {
       this.gridService.nodes.forEach((row, idx) => {
         row.push(
@@ -103,7 +106,7 @@ export class GridResizeService {
     }
   }
 
-  updateDestinationNodesAfterResize({newRowIdx, newColIdx}: {newRowIdx: number, newColIdx: number}) {
+  private updateDestinationNodesAfterResize({newRowIdx, newColIdx}: {newRowIdx: number, newColIdx: number}) {
     const newStartNode = GridBuilder.generateGridNode({
       rowIdx: this.getNodeIdxAfterResize({oldIdx: this.gridService.startNode.rowIdx, newIdx: newRowIdx}),
       colIdx: this.getNodeIdxAfterResize({oldIdx: this.gridService.startNode.colIdx, newIdx: newColIdx}),
@@ -123,11 +126,11 @@ export class GridResizeService {
     this.gridService.setDestinationNode(this.gridService.startNode);
   }
 
-  isIdxOutOfGrid({oldIdx, newIdx}: {oldIdx: number, newIdx: number}): boolean {
+  private isIdxOutOfGrid({oldIdx, newIdx}: {oldIdx: number, newIdx: number}): boolean {
     return oldIdx > newIdx;
   }
 
-  getNodeIdxAfterResize({oldIdx, newIdx}: {oldIdx: number, newIdx: number}): number {
+  private getNodeIdxAfterResize({oldIdx, newIdx}: {oldIdx: number, newIdx: number}): number {
     return this.isIdxOutOfGrid({oldIdx, newIdx}) ? newIdx : oldIdx;
   }
 }

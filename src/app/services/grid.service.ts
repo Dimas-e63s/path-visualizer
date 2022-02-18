@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {concat, concatMap, delay, finalize, from, Observable, of, Subject, tap} from 'rxjs';
+import {concat, concatMap, delay, filter, from, Observable, of, Subject, tap} from 'rxjs';
 import {MazeGenerationEnum, PathAlgorithmEnum} from '../header/header.component';
 import {Grid, GridMap} from '../models/grid.types';
 import {GridBuilder} from '../grid-builder';
@@ -167,6 +167,16 @@ export class GridService {
     return concat(
       this.getAnimationObservable(visitedNodesInOrder),
       this.getAnimationObservable(shortestPath),
+    )
+  }
+
+  animateMazeBuilding(mazeAlgo: MazeGenerationEnum): Observable<any> {
+    return from(this.getMaze(mazeAlgo).values()).pipe(
+      filter(node => node.isWall()),
+      concatMap(node => of(node).pipe(delay(5))),
+      tap(node => {
+        this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
+      })
     )
   }
 }

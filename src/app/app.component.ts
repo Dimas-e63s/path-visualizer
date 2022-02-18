@@ -1,13 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {Node, NodeWeights} from './models/Node.class';
-import {Grid, GridMap, GridRow} from './models/grid.types';
+import {Grid, GridRow} from './models/grid.types';
 import {
-  concatMap,
-  delay,
-  filter,
   finalize,
-  from,
-  of,
 } from 'rxjs';
 import {MazeGenerationEnum, PathAlgorithmEnum} from './header/header.component';
 import {GridService} from './services/grid.service';
@@ -27,17 +22,6 @@ export class AppComponent implements OnInit {
   moveHead = false;
   moveEnd = false;
   isButtonsDisabled = false;
-
-  // runAlgo
-  // clearPath
-  // clearWalls
-  // onAlgoSelected
-  // onMazeAlgoSelected
-  // onAnimSpeedSelected
-  // startEditing
-  // breakEdit
-  // onAddedWall
-  // onDraw
 
   constructor(
     private gridService: GridService,
@@ -170,18 +154,10 @@ export class AppComponent implements OnInit {
   }
 
   onMazeAlgoSelected(mazeAlgo: MazeGenerationEnum): void {
-    this.animateMazeBuilding(this.gridService.getMaze(mazeAlgo));
-  }
-
-  animateMazeBuilding(maze: GridMap): void {
     this.disableButtons();
-    from(maze.values()).pipe(
-      filter(node => node.isWall()),
-      concatMap(node => of(node).pipe(delay(5))),
-      finalize(() => this.activateButtons()),
-    ).subscribe(node => {
-      this.gridService.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
-    });
+    this.gridService.animateMazeBuilding(mazeAlgo).pipe(
+      finalize(() => {this.activateButtons()})
+    ).subscribe();
   }
 
   onAnimSpeedSelected(animSpeed: string) {
