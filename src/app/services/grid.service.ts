@@ -91,7 +91,8 @@ export class GridService {
         return new Kruskal(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
       case MazeGenerationEnum.PRIM:
         return new Prim(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
-      // TODO: add default
+      default:
+        throw new Error(`Unknown maze generation algorithm type. Given ${mazeAlgo}`)
     }
   }
 
