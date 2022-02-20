@@ -16,8 +16,11 @@ export class StoreService {
   private startNode!: NodeCoordinates;
   private endNode!: NodeCoordinates;
   private grid: Grid = [];
-  // TODO: - add type def
-  private prevNode = {rowIdx: null, colIdx: null};
+  // TODO:
+  //  - add type def
+  //  - rename state
+  private prevNode = {row: null, col: null};
+  private prevHead = {col: null, row: null};
 
   constructor() { }
 
@@ -39,6 +42,10 @@ export class StoreService {
     return this.prevNode;
   }
 
+  getPrevStartNode(): any {
+    return this.prevHead;
+  }
+
   // ACTIONS
   updateStartNode(coordinates: NodeCoordinates): void {
     this.startNode = coordinates;
@@ -55,5 +62,10 @@ export class StoreService {
   // TODO: - add type def
   updatePrevNode(node: any): void {
     this.prevNode = node;
+  }
+
+  // TODO: - add type def
+  updatePrevHead(node: any): void {
+    this.prevHead = node;
   }
 }

@@ -60,7 +60,7 @@ export class AppComponent implements OnInit {
     if (selectedNode.getIsStartNode()) {
       this.moveHead = true;
       // @ts-ignore
-      this.gridService.prevHead = {col, row};
+      this.storeService.updatePrevHead({col, row});
     } else if (selectedNode.getIsFinishNode()) {
       this.moveEnd = true;
       // @ts-ignore
@@ -85,7 +85,7 @@ export class AppComponent implements OnInit {
   onDraw($event: any) {
     if (this.moveHead && (this.storeService.getStartNode().rowIdx !== $event.row || this.storeService.getStartNode().colIdx !== $event.col)) {
       //@ts-ignore
-      this.gridService.removeHeadNode(this.storeService.getGrid()[this.gridService.prevHead.row][this.gridService.prevHead.col]);
+      this.gridService.removeHeadNode(this.storeService.getGrid()[this.storeService.getPrevStartNode().row][this.storeService.getPrevStartNode().col]);
       this.gridService.addHeadNode($event);
     } else if (this.moveEnd && (this.storeService.getEndNode().rowIdx !== $event.row || this.storeService.getEndNode().colIdx !== $event.col)) {
       //@ts-ignore
