@@ -83,13 +83,13 @@ export class AppComponent implements OnInit {
   }
 
   onDraw($event: any) {
-    if (this.moveHead && (this.gridService.prevHead.row !== $event.row || this.gridService.prevHead.col !== $event.col)) {
+    if (this.moveHead && (this.storeService.getStartNode().rowIdx !== $event.row || this.storeService.getStartNode().colIdx !== $event.col)) {
       //@ts-ignore
-      this.gridService.removeHeadNode(this.gridService.nodes[this.gridService.prevHead.row][this.gridService.prevHead.col]);
+      this.gridService.removeHeadNode(this.storeService.getGrid()[this.gridService.prevHead.row][this.gridService.prevHead.col]);
       this.gridService.addHeadNode($event);
-    } else if (this.moveEnd && (this.gridService.prevEnd.row !== $event.row || this.gridService.prevEnd.col !== $event.col)) {
+    } else if (this.moveEnd && (this.storeService.getEndNode().rowIdx !== $event.row || this.storeService.getEndNode().colIdx !== $event.col)) {
       //@ts-ignore
-      this.gridService.removeEndNode(this.gridService.nodes[this.gridService.prevEnd.row][this.gridService.prevEnd.col]);
+      this.gridService.removeEndNode(this.storeService.getGrid()[this.gridService.prevEnd.row][this.gridService.prevEnd.col]);
       this.gridService.addEndNode($event);
     } else if (this.isSameNode($event) && this.buildWalls) {
       this.storeService.updatePrevNode($event);
