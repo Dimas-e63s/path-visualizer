@@ -8,6 +8,9 @@ import {MazeGenerationEnum, PathAlgorithmEnum} from './header/header.component';
 import {GridService} from './services/grid.service';
 import {GridResizeService} from './services/grid-resize.service';
 
+// TODO:
+// - be careful, removed prevNode state
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -16,9 +19,6 @@ import {GridResizeService} from './services/grid-resize.service';
 export class AppComponent implements OnInit {
   selectedPathAlgo: PathAlgorithmEnum | null = null;
   buildWalls = false;
-  prevNode = {col: null, row: null};
-  prevHead = {col: null, row: null};
-  prevEnd = {col: null, row: null};
   moveHead = false;
   moveEnd = false;
   isButtonsDisabled = false;
@@ -58,11 +58,11 @@ export class AppComponent implements OnInit {
     if (selectedNode.getIsStartNode()) {
       this.moveHead = true;
       // @ts-ignore
-      this.prevHead = {col, row};
+      this.gridService.prevHead = {col, row};
     } else if (selectedNode.getIsFinishNode()) {
       this.moveEnd = true;
       // @ts-ignore
-      this.prevEnd = {col, row};
+      this.gridService.prevEnd = {col, row};
     } else {
       this.addWall(this.gridService.nodes[row][col]);
     }
@@ -81,16 +81,16 @@ export class AppComponent implements OnInit {
   }
 
   onDraw($event: any) {
-    if (this.moveHead && (this.prevHead.row !== $event.row || this.prevHead.col !== $event.col)) {
+    if (this.moveHead && (this.gridService.prevHead.row !== $event.row || this.gridService.prevHead.col !== $event.col)) {
       //@ts-ignore
-      this.gridService.removeHeadNode(this.gridService.nodes[this.prevHead.row][this.prevHead.col]);
+      this.gridService.removeHeadNode(this.gridService.nodes[this.gridService.prevHead.row][this.gridService.prevHead.col]);
       this.gridService.addHeadNode($event);
-    } else if (this.moveEnd && (this.prevEnd.row !== $event.row || this.prevEnd.col !== $event.col)) {
+    } else if (this.moveEnd && (this.gridService.prevEnd.row !== $event.row || this.gridService.prevEnd.col !== $event.col)) {
       //@ts-ignore
-      this.gridService.removeEndNode(this.gridService.nodes[this.prevEnd.row][this.prevEnd.col]);
+      this.gridService.removeEndNode(this.gridService.nodes[this.gridService.prevEnd.row][this.gridService.prevEnd.col]);
       this.gridService.addEndNode($event);
     } else if (this.isSameNode($event) && this.buildWalls) {
-      this.prevNode = $event;
+      this.gridService.prevNode = $event;
       this.addWall(this.gridService.nodes[$event.row][$event.col]);
     }
   }
@@ -173,6 +173,6 @@ export class AppComponent implements OnInit {
   }
 
   private isSameNode(node: any): boolean {
-    return this.prevNode.row !== node.row || this.prevNode.col !== node.col;
+    return this.gridService.prevNode.row !== node.row || this.gridService.prevNode.col !== node.col;
   }
 }

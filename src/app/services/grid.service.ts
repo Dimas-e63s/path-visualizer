@@ -22,7 +22,6 @@ export class GridService {
   private destroy$ = new Subject<void>();
   selectedPathAlgo: PathAlgorithmEnum | null = null;
   nodes: Grid = [];
-  buildWalls = false;
   prevNode = {col: null, row: null};
   prevHead = {col: null, row: null};
   prevEnd = {col: null, row: null};
