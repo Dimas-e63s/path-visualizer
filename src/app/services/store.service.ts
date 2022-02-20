@@ -13,9 +13,11 @@ export interface NodeCoordinates {
   providedIn: 'root'
 })
 export class StoreService {
-  private startNode = {colIdx: 2, rowIdx: 25};
-  private endNode = {colIdx: 25, rowIdx: 0};
+  private startNode!: NodeCoordinates;
+  private endNode!: NodeCoordinates;
   private grid: Grid = [];
+  // TODO: - add type def
+  private prevNode = {rowIdx: null, colIdx: null};
 
   constructor() { }
 
@@ -33,6 +35,10 @@ export class StoreService {
     return this.grid;
   }
 
+  getPrevNode(): any {
+    return this.prevNode;
+  }
+
   // ACTIONS
   updateStartNode(coordinates: NodeCoordinates): void {
     this.startNode = coordinates;
@@ -44,5 +50,10 @@ export class StoreService {
 
   updateGrid(newGrid: Grid) {
     this.grid = newGrid;
+  }
+
+  // TODO: - add type def
+  updatePrevNode(node: any): void {
+    this.prevNode = node;
   }
 }

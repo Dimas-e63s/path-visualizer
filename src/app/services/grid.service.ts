@@ -18,7 +18,6 @@ import {NodeCoordinates, StoreService} from './store.service';
 })
 export class GridService {
   private destroy$ = new Subject<void>();
-  prevNode = {col: null, row: null};
   prevHead = {col: null, row: null};
   prevEnd = {col: null, row: null};
 

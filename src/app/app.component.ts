@@ -92,7 +92,7 @@ export class AppComponent implements OnInit {
       this.gridService.removeEndNode(this.gridService.nodes[this.gridService.prevEnd.row][this.gridService.prevEnd.col]);
       this.gridService.addEndNode($event);
     } else if (this.isSameNode($event) && this.buildWalls) {
-      this.gridService.prevNode = $event;
+      this.storeService.updatePrevNode($event);
       this.addWall(this.storeService.getGrid()[$event.row][$event.col]);
     }
   }
@@ -175,6 +175,6 @@ export class AppComponent implements OnInit {
   }
 
   private isSameNode(node: any): boolean {
-    return this.gridService.prevNode.row !== node.row || this.gridService.prevNode.col !== node.col;
+    return this.storeService.getPrevNode().row !== node.row || this.storeService.getPrevNode().col !== node.col;
   }
 }
