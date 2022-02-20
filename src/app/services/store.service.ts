@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-interface NodeCoordinates {
+export interface NodeCoordinates {
   rowIdx: number;
   colIdx: number;
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {concat, concatMap, delay, filter, from, Observable, of, Subject, tap} from 'rxjs';
 import {MazeGenerationEnum, PathAlgorithmEnum} from '../header/header.component';
 import {Grid, GridMap} from '../models/grid.types';
@@ -11,14 +11,13 @@ import {Node} from '../models/Node.class';
 import {Dijkstra} from '../algorithms/dijkstra/dijkstra';
 import {AStar} from '../algorithms/a-star/a-star';
 import {UnweightedAlgorithms} from '../algorithms/unweighted/unweighted-algorithms';
-import {StoreService} from './store.service';
+import {NodeCoordinates, StoreService} from './store.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GridService {
   private destroy$ = new Subject<void>();
-  selectedPathAlgo: PathAlgorithmEnum | null = null;
   nodes: Grid = [];
   prevNode = {col: null, row: null};
   prevHead = {col: null, row: null};
@@ -27,8 +26,9 @@ export class GridService {
   moveEnd = false;
 
   constructor(
-    private storeService: StoreService
-  ) { }
+    private storeService: StoreService,
+  ) {
+  }
 
   ngOnDestroy() {
     this.destroy$.next();
@@ -50,21 +50,21 @@ export class GridService {
     };
   }
 
-  generateStartNode(gridSize: {row: number, col: number}): {rowIdx: number, colIdx: number} {
+  generateStartNode(gridSize: {row: number, col: number}): NodeCoordinates {
     return {
       colIdx: 0,
       rowIdx: Math.floor(gridSize.row / 2),
     };
   }
 
-  generateEndNode(gridSize: {row: number, col: number}): {rowIdx: number, colIdx: number} {
+  generateEndNode(gridSize: {row: number, col: number}): NodeCoordinates {
     return {
       colIdx: gridSize.col - 1,
       rowIdx: Math.floor(gridSize.row / 2),
     };
   }
 
-  setDestinationNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
+  setDestinationNode({rowIdx, colIdx}: NodeCoordinates) {
     this.nodes[rowIdx][colIdx] = GridBuilder.generateGridNode({
       rowIdx: rowIdx,
       colIdx: colIdx,
@@ -73,11 +73,11 @@ export class GridService {
     });
   }
 
-  isStartNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
+  isStartNode({rowIdx, colIdx}: NodeCoordinates) {
     return rowIdx === this.storeService.getStartNode().rowIdx && this.storeService.getStartNode().colIdx === colIdx;
   }
 
-  isEndNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
+  isEndNode({rowIdx, colIdx}: NodeCoordinates) {
     return rowIdx === this.storeService.getEndNode().rowIdx && this.storeService.getEndNode().colIdx === colIdx;
   }
 
@@ -91,6 +91,7 @@ export class GridService {
         return new Kruskal(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
       case MazeGenerationEnum.PRIM:
         return new Prim(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
+      // TODO: add default
     }
   }
 
@@ -119,7 +120,7 @@ export class GridService {
       case PathAlgorithmEnum.DFS:
         return new UnweightedAlgorithms(algorithmData).dfs();
       default:
-        throw new Error(`Unknown algorithm type. Given ${this.selectedPathAlgo}`);
+        throw new Error(`Unknown algorithm type. Given ${selectedPathAlgo}`);
     }
   }
 
@@ -167,7 +168,7 @@ export class GridService {
     return concat(
       this.getAnimationObservable(visitedNodesInOrder),
       this.getAnimationObservable(shortestPath),
-    )
+    );
   }
 
   animateMazeBuilding(mazeAlgo: MazeGenerationEnum): Observable<any> {
@@ -176,7 +177,7 @@ export class GridService {
       concatMap(node => of(node).pipe(delay(5))),
       tap(node => {
         this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
-      })
-    )
+      }),
+    );
   }
 }
