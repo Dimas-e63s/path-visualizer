@@ -11,6 +11,7 @@ import {Node} from '../models/Node.class';
 import {Dijkstra} from '../algorithms/dijkstra/dijkstra';
 import {AStar} from '../algorithms/a-star/a-star';
 import {UnweightedAlgorithms} from '../algorithms/unweighted/unweighted-algorithms';
+import {StoreService} from './store.service';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,9 @@ export class GridService {
   moveHead = false;
   moveEnd = false;
 
-  constructor() { }
+  constructor(
+    private storeService: StoreService
+  ) { }
 
   ngOnDestroy() {
     this.destroy$.next();
