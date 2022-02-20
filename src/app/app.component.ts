@@ -7,6 +7,7 @@ import {
 import {MazeGenerationEnum, PathAlgorithmEnum} from './header/header.component';
 import {GridService} from './services/grid.service';
 import {GridResizeService} from './services/grid-resize.service';
+import {StoreService} from './services/store.service';
 
 // TODO:
 // - be careful, removed prevNode state
@@ -26,6 +27,7 @@ export class AppComponent implements OnInit {
   constructor(
     private gridService: GridService,
     private gridResizeService: GridResizeService,
+    private storeService: StoreService
   ) {
   }
 
@@ -35,7 +37,7 @@ export class AppComponent implements OnInit {
   }
 
   getNodes(): Grid {
-    return this.gridService.nodes;
+    return this.storeService.getGrid();
   }
 
   runAlgo() {
@@ -54,7 +56,7 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    const selectedNode = this.gridService.nodes[row][col];
+    const selectedNode = this.storeService.getGrid()[row][col];
     if (selectedNode.getIsStartNode()) {
       this.moveHead = true;
       // @ts-ignore
@@ -64,7 +66,7 @@ export class AppComponent implements OnInit {
       // @ts-ignore
       this.gridService.prevEnd = {col, row};
     } else {
-      this.addWall(this.gridService.nodes[row][col]);
+      this.addWall(this.storeService.getGrid()[row][col]);
     }
   }
 
@@ -91,7 +93,7 @@ export class AppComponent implements OnInit {
       this.gridService.addEndNode($event);
     } else if (this.isSameNode($event) && this.buildWalls) {
       this.gridService.prevNode = $event;
-      this.addWall(this.gridService.nodes[$event.row][$event.col]);
+      this.addWall(this.storeService.getGrid()[$event.row][$event.col]);
     }
   }
 
@@ -109,7 +111,7 @@ export class AppComponent implements OnInit {
 
   clearWalls() {
     this.disableButtons();
-    for (const row of this.gridService.nodes) {
+    for (const row of this.storeService.getGrid()) {
       for (const column of row) {
         this.removeWall(column);
       }
@@ -121,13 +123,13 @@ export class AppComponent implements OnInit {
     if (!node.isWall()) {
       const nodeClone = node.clone();
       nodeClone.setAsWall();
-      this.gridService.nodes[node.getRowIdx()][node.getColumnIdx()] = nodeClone;
+      this.storeService.getGrid()[node.getRowIdx()][node.getColumnIdx()] = nodeClone;
     }
   }
 
   removeWall(node: Node): void {
     if (node.isWall()) {
-      this.gridService.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+      this.storeService.getGrid()[node.getRowIdx()][node.getColumnIdx()] = node.clone({
         weight: NodeWeights.EMPTY,
         previousNode: null,
       });
@@ -135,10 +137,10 @@ export class AppComponent implements OnInit {
   }
 
   clearPath(): void {
-    for (const row of this.gridService.nodes) {
+    for (const row of this.storeService.getGrid()) {
       for (const node of row) {
         if (!node.isWall() || node.isVisitedNode() || node.isShortestPath) {
-          this.gridService.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+          this.storeService.getGrid()[node.getRowIdx()][node.getColumnIdx()] = node.clone({
             isShortestPath: false,
             previousNode: null,
             isVisitedNode: false,

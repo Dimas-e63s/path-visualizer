@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {concat, concatMap, delay, filter, from, Observable, of, Subject, tap} from 'rxjs';
 import {MazeGenerationEnum, PathAlgorithmEnum} from '../header/header.component';
-import {Grid, GridMap} from '../models/grid.types';
+import {GridMap} from '../models/grid.types';
 import {GridBuilder} from '../grid-builder';
 import {BacktrackingIterative} from '../algorithms/maze-generation/backtracking/backtracking-iterative.class';
 import {BacktrackingRecursive} from '../algorithms/maze-generation/backtracking/backtracking-recursive.class';
@@ -18,12 +18,9 @@ import {NodeCoordinates, StoreService} from './store.service';
 })
 export class GridService {
   private destroy$ = new Subject<void>();
-  nodes: Grid = [];
   prevNode = {col: null, row: null};
   prevHead = {col: null, row: null};
   prevEnd = {col: null, row: null};
-  moveHead = false;
-  moveEnd = false;
 
   constructor(
     private storeService: StoreService,
@@ -36,7 +33,7 @@ export class GridService {
   }
 
   initGrid() {
-    this.nodes = GridBuilder.generateGrid(this.getGridSize());
+    this.storeService.updateGrid(GridBuilder.generateGrid(this.getGridSize()));
     this.storeService.updateStartNode(this.generateStartNode(this.getGridSize()));
     this.storeService.updateEndNode(this.generateEndNode(this.getGridSize()));
     this.setDestinationNode(this.storeService.getStartNode());
@@ -65,7 +62,7 @@ export class GridService {
   }
 
   setDestinationNode({rowIdx, colIdx}: NodeCoordinates) {
-    this.nodes[rowIdx][colIdx] = GridBuilder.generateGridNode({
+    this.storeService.getGrid()[rowIdx][colIdx] = GridBuilder.generateGridNode({
       rowIdx: rowIdx,
       colIdx: colIdx,
       isStartNode: this.isStartNode({rowIdx, colIdx}),
@@ -84,29 +81,29 @@ export class GridService {
   getMaze(mazeAlgo: MazeGenerationEnum): GridMap {
     switch (mazeAlgo) {
       case MazeGenerationEnum.BACKTRACKING_ITR:
-        return new BacktrackingIterative(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
+        return new BacktrackingIterative(this.storeService.getGrid(), this.getStartNode(), this.getEndNode()).getMaze();
       case MazeGenerationEnum.BACKTRACKING_REC:
-        return new BacktrackingRecursive(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
+        return new BacktrackingRecursive(this.storeService.getGrid(), this.getStartNode(), this.getEndNode()).getMaze();
       case MazeGenerationEnum.KRUSKAL:
-        return new Kruskal(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
+        return new Kruskal(this.storeService.getGrid(), this.getStartNode(), this.getEndNode()).getMaze();
       case MazeGenerationEnum.PRIM:
-        return new Prim(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
+        return new Prim(this.storeService.getGrid(), this.getStartNode(), this.getEndNode()).getMaze();
       default:
         throw new Error(`Unknown maze generation algorithm type. Given ${mazeAlgo}`)
     }
   }
 
   private getStartNode(): Node {
-    return this.nodes[this.storeService.getStartNode().rowIdx][this.storeService.getStartNode().colIdx];
+    return this.storeService.getGrid()[this.storeService.getStartNode().rowIdx][this.storeService.getStartNode().colIdx];
   }
 
   private getEndNode(): Node {
-    return this.nodes[this.storeService.getEndNode().rowIdx][this.storeService.getEndNode().colIdx];
+    return this.storeService.getGrid()[this.storeService.getEndNode().rowIdx][this.storeService.getEndNode().colIdx];
   }
 
   getShortestPath(selectedPathAlgo: PathAlgorithmEnum | null): [Node[], Node[]] {
     const algorithmData = {
-      grid: this.nodes,
+      grid: this.storeService.getGrid(),
       startNode: this.getStartNode(),
       endNode: this.getEndNode(),
     };
@@ -130,7 +127,7 @@ export class GridService {
       .pipe(
         concatMap((node) => of(node).pipe(delay(15))),
         tap((node) => {
-          this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
+          this.storeService.getGrid()[node.getRowIdx()][node.getColumnIdx()] = node;
         }),
       );
   }
@@ -143,7 +140,7 @@ export class GridService {
 
   removeEndNode(node: Node): void {
     if (node.getIsFinishNode()) {
-      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+      this.storeService.getGrid()[node.getRowIdx()][node.getColumnIdx()] = node.clone({
         isFinishNode: false,
       });
     }
@@ -157,7 +154,7 @@ export class GridService {
 
   removeHeadNode(node: Node): void {
     if (node.getIsStartNode()) {
-      this.nodes[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+      this.storeService.getGrid()[node.getRowIdx()][node.getColumnIdx()] = node.clone({
         isStartNode: false,
       });
     }
@@ -177,7 +174,7 @@ export class GridService {
       filter(node => node.isWall()),
       concatMap(node => of(node).pipe(delay(5))),
       tap(node => {
-        this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
+        this.storeService.getGrid()[node.getRowIdx()][node.getColumnIdx()] = node;
       }),
     );
   }

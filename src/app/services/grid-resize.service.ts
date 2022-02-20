@@ -54,12 +54,12 @@ export class GridResizeService {
     const {
       totalCol: currentAmountOfCols,
       totalRow: currentAmountOfRows,
-    } = Utils.getGridSize(this.gridService.nodes);
+    } = Utils.getGridSize(this.storeService.getGrid());
 
     if (currentAmountOfRows > totalRow) {
       this.decreaseGridHeight(totalRow);
     } else if (currentAmountOfRows < totalRow) {
-      this.gridService.nodes.push(
+      this.storeService.getGrid().push(
         ...this.increaseGridHeight({totalRow, currentAmountOfCols, currentAmountOfRows}),
       );
     }
@@ -72,11 +72,11 @@ export class GridResizeService {
   }
 
   private decreaseGridHeight(newRowCount: number): void {
-    this.gridService.nodes.length = newRowCount;
+    this.storeService.getGrid().length = newRowCount;
   }
 
   private decreaseGridLength(newColCount: number): void {
-    this.gridService.nodes.forEach(row => {
+    this.storeService.getGrid().forEach(row => {
       row.length = newColCount;
     });
   }
@@ -99,7 +99,7 @@ export class GridResizeService {
 
   private increaseGridLength({totalCol, currentAmountOfCols}: {totalCol: number, currentAmountOfCols: number}) {
     for (let i = 0; i < totalCol - currentAmountOfCols; i++) {
-      this.gridService.nodes.forEach((row, idx) => {
+      this.storeService.getGrid().forEach((row, idx) => {
         row.push(
           GridBuilder.generateGridNode({
             rowIdx: idx,

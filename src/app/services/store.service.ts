@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import {Grid} from '../models/grid.types';
 
 export interface NodeCoordinates {
   rowIdx: number;
@@ -14,6 +15,7 @@ export interface NodeCoordinates {
 export class StoreService {
   private startNode = {colIdx: 2, rowIdx: 25};
   private endNode = {colIdx: 25, rowIdx: 0};
+  private grid: Grid = [];
 
   constructor() { }
 
@@ -27,6 +29,10 @@ export class StoreService {
     return this.endNode;
   }
 
+  getGrid(): Grid {
+    return this.grid;
+  }
+
   // ACTIONS
   updateStartNode(coordinates: NodeCoordinates): void {
     this.startNode = coordinates;
@@ -34,5 +40,9 @@ export class StoreService {
 
   updateEndNode(coordinates: NodeCoordinates): void {
     this.endNode = coordinates;
+  }
+
+  updateGrid(newGrid: Grid) {
+    this.grid = newGrid;
   }
 }
