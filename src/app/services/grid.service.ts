@@ -18,7 +18,6 @@ import {NodeCoordinates, StoreService} from './store.service';
 })
 export class GridService {
   private destroy$ = new Subject<void>();
-  prevEnd = {col: null, row: null};
 
   constructor(
     private storeService: StoreService,
@@ -131,7 +130,7 @@ export class GridService {
   }
 
   addEndNode($event: any) {
-    this.prevEnd = $event;
+    this.storeService.updatePrevEnd($event);
     this.storeService.updateEndNode({colIdx: $event.col, rowIdx: $event.row});
     this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
   }

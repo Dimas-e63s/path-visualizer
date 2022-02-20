@@ -51,6 +51,7 @@ export class AppComponent implements OnInit {
     }
   }
 
+  // TODO: - refactor this function
   onAddedWall({col, row}: {col: number, row: number}) {
     if (this.isButtonsDisabled) {
       return;
@@ -59,12 +60,11 @@ export class AppComponent implements OnInit {
     const selectedNode = this.storeService.getGrid()[row][col];
     if (selectedNode.getIsStartNode()) {
       this.moveHead = true;
-      // @ts-ignore
+      // TODO: - refactor function API
       this.storeService.updatePrevHead({col, row});
     } else if (selectedNode.getIsFinishNode()) {
       this.moveEnd = true;
-      // @ts-ignore
-      this.gridService.prevEnd = {col, row};
+      this.storeService.updatePrevEnd({col, row});
     } else {
       this.addWall(this.storeService.getGrid()[row][col]);
     }
@@ -89,7 +89,7 @@ export class AppComponent implements OnInit {
       this.gridService.addHeadNode($event);
     } else if (this.moveEnd && (this.storeService.getEndNode().rowIdx !== $event.row || this.storeService.getEndNode().colIdx !== $event.col)) {
       //@ts-ignore
-      this.gridService.removeEndNode(this.storeService.getGrid()[this.gridService.prevEnd.row][this.gridService.prevEnd.col]);
+      this.gridService.removeEndNode(this.storeService.getGrid()[this.storeService.getPrevEndNode().row][this.storeService.getPrevEndNode().col]);
       this.gridService.addEndNode($event);
     } else if (this.isSameNode($event) && this.buildWalls) {
       this.storeService.updatePrevNode($event);
