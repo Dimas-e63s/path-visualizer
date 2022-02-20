@@ -4,6 +4,7 @@ import {distinctUntilChanged, fromEvent, map, Observable, Subject, takeUntil, ta
 import {GridBuilder} from '../grid-builder';
 import {Utils} from '../algorithms/utils/utils.class';
 import {GridService} from './grid.service';
+import {StoreService} from './store.service';
 
 // TODO:
 // - refactor to use Resize Observer API
@@ -14,7 +15,10 @@ import {GridService} from './grid.service';
 export class GridResizeService {
   private destroy$ = new Subject<void>();
 
-  constructor(private gridService: GridService) { }
+  constructor(
+    private gridService: GridService,
+    private storeService: StoreService
+  ) { }
 
   ngOnDestroy() {
     this.destroy$.next();
@@ -108,8 +112,8 @@ export class GridResizeService {
 
   private updateDestinationNodesAfterResize({newRowIdx, newColIdx}: {newRowIdx: number, newColIdx: number}) {
     const newStartNode = GridBuilder.generateGridNode({
-      rowIdx: this.getNodeIdxAfterResize({oldIdx: this.gridService.startNode.rowIdx, newIdx: newRowIdx}),
-      colIdx: this.getNodeIdxAfterResize({oldIdx: this.gridService.startNode.colIdx, newIdx: newColIdx}),
+      rowIdx: this.getNodeIdxAfterResize({oldIdx: this.storeService.getStartNode().rowIdx, newIdx: newRowIdx}),
+      colIdx: this.getNodeIdxAfterResize({oldIdx: this.storeService.getStartNode().colIdx, newIdx: newColIdx}),
       isStartNode: true,
     });
 
@@ -120,10 +124,10 @@ export class GridResizeService {
     });
 
     this.gridService.finishNode = Utils.getNodeCoordinates(newEndNode);
-    this.gridService.startNode = Utils.getNodeCoordinates(newStartNode);
+    this.storeService.updateStartNode(Utils.getNodeCoordinates(newStartNode));
 
     this.gridService.setDestinationNode(this.gridService.finishNode);
-    this.gridService.setDestinationNode(this.gridService.startNode);
+    this.gridService.setDestinationNode(this.storeService.getStartNode());
   }
 
   private isIdxOutOfGrid({oldIdx, newIdx}: {oldIdx: number, newIdx: number}): boolean {

@@ -17,7 +17,6 @@ import {StoreService} from './store.service';
   providedIn: 'root'
 })
 export class GridService {
-   startNode = {colIdx: 2, rowIdx: 25};
    finishNode = {colIdx: 25, rowIdx: 0};
   private destroy$ = new Subject<void>();
   selectedPathAlgo: PathAlgorithmEnum | null = null;
@@ -39,9 +38,9 @@ export class GridService {
 
   initGrid() {
     this.nodes = GridBuilder.generateGrid(this.getGridSize());
-    this.startNode = this.generateStartNode(this.getGridSize());
+    this.storeService.updateStartNode(this.generateStartNode(this.getGridSize()));
     this.finishNode = this.generateEndNode(this.getGridSize());
-    this.setDestinationNode(this.startNode);
+    this.setDestinationNode(this.storeService.getStartNode());
     this.setDestinationNode(this.finishNode);
   }
 
@@ -76,7 +75,7 @@ export class GridService {
   }
 
   isStartNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
-    return rowIdx === this.startNode.rowIdx && this.startNode.colIdx === colIdx;
+    return rowIdx === this.storeService.getStartNode().rowIdx && this.storeService.getStartNode().colIdx === colIdx;
   }
 
   isEndNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
@@ -97,7 +96,7 @@ export class GridService {
   }
 
   private getStartNode(): Node {
-    return this.nodes[this.startNode.rowIdx][this.startNode.colIdx];
+    return this.nodes[this.storeService.getStartNode().rowIdx][this.storeService.getStartNode().colIdx];
   }
 
   private getEndNode(): Node {
@@ -150,7 +149,7 @@ export class GridService {
   }
 
   addHeadNode($event: any) {
-    this.startNode = {colIdx: $event.col, rowIdx: $event.row};
+    this.storeService.updateStartNode({colIdx: $event.col, rowIdx: $event.row});
     this.prevHead = $event;
     this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
   }
