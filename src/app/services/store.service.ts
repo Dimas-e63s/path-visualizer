@@ -17,6 +17,8 @@ export class StoreService {
 
   constructor() { }
 
+  // SELECTORS
+
   getStartNode(): NodeCoordinates {
     return this.startNode;
   }
@@ -25,6 +27,7 @@ export class StoreService {
     return this.endNode;
   }
 
+  // ACTIONS
   updateStartNode(coordinates: NodeCoordinates): void {
     this.startNode = coordinates;
   }

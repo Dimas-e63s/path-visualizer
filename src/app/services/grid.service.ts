@@ -17,7 +17,6 @@ import {StoreService} from './store.service';
   providedIn: 'root'
 })
 export class GridService {
-   finishNode = {colIdx: 25, rowIdx: 0};
   private destroy$ = new Subject<void>();
   selectedPathAlgo: PathAlgorithmEnum | null = null;
   nodes: Grid = [];
@@ -39,9 +38,9 @@ export class GridService {
   initGrid() {
     this.nodes = GridBuilder.generateGrid(this.getGridSize());
     this.storeService.updateStartNode(this.generateStartNode(this.getGridSize()));
-    this.finishNode = this.generateEndNode(this.getGridSize());
+    this.storeService.updateEndNode(this.generateEndNode(this.getGridSize()));
     this.setDestinationNode(this.storeService.getStartNode());
-    this.setDestinationNode(this.finishNode);
+    this.setDestinationNode(this.storeService.getEndNode());
   }
 
   private getGridSize(): {row: number, col: number} {
@@ -79,7 +78,7 @@ export class GridService {
   }
 
   isEndNode({rowIdx, colIdx}: {rowIdx: number, colIdx: number}) {
-    return rowIdx === this.finishNode.rowIdx && this.finishNode.colIdx === colIdx;
+    return rowIdx === this.storeService.getEndNode().rowIdx && this.storeService.getEndNode().colIdx === colIdx;
   }
 
   getMaze(mazeAlgo: MazeGenerationEnum): GridMap {
@@ -100,7 +99,7 @@ export class GridService {
   }
 
   private getEndNode(): Node {
-    return this.nodes[this.finishNode.rowIdx][this.finishNode.colIdx];
+    return this.nodes[this.storeService.getEndNode().rowIdx][this.storeService.getEndNode().colIdx];
   }
 
   getShortestPath(selectedPathAlgo: PathAlgorithmEnum | null): [Node[], Node[]] {
@@ -136,7 +135,7 @@ export class GridService {
 
   addEndNode($event: any) {
     this.prevEnd = $event;
-    this.finishNode = {colIdx: $event.col, rowIdx: $event.row};
+    this.storeService.updateEndNode({colIdx: $event.col, rowIdx: $event.row});
     this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
   }
 

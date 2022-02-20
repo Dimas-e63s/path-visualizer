@@ -118,15 +118,15 @@ export class GridResizeService {
     });
 
     const newEndNode = GridBuilder.generateGridNode({
-      rowIdx: this.getNodeIdxAfterResize({oldIdx: this.gridService.finishNode.rowIdx, newIdx: newRowIdx}),
-      colIdx: this.getNodeIdxAfterResize({oldIdx: this.gridService.finishNode.colIdx, newIdx: newColIdx}),
+      rowIdx: this.getNodeIdxAfterResize({oldIdx: this.storeService.getEndNode().rowIdx, newIdx: newRowIdx}),
+      colIdx: this.getNodeIdxAfterResize({oldIdx: this.storeService.getEndNode().colIdx, newIdx: newColIdx}),
       isFinishNode: true,
     });
 
-    this.gridService.finishNode = Utils.getNodeCoordinates(newEndNode);
+    this.storeService.updateEndNode(Utils.getNodeCoordinates(newEndNode));
     this.storeService.updateStartNode(Utils.getNodeCoordinates(newStartNode));
 
-    this.gridService.setDestinationNode(this.gridService.finishNode);
+    this.gridService.setDestinationNode(this.storeService.getEndNode());
     this.gridService.setDestinationNode(this.storeService.getStartNode());
   }
 
