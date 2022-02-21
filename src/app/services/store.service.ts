@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {Grid} from '../models/grid.types';
+import {GridBuilder} from '../grid-builder';
 
 export interface NodeCoordinates {
   rowIdx: number;
@@ -52,6 +53,14 @@ export class StoreService {
     return this.prevEnd;
   }
 
+  isStartNode({rowIdx, colIdx}: NodeCoordinates) {
+    return rowIdx === this.getStartNode().rowIdx && this.getStartNode().colIdx === colIdx;
+  }
+
+  isEndNode({rowIdx, colIdx}: NodeCoordinates) {
+    return rowIdx === this.getEndNode().rowIdx && this.getEndNode().colIdx === colIdx;
+  }
+
   // ACTIONS
   updateStartNode(coordinates: NodeCoordinates): void {
     this.startNode = coordinates;
@@ -78,5 +87,14 @@ export class StoreService {
   // TODO: - add type def
   updatePrevEnd(node: any): void {
     this.prevEnd = node;
+  }
+
+  setDestinationNode({rowIdx, colIdx}: NodeCoordinates) {
+    this.getGrid()[rowIdx][colIdx] = GridBuilder.generateGridNode({
+      rowIdx: rowIdx,
+      colIdx: colIdx,
+      isStartNode: this.isStartNode({rowIdx, colIdx}),
+      isFinishNode: this.isEndNode({rowIdx, colIdx}),
+    });
   }
 }

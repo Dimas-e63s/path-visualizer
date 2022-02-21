@@ -35,8 +35,8 @@ export class GridService {
     this.storeService.updateGrid(GridBuilder.generateGrid(this.getGridSize()));
     this.storeService.updateStartNode(this.getDefaultStartNode(this.getGridSize()));
     this.storeService.updateEndNode(this.getDefaultEndNode(this.getGridSize()));
-    this.setDestinationNode(this.storeService.getStartNode());
-    this.setDestinationNode(this.storeService.getEndNode());
+    this.storeService.setDestinationNode(this.storeService.getStartNode());
+    this.storeService.setDestinationNode(this.storeService.getEndNode());
   }
 
   private getGridSize(): GridSize {
@@ -58,23 +58,6 @@ export class GridService {
       colIdx: totalCol - 1,
       rowIdx: Math.floor(totalRow / 2),
     };
-  }
-
-  setDestinationNode({rowIdx, colIdx}: NodeCoordinates) {
-    this.storeService.getGrid()[rowIdx][colIdx] = GridBuilder.generateGridNode({
-      rowIdx: rowIdx,
-      colIdx: colIdx,
-      isStartNode: this.isStartNode({rowIdx, colIdx}),
-      isFinishNode: this.isEndNode({rowIdx, colIdx}),
-    });
-  }
-
-  isStartNode({rowIdx, colIdx}: NodeCoordinates) {
-    return rowIdx === this.storeService.getStartNode().rowIdx && this.storeService.getStartNode().colIdx === colIdx;
-  }
-
-  isEndNode({rowIdx, colIdx}: NodeCoordinates) {
-    return rowIdx === this.storeService.getEndNode().rowIdx && this.storeService.getEndNode().colIdx === colIdx;
   }
 
   getMaze(mazeAlgo: MazeGenerationEnum): GridMap {
@@ -134,7 +117,7 @@ export class GridService {
   addEndNode($event: any) {
     this.storeService.updatePrevEnd($event);
     this.storeService.updateEndNode({colIdx: $event.col, rowIdx: $event.row});
-    this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
+    this.storeService.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
   }
 
   removeEndNode(node: Node): void {
@@ -148,7 +131,7 @@ export class GridService {
   addHeadNode($event: any) {
     this.storeService.updateStartNode({colIdx: $event.col, rowIdx: $event.row});
     this.storeService.updatePrevHead($event);
-    this.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
+    this.storeService.setDestinationNode({rowIdx: $event.row, colIdx: $event.col});
   }
 
   removeHeadNode(node: Node): void {

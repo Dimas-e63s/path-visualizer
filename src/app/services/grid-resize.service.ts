@@ -126,8 +126,8 @@ export class GridResizeService {
     this.storeService.updateEndNode(Utils.getNodeCoordinates(newEndNode));
     this.storeService.updateStartNode(Utils.getNodeCoordinates(newStartNode));
 
-    this.gridService.setDestinationNode(this.storeService.getEndNode());
-    this.gridService.setDestinationNode(this.storeService.getStartNode());
+    this.storeService.setDestinationNode(this.storeService.getEndNode());
+    this.storeService.setDestinationNode(this.storeService.getStartNode());
   }
 
   private isIdxOutOfGrid({oldIdx, newIdx}: {oldIdx: number, newIdx: number}): boolean {
