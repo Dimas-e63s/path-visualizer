@@ -29,11 +29,11 @@ describe('GridBuilder', () => {
 
   describe('generateEmptyGrid', () => {
     it('should create an empty 2d array', () => {
-      expect(GridBuilder.generateEmptyGrid({row: 0, col: 0})).toEqual([]);
+      expect(GridBuilder.generateEmptyGrid({totalRow: 0, totalCol: 0})).toEqual([]);
     });
 
     it('should create non-empty 2d array', () => {
-      expect(GridBuilder.generateEmptyGrid({row: 2, col: 2})).toEqual(
+      expect(GridBuilder.generateEmptyGrid({totalRow: 2, totalCol: 2})).toEqual(
         [
           [null, null],
           [null, null],

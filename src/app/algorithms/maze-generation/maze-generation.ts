@@ -3,6 +3,7 @@ import {Grid, GridMap} from '../../models/grid.types';
 import {Node, NodeWeights} from '../../models/Node.class';
 import {AlgorithmBase} from '../algorithm-base/algorithm-base';
 import {DirectionsEnum, DX, DY} from '../../models/maze-generation.enum';
+import {NodeCoordinates} from '../../services/store.service';
 
 export class MazeGeneration extends AlgorithmBase {
   protected readonly totalCol: number;
@@ -31,12 +32,12 @@ export class MazeGeneration extends AlgorithmBase {
     throw new Error('The method wasn\'t implemented.');
   }
 
-  protected parseNodeKey(nodeKey: string): {row: number, col: number} {
-    const [row, col] = nodeKey.split('-').map(key => Number(key));
+  protected parseNodeKey(nodeKey: string): NodeCoordinates {
+    const [rowIdx, colIdx] = nodeKey.split('-').map(key => Number(key));
 
     return {
-      row,
-      col
+      rowIdx,
+      colIdx
     }
   }
 
@@ -45,8 +46,8 @@ export class MazeGeneration extends AlgorithmBase {
   }
 
   protected getNeighborKey(nodeKey: string, direction: DirectionsEnum): string {
-    const {row, col} = this.parseNodeKey(nodeKey);
-    return `${MazeGeneration.getNeighborRowIdx(row, direction)}-${MazeGeneration.getNeighborColIdx(col, direction)}`;
+    const {rowIdx, colIdx} = this.parseNodeKey(nodeKey);
+    return `${MazeGeneration.getNeighborRowIdx(rowIdx, direction)}-${MazeGeneration.getNeighborColIdx(colIdx, direction)}`;
   }
 
   private static getNeighborColIdx(colIdx: number, direction: DirectionsEnum): number {

@@ -86,7 +86,7 @@ export class GridResizeService {
                        currentAmountOfRows,
                        currentAmountOfCols,
                      }: {totalRow: number, currentAmountOfRows: number, currentAmountOfCols: number}) {
-    const newGrid = GridBuilder.generateEmptyGrid({row: totalRow - currentAmountOfRows, col: currentAmountOfCols});
+    const newGrid = GridBuilder.generateEmptyGrid({totalRow: totalRow - currentAmountOfRows, totalCol: currentAmountOfCols});
 
     for (let rowIdx = 0; rowIdx < newGrid.length; rowIdx++) {
       for (let colIdx = 0; colIdx < newGrid[0].length; colIdx++) {

@@ -8,6 +8,7 @@ export interface NodeCoordinates {
 
 // TODO:
 // - limit injector scope only to app component
+// - consider move state to Observable streams
 
 @Injectable({
   providedIn: 'root'

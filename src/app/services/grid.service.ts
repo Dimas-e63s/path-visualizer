@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {concat, concatMap, delay, filter, from, Observable, of, Subject, tap} from 'rxjs';
 import {MazeGenerationEnum, PathAlgorithmEnum} from '../header/header.component';
-import {GridMap} from '../models/grid.types';
+import {GridMap, GridSize} from '../models/grid.types';
 import {GridBuilder} from '../grid-builder';
 import {BacktrackingIterative} from '../algorithms/maze-generation/backtracking/backtracking-iterative.class';
 import {BacktrackingRecursive} from '../algorithms/maze-generation/backtracking/backtracking-recursive.class';
@@ -12,6 +12,8 @@ import {Dijkstra} from '../algorithms/dijkstra/dijkstra';
 import {AStar} from '../algorithms/a-star/a-star';
 import {UnweightedAlgorithms} from '../algorithms/unweighted/unweighted-algorithms';
 import {NodeCoordinates, StoreService} from './store.service';
+
+// TODO: - change logic for setting grid height to take elementRef of section as source of height
 
 @Injectable({
   providedIn: 'root',
@@ -31,30 +33,30 @@ export class GridService {
 
   initGrid() {
     this.storeService.updateGrid(GridBuilder.generateGrid(this.getGridSize()));
-    this.storeService.updateStartNode(this.generateStartNode(this.getGridSize()));
-    this.storeService.updateEndNode(this.generateEndNode(this.getGridSize()));
+    this.storeService.updateStartNode(this.getDefaultStartNode(this.getGridSize()));
+    this.storeService.updateEndNode(this.getDefaultEndNode(this.getGridSize()));
     this.setDestinationNode(this.storeService.getStartNode());
     this.setDestinationNode(this.storeService.getEndNode());
   }
 
-  private getGridSize(): {row: number, col: number} {
+  private getGridSize(): GridSize {
     return {
-      row: GridBuilder.calculateAmountOfRows(window.innerHeight),
-      col: GridBuilder.calculateAmountOfColumns(window.innerWidth),
+      totalRow: GridBuilder.calculateAmountOfRows(window.innerHeight),
+      totalCol: GridBuilder.calculateAmountOfColumns(window.innerWidth),
     };
   }
 
-  generateStartNode(gridSize: {row: number, col: number}): NodeCoordinates {
+  private getDefaultStartNode({totalRow}: GridSize): NodeCoordinates {
     return {
       colIdx: 0,
-      rowIdx: Math.floor(gridSize.row / 2),
+      rowIdx: Math.floor(totalRow / 2),
     };
   }
 
-  generateEndNode(gridSize: {row: number, col: number}): NodeCoordinates {
+  private getDefaultEndNode({totalRow, totalCol}: GridSize): NodeCoordinates {
     return {
-      colIdx: gridSize.col - 1,
-      rowIdx: Math.floor(gridSize.row / 2),
+      colIdx: totalCol - 1,
+      rowIdx: Math.floor(totalRow / 2),
     };
   }
 

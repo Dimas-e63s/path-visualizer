@@ -30,30 +30,6 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('isIdxOutOfGrid', () => {
-    it('should return true if Node oldIdx grater than newIdx', () => {
-      expect(component.isIdxOutOfGrid({oldIdx: 10, newIdx: 9})).toBeTrue();
-    });
-
-    it('should return false if Node oldIdx grater than newIdx', () => {
-      expect(component.isIdxOutOfGrid({oldIdx: 10, newIdx: 11})).toBeFalse();
-    });
-
-    it('should return false if Node oldIdx equal to newIdx', () => {
-      expect(component.isIdxOutOfGrid({oldIdx: 10, newIdx: 10})).toBeFalse();
-    });
-  });
-
-  describe('getNodeIdxAfterResize', () => {
-    it('should return newIdx for idx out of grid bounds', () => {
-      expect(component.getNodeIdxAfterResize({oldIdx: 10, newIdx: 9})).toEqual(9);
-    });
-
-    it('should return oldIdx for idx in grid bounds', () => {
-      expect(component.getNodeIdxAfterResize({oldIdx: 10, newIdx: 11})).toEqual(10);
-    });
-  });
-
   describe('trackByNode', () => {
     it('should return Node id', () => {
       const stubNode = GridBuilder.generateGridNode({rowIdx: 0, colIdx: 0});
@@ -74,22 +50,6 @@ describe('AppComponent', () => {
 
       component.disableButtons();
       expect(component.isButtonsDisabled).toBeTrue();
-    });
-  });
-
-  describe('generateStartNode', () => {
-    it('should return startNode based on size of the frid', () => {
-      expect(
-        component.generateStartNode({row: 20, col: 20}),
-      ).toEqual({colIdx: 0, rowIdx: 10});
-    });
-  });
-
-  describe('generateEndNode', () => {
-    it('should return endNode based on size of the frid', () => {
-      expect(
-        component.generateEndNode({row: 20, col: 34}),
-      ).toEqual({colIdx: 33, rowIdx: 10});
     });
   });
 });

@@ -25,12 +25,12 @@ export class Kruskal extends MazeGeneration {
     this.randomSort(
       this.getListOfEdges(),
     ).forEach(edgeKey => {
-      const {row, col} = this.parseNodeKey(edgeKey);
-      if (this.isOdd(row) && !this.isNodeBelongToSet(edgeKey, horizontalNeighbors)) {
+      const {rowIdx, colIdx} = this.parseNodeKey(edgeKey);
+      if (this.isOdd(rowIdx) && !this.isNodeBelongToSet(edgeKey, horizontalNeighbors)) {
         this.makePassage(edgeKey, horizontalNeighbors);
       }
 
-      if (this.isOdd(col) && !this.isNodeBelongToSet(edgeKey, verticalNeighbors)) {
+      if (this.isOdd(colIdx) && !this.isNodeBelongToSet(edgeKey, verticalNeighbors)) {
         this.makePassage(edgeKey, verticalNeighbors);
       }
     });

@@ -14,7 +14,7 @@ describe('Backtracking class', () => {
   let backtrackingObj: BacktrackingStub;
 
   beforeEach(() => {
-    const grid = GridBuilder.generateGrid({row: 10, col: 10});
+    const grid = GridBuilder.generateGrid({totalRow: 10, totalCol: 10});
     backtrackingObj = new BacktrackingStub(
       grid,
       grid[0][0],
