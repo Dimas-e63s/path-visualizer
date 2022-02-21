@@ -7,7 +7,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "start": "node server.js",
-    "postinstall": "ng build --aot --prod"
+    "postinstall": "ng build --aot --prod",
+    "analyze-bundle": "ng build --configuration production --stats-json && webpack-bundle-analyzer dist/stats.json"
   },
   "engines": {
     "node": "14.17.0",
