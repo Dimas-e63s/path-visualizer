@@ -19,13 +19,14 @@ export enum PathAlgorithmEnum {
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class HeaderComponent {
   @Input() isButtonsDisabled!: boolean;
   @Output() onAlgoRunButtonWasClicked = new EventEmitter<void>();
   @Output() onClearPathWasClicked = new EventEmitter<void>();
   @Output() onClearWallsWasClicked = new EventEmitter<void>();
+  @Output() onClearBoardWasClicked = new EventEmitter<void>();
   @Output() onAlgorithmSelectedWasClicked = new EventEmitter<PathAlgorithmEnum>();
   @Output() onMazeAlgorithmWasClicked = new EventEmitter<MazeGenerationEnum>();
   @Output() onAnimSpeedWasClicked = new EventEmitter<string>();
@@ -36,7 +37,7 @@ export class HeaderComponent {
     PathAlgorithmEnum.DIJKSTRA,
     PathAlgorithmEnum.A_STAR,
     PathAlgorithmEnum.BFS,
-    PathAlgorithmEnum.DFS
+    PathAlgorithmEnum.DFS,
   ];
   readonly mazesOptions = [
     MazeGenerationEnum.BACKTRACKING_REC,
@@ -60,14 +61,19 @@ export class HeaderComponent {
     this.closeNavbar();
   }
 
+  onClearBoard() {
+    this.onClearBoardWasClicked.emit();
+    this.closeNavbar();
+  }
+
   onAlgorithmSelected(algo: PathAlgorithmEnum) {
     this.onAlgorithmSelectedWasClicked.emit(algo);
-    this.closeNavbar()
+    this.closeNavbar();
   }
 
   onMazeAlgorithmSelected(mazeAlgo: MazeGenerationEnum) {
     this.onMazeAlgorithmWasClicked.emit(mazeAlgo);
-    this.closeNavbar()
+    this.closeNavbar();
   }
 
   onAnimationSpeedSelected(animationSpeed: string) {

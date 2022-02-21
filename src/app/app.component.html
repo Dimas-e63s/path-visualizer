@@ -4,6 +4,7 @@
     (onAlgoRunButtonWasClicked)="runAlgo()"
     (onClearPathWasClicked)="clearPath()"
     (onClearWallsWasClicked)="clearWalls()"
+    (onClearBoardWasClicked)="clearBoard()"
     (onAlgorithmSelectedWasClicked)="onAlgorithmSelected($event)"
     (onMazeAlgorithmWasClicked)="onMazeAlgoSelected($event)"
     (onAnimSpeedWasClicked)="onAnimSpeedSelected($event)"
@@ -12,8 +13,8 @@
     <app-legend [selectedAlgorithm]="this.selectedPathAlgo"></app-legend>
     <section
       (mousedown)="startEditing()"
-      (mouseup)="breakEdit()"
-      (mouseleave)="breakEdit()"
+      (mouseup)="stopEdit()"
+      (mouseleave)="stopEdit()"
     >
       <div
         class="row"

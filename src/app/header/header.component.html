@@ -50,6 +50,17 @@
     >
       Clear Walls
     </button>
+    <button
+      tuiButton
+      [disabled]="isButtonsDisabled"
+      size="m"
+      type="button"
+      class="button--error"
+      appearance="secondary"
+      (click)="onClearBoard()"
+    >
+      Clear Board
+    </button>
     <app-dropdown
       buttonText="Speed"
       [items]="animationSpeedOptions"

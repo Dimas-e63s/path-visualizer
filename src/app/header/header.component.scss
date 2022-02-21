@@ -10,7 +10,7 @@
   background: $primary-color;
   height: 100px;
   padding: 22px 23px 42px;
-  box-shadow: 0px 4px 21px rgba(24, 31, 72, 0.52);
+  box-shadow: 0 4px 21px rgba(24, 31, 72, 0.52);
   overflow: hidden;
   transition: .5s;
   row-gap: 24px;
@@ -21,7 +21,7 @@
   }
 
   &--active {
-    height: 540px;
+    height: 610px;
   }
 
   &__toggle {

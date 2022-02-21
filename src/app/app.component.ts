@@ -43,6 +43,7 @@ export class AppComponent implements OnInit {
   runAlgo() {
     if (this.selectedPathAlgo) {
       this.disableButtons();
+
       this.gridService.animatePathfindingAlgo(this.selectedPathAlgo).pipe(
         finalize(() => {
           this.activateButtons();
@@ -76,7 +77,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  breakEdit(): void {
+  stopEdit(): void {
     this.buildWalls = false;
     this.moveHead = false;
     this.moveEnd = false;
@@ -84,11 +85,9 @@ export class AppComponent implements OnInit {
 
   onDraw($event: any) {
     if (this.moveHead && (this.storeService.getStartNode().rowIdx !== $event.row || this.storeService.getStartNode().colIdx !== $event.col)) {
-      //@ts-ignore
       this.gridService.removeHeadNode(this.storeService.getGrid()[this.storeService.getPrevStartNode().row][this.storeService.getPrevStartNode().col]);
       this.gridService.addHeadNode($event);
     } else if (this.moveEnd && (this.storeService.getEndNode().rowIdx !== $event.row || this.storeService.getEndNode().colIdx !== $event.col)) {
-      //@ts-ignore
       this.gridService.removeEndNode(this.storeService.getGrid()[this.storeService.getPrevEndNode().row][this.storeService.getPrevEndNode().col]);
       this.gridService.addEndNode($event);
     } else if (this.isSameNode($event) && this.buildWalls) {
