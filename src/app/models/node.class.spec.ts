@@ -75,6 +75,6 @@ describe('Node', () => {
     it('it should throw error for node with both startNode and endNode set to true', () => {
       // @ts-expect-error
       expect(() => stubNode.validateDestinationInput({isStartNode: true, isFinishNode: true})).toThrow();
-    })
+    });
   });
 });

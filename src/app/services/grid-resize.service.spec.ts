@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { GridResizeService } from './grid-resize.service';
+import {GridResizeService} from './grid-resize.service';
 
 describe('GridResizeService', () => {
   let service: GridResizeService;
@@ -18,16 +18,16 @@ describe('GridResizeService', () => {
     it('should return true if size the same', () => {
       // @ts-expect-error
       expect(service.isGridSizeFixed(
-        {totalCol: 10, totalRow: 10},
-        {totalCol: 10, totalRow: 10},
+          {totalCol: 10, totalRow: 10},
+          {totalCol: 10, totalRow: 10},
       )).toBeTrue();
     });
 
     it('should return false if size changed', () => {
       // @ts-expect-error
       expect(service.isGridSizeFixed(
-        {totalCol: 10, totalRow: 10},
-        {totalCol: 10, totalRow: 11},
+          {totalCol: 10, totalRow: 10},
+          {totalCol: 10, totalRow: 11},
       )).toBeFalse();
     });
   });

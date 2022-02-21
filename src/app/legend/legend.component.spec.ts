@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { LegendComponent } from './legend.component';
+import {LegendComponent} from './legend.component';
 
 describe('LegendComponent', () => {
   let component: LegendComponent;
@@ -8,9 +8,9 @@ describe('LegendComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LegendComponent ]
+      declarations: [LegendComponent],
     })
-    .compileComponents();
+        .compileComponents();
   });
 
   beforeEach(() => {

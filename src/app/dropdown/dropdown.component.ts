@@ -5,11 +5,11 @@ import {TuiHostedDropdownComponent} from '@taiga-ui/core';
   selector: 'app-dropdown',
   templateUrl: './dropdown.component.html',
   styleUrls: ['./dropdown.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DropdownComponent  {
+export class DropdownComponent {
   @ViewChild(TuiHostedDropdownComponent)
-  component?: TuiHostedDropdownComponent;
+    component?: TuiHostedDropdownComponent;
 
   @Input() items!: string[];
   @Input() buttonText!: string;

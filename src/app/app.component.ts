@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
   constructor(
     private gridService: GridService,
     private gridResizeService: GridResizeService,
-    private storeService: StoreService
+    private storeService: StoreService,
   ) {
   }
 
@@ -45,9 +45,9 @@ export class AppComponent implements OnInit {
       this.disableButtons();
 
       this.gridService.animatePathfindingAlgo(this.selectedPathAlgo).pipe(
-        finalize(() => {
-          this.activateButtons();
-        }),
+          finalize(() => {
+            this.activateButtons();
+          }),
       ).subscribe();
     }
   }
@@ -162,7 +162,9 @@ export class AppComponent implements OnInit {
   onMazeAlgoSelected(mazeAlgo: MazeGenerationEnum): void {
     this.disableButtons();
     this.gridService.animateMazeBuilding(mazeAlgo).pipe(
-      finalize(() => {this.activateButtons()})
+        finalize(() => {
+          this.activateButtons();
+        }),
     ).subscribe();
   }
 

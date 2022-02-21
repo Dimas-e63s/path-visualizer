@@ -89,13 +89,13 @@ export class AStar extends AlgorithmBase {
 
   // TODO: - extract type
   static setStartNode({
-                        startNodeKey,
-                        gScore,
-                        fScore,
-                        prioQ,
-                        endNode,
-                        startNode,
-                      }: {
+    startNodeKey,
+    gScore,
+    fScore,
+    prioQ,
+    endNode,
+    startNode,
+  }: {
     startNodeKey: string,
     gScore: Map<string, number>,
     fScore: Map<string, number>,
@@ -114,10 +114,10 @@ export class AStar extends AlgorithmBase {
 
   // TODO: - extract type
   static populateMapsWithDefaultValues({
-                                         gScore,
-                                         fScore,
-                                         grid,
-                                       }:
+    gScore,
+    fScore,
+    grid,
+  }:
                                          {
                                            gScore: Map<string, number>,
                                            fScore: Map<string, number>,
@@ -144,10 +144,10 @@ export class AStar extends AlgorithmBase {
 
   // TODO: - extract type
   static isNeighborHasCloserPath({
-                                   tentative_gScore,
-                                   gScore,
-                                   neighbor,
-                                 }: {
+    tentative_gScore,
+    gScore,
+    neighbor,
+  }: {
     tentative_gScore: number,
     gScore: Map<string, number>,
     neighbor: Node

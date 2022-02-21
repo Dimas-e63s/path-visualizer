@@ -2,8 +2,8 @@ import {Node} from '../../models/Node.class';
 import {Grid, GridMap, GridRow} from '../../models/grid.types';
 import {Utils} from '../utils/utils.class';
 import {Dijkstra} from '../dijkstra/dijkstra';
-import { Stack } from '@datastructures-js/stack';
-import { Queue } from '@datastructures-js/queue';
+import {Stack} from '@datastructures-js/stack';
+import {Queue} from '@datastructures-js/queue';
 import {AlgorithmBase} from '../algorithm-base/algorithm-base';
 
 export class UnweightedAlgorithms extends AlgorithmBase {
@@ -39,22 +39,22 @@ export class UnweightedAlgorithms extends AlgorithmBase {
         currentNode,
         grid: gridMap,
         totalRow,
-        totalCol
-      })
+        totalCol,
+      });
 
-      neighbors.forEach(neighbor => {
-        if(!neighbor.isVisitedNode()) {
+      neighbors.forEach((neighbor) => {
+        if (!neighbor.isVisitedNode()) {
           neighbor.previousNode = currentNode;
           stack.push(neighbor);
         }
-      })
+      });
     }
 
     const shortestPath = Utils.getNodesInShortestPathOrder(
-      gridMap.get(Utils.getNodeKey(this.endNode)) as Node
-    )
+      gridMap.get(Utils.getNodeKey(this.endNode)) as Node,
+    );
 
-    return [visitedNodes, shortestPath]
+    return [visitedNodes, shortestPath];
   }
 
   // TODO: - extract type
@@ -83,56 +83,56 @@ export class UnweightedAlgorithms extends AlgorithmBase {
         currentNode,
         grid: gridMap,
         totalRow,
-        totalCol
+        totalCol,
       });
 
-      neighbors.forEach(neighbor => {
+      neighbors.forEach((neighbor) => {
         if (!exploredNodes.has(Utils.getNodeKey(neighbor))) {
           exploredNodes.add(Utils.getNodeKey(neighbor));
           neighbor.previousNode = currentNode;
           queue.enqueue(neighbor);
         }
-      })
+      });
     }
 
     const shortestPath = Utils.getNodesInShortestPathOrder(
-      gridMap.get(Utils.getNodeKey(this.endNode)) as Node
-    )
+      gridMap.get(Utils.getNodeKey(this.endNode)) as Node,
+    );
 
-    return [visitedNodes, shortestPath]
+    return [visitedNodes, shortestPath];
   }
 
   // TODO:
   //  - extract type
   //  - add return type
   static getNeighbors({
-                        currentNode, grid, totalCol,
-                        totalRow
-                      }: {currentNode: Node, grid: GridMap, totalCol: number, totalRow: number}) {
+    currentNode, grid, totalCol,
+    totalRow,
+  }: {currentNode: Node, grid: GridMap, totalCol: number, totalRow: number}) {
     const neighbors = [];
     const {rowIdx, colIdx} = Utils.getNodeCoordinates(currentNode);
 
     if (!Dijkstra.isFirstColumn(colIdx)) {
       neighbors.push(
-        Utils.getLeftNode(currentNode, grid)
-      )
+          Utils.getLeftNode(currentNode, grid),
+      );
     }
 
     if (!Dijkstra.isLastRow(rowIdx, totalRow - 1)) {
       neighbors.push(
-        Utils.getBelowNode(currentNode, grid)
-      )
+          Utils.getBelowNode(currentNode, grid),
+      );
     }
 
     if (!Dijkstra.isLastColumn(colIdx, totalCol - 1)) {
       neighbors.push(
-        Utils.getRightNode(currentNode, grid)
+          Utils.getRightNode(currentNode, grid),
       );
     }
 
     if (!Dijkstra.isFirstRow(rowIdx)) {
       neighbors.push(
-        Utils.getUpNode(currentNode, grid)
+          Utils.getUpNode(currentNode, grid),
       );
     }
 

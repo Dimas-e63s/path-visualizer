@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Grid} from '../models/grid.types';
 import {GridBuilder} from '../grid-builder';
 
@@ -13,7 +13,7 @@ export interface NodeCoordinates {
 // - consider move state to Observable streams
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class StoreService {
   private startNode!: NodeCoordinates;
@@ -55,11 +55,13 @@ export class StoreService {
   }
 
   isStartNode({rowIdx, colIdx}: NodeCoordinates) {
-    return rowIdx === this.getStartNode().rowIdx && this.getStartNode().colIdx === colIdx;
+    return rowIdx === this.getStartNode().rowIdx &&
+      this.getStartNode().colIdx === colIdx;
   }
 
   isEndNode({rowIdx, colIdx}: NodeCoordinates) {
-    return rowIdx === this.getEndNode().rowIdx && this.getEndNode().colIdx === colIdx;
+    return rowIdx === this.getEndNode().rowIdx &&
+      this.getEndNode().colIdx === colIdx;
   }
 
   // ACTIONS

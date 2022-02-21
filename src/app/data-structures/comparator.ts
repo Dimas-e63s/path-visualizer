@@ -1,5 +1,5 @@
 // TODO: - migrate to ts
-//@ts-nocheck
+// @ts-nocheck
 export default class Comparator {
   /**
    * Constructor.
@@ -14,7 +14,7 @@ export default class Comparator {
    * Default comparison function. It just assumes that "a" and "b" are strings or numbers.
    * @param {(string|number)} a
    * @param {(string|number)} b
-   * @returns {number}
+   * @return {number}
    */
   static defaultCompareFunction(a, b) {
     if (a === b) {

@@ -14,7 +14,7 @@ import {AppComponent} from './app.component';
 import {GridNodeComponent} from './grid-node/grid-node.component';
 import {HeaderComponent} from './header/header.component';
 import {DropdownComponent} from './dropdown/dropdown.component';
-import { LegendComponent } from './legend/legend.component';
+import {LegendComponent} from './legend/legend.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +32,7 @@ import { LegendComponent } from './legend/legend.component';
     TuiDataListModule,
     TuiHostedDropdownModule,
     TuiNotificationModule,
-    TuiSvgModule
+    TuiSvgModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

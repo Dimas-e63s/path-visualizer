@@ -21,9 +21,9 @@ export class Backtracking extends MazeGeneration {
   }
 
   protected isUnvisitedNode({neighborKey, wallKey}: {neighborKey: string, wallKey: string}) {
-    return this.gridMap.has(neighborKey)
-      && !this.visitedNodes.has(neighborKey)
-      && !this.visitedNodes.has(wallKey);
+    return this.gridMap.has(neighborKey) &&
+      !this.visitedNodes.has(neighborKey) &&
+      !this.visitedNodes.has(wallKey);
   }
 }
 

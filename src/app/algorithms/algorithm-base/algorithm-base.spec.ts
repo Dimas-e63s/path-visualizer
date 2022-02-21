@@ -1,4 +1,4 @@
-import { AlgorithmBase } from './algorithm-base';
+import {AlgorithmBase} from './algorithm-base';
 
 describe('AlgorithmBase', () => {
   it('should create an instance', () => {

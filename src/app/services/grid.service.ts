@@ -72,7 +72,7 @@ export class GridService {
       case MazeGenerationEnum.PRIM:
         return new Prim(this.storeService.getGrid(), this.getStartNode(), this.getEndNode()).getMaze();
       default:
-        throw new Error(`Unknown maze generation algorithm type. Given ${mazeAlgo}`)
+        throw new Error(`Unknown maze generation algorithm type. Given ${mazeAlgo}`);
     }
   }
 
@@ -107,12 +107,12 @@ export class GridService {
 
   getAnimationObservable(nodeArray: Node[]): Observable<Node> {
     return from(nodeArray)
-      .pipe(
-        concatMap((node) => of(node).pipe(delay(15))),
-        tap((node) => {
-          this.storeService.getGrid()[node.getRowIdx()][node.getColumnIdx()] = node;
-        }),
-      );
+        .pipe(
+            concatMap((node) => of(node).pipe(delay(15))),
+            tap((node) => {
+              this.storeService.getGrid()[node.getRowIdx()][node.getColumnIdx()] = node;
+            }),
+        );
   }
 
   addEndNode($event: any) {
@@ -147,18 +147,19 @@ export class GridService {
     const [visitedNodesInOrder, shortestPath] = this.getShortestPath(selectedPathAlgo);
 
     return concat(
-      this.getAnimationObservable(visitedNodesInOrder),
-      this.getAnimationObservable(shortestPath),
+        this.getAnimationObservable(visitedNodesInOrder),
+        this.getAnimationObservable(shortestPath),
     );
   }
 
   animateMazeBuilding(mazeAlgo: MazeGenerationEnum): Observable<any> {
     return from(this.getMaze(mazeAlgo).values()).pipe(
-      filter(node => node.isWall()),
-      concatMap(node => of(node).pipe(delay(5))),
-      tap(node => {
-        this.storeService.getGrid()[node.getRowIdx()][node.getColumnIdx()] = node;
-      }),
+        filter((node) => node.isWall()),
+        concatMap((node) => of(node).pipe(delay(5))),
+        tap((node) => {
+          // TODO: - refactor to delegate this logic to store
+          this.storeService.getGrid()[node.getRowIdx()][node.getColumnIdx()] = node;
+        }),
     );
   }
 }

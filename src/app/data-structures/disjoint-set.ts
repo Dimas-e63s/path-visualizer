@@ -67,7 +67,7 @@ export class DisjointSet {
     }
     let toUpdateX = node;
     while (toUpdateX.parent !== null) {
-      let toUpdateParent = toUpdateX;
+      const toUpdateParent = toUpdateX;
       toUpdateX = toUpdateX.parent;
       toUpdateParent.parent = rootX;
     }

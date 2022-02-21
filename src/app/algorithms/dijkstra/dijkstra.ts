@@ -45,14 +45,14 @@ export class Dijkstra extends AlgorithmBase {
     this.startNode.distance = 0;
     const unvisitedNodes = Utils.getNodesCopy(this.grid);
 
-    //@ts-ignore
+    // @ts-ignore
     const prioQ = new PriorityQueue<NodeOption>({
       compare: (a: NodeOption, b: NodeOption) => {
         if (a.node.distance < b.node.distance) return -1;
         if (a.node.distance > b.node.distance) return 1;
 
         return a.timestamp > b.timestamp ? 1 : 0;
-      }
+      },
     });
 
     const gridCopy = [];
@@ -84,14 +84,14 @@ export class Dijkstra extends AlgorithmBase {
       }
 
       Utils.updateUnvisitedNeighbors(
-        {
-          node: closestNode,
-          grid: unvisitedNodes,
-          totalCol,
-          totalRow,
-          prioQ,
-          counter
-        });
+          {
+            node: closestNode,
+            grid: unvisitedNodes,
+            totalCol,
+            totalRow,
+            prioQ,
+            counter,
+          });
     }
 
     const shortestPath = Utils.getNodesInShortestPathOrder(

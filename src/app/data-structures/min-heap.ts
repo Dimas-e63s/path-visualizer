@@ -1,4 +1,4 @@
-//@ts-nocheck
+// @ts-nocheck
 
 import Heap from './heap';
 // TODO: - migrate to ts

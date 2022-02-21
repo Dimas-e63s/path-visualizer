@@ -18,7 +18,7 @@ describe('AppComponent', () => {
       declarations: [
         AppComponent,
         StubRootComponent,
-        StubHeaderComponent
+        StubHeaderComponent,
       ],
     }).compileComponents();
 

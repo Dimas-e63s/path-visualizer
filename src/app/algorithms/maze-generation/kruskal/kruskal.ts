@@ -23,8 +23,8 @@ export class Kruskal extends MazeGeneration {
     const horizontalNeighbors: Readonly<DirectionsEnum[]> = [DirectionsEnum.W, DirectionsEnum.E];
 
     this.randomSort(
-      this.getListOfEdges(),
-    ).forEach(edgeKey => {
+        this.getListOfEdges(),
+    ).forEach((edgeKey) => {
       const {rowIdx, colIdx} = this.parseNodeKey(edgeKey);
       if (this.isOdd(rowIdx) && !this.isNodeBelongToSet(edgeKey, horizontalNeighbors)) {
         this.makePassage(edgeKey, horizontalNeighbors);
@@ -38,8 +38,8 @@ export class Kruskal extends MazeGeneration {
 
   private isNodeBelongToSet(node: string, directions: Readonly<DirectionsEnum[]>) {
     return this.set.connected(
-      this.set.get(this.getNeighborKey(node, directions[0])),
-      this.set.get(this.getNeighborKey(node, directions[1])),
+        this.set.get(this.getNeighborKey(node, directions[0])),
+        this.set.get(this.getNeighborKey(node, directions[1])),
     );
   }
 
@@ -74,9 +74,9 @@ export class Kruskal extends MazeGeneration {
   }
 
   private isBorderNode(node: Node) {
-    return Dijkstra.isFirstColumn(node.getColumnIdx())
-      || Dijkstra.isFirstRow(node.getRowIdx())
-      || Dijkstra.isLastColumn(node.getColumnIdx(), this.totalCol - 1)
-      || Dijkstra.isLastRow(node.getRowIdx(), this.totalRow - 1);
+    return Dijkstra.isFirstColumn(node.getColumnIdx()) ||
+      Dijkstra.isFirstRow(node.getRowIdx()) ||
+      Dijkstra.isLastColumn(node.getColumnIdx(), this.totalCol - 1) ||
+      Dijkstra.isLastRow(node.getRowIdx(), this.totalRow - 1);
   }
 }

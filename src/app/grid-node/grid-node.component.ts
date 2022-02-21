@@ -17,7 +17,7 @@ import {Node} from '../models/Node.class';
   styleUrls: ['./grid-node.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GridNodeComponent implements OnChanges{
+export class GridNodeComponent implements OnChanges {
   @Input() vm!: Node;
   @Input() listen!: boolean;
   @Output() addedWall = new EventEmitter<{col: number, row: number}>();
@@ -29,7 +29,7 @@ export class GridNodeComponent implements OnChanges{
 
   @HostListener('mousedown', ['$event'])
   onMouseDown(_: MouseEvent) {
-      this.addedWall.emit({row: this.vm.getRowIdx(), col: this.vm.getColumnIdx()});
+    this.addedWall.emit({row: this.vm.getRowIdx(), col: this.vm.getColumnIdx()});
   }
 
   @HostListener('mouseenter', ['$event'])
@@ -47,7 +47,7 @@ export class GridNodeComponent implements OnChanges{
     return {
       [`${BASE_CLASS}--visited`]: this.vm.isVisitedNode(),
       [`${BASE_CLASS}--wall`]: this.vm.isWall(),
-      [`${BASE_CLASS}--path`]: this.vm.getIsShortestPath()
+      [`${BASE_CLASS}--path`]: this.vm.getIsShortestPath(),
     };
   }
 }

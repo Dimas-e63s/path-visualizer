@@ -18,12 +18,12 @@ export class BacktrackingRecursive extends Backtracking {
 
     this.makePassage(nodeKey);
 
-    this.getRandomDirections().forEach(direction => {
+    this.getRandomDirections().forEach((direction) => {
       const wallKey = this.getNeighborKey(nodeKey, direction);
       const neighborKey = this.getNeighborKey(wallKey, direction);
 
       if (this.isUnvisitedNode({neighborKey, wallKey})) {
-        this.makePassage(wallKey)
+        this.makePassage(wallKey);
         this.generateMaze({nodeKey: neighborKey});
       }
     });

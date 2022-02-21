@@ -19,7 +19,7 @@ export class MazeGeneration extends AlgorithmBase {
   }
 
   getMaze() {
-    this.transformToWalls()
+    this.transformToWalls();
 
     this.generateMaze({nodeKey: '0-0'});
 
@@ -33,12 +33,12 @@ export class MazeGeneration extends AlgorithmBase {
   }
 
   protected parseNodeKey(nodeKey: string): NodeCoordinates {
-    const [rowIdx, colIdx] = nodeKey.split('-').map(key => Number(key));
+    const [rowIdx, colIdx] = nodeKey.split('-').map((key) => Number(key));
 
     return {
       rowIdx,
-      colIdx
-    }
+      colIdx,
+    };
   }
 
   protected getEmptyNode(nodeKey: string): Node {

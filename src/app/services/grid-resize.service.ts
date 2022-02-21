@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {GridSize} from '../models/grid.types';
 import {distinctUntilChanged, fromEvent, map, Observable, Subject, takeUntil, tap} from 'rxjs';
 import {GridBuilder} from '../grid-builder';
@@ -10,14 +10,14 @@ import {StoreService} from './store.service';
 // - refactor to use Resize Observer API
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class GridResizeService {
   private destroy$ = new Subject<void>();
 
   constructor(
     private gridService: GridService,
-    private storeService: StoreService
+    private storeService: StoreService,
   ) { }
 
   ngOnDestroy() {
@@ -27,18 +27,18 @@ export class GridResizeService {
 
   getResizeObservable(): Observable<GridSize> {
     return fromEvent(window, 'resize')
-      .pipe(
-        map(({target}) => target as Window),
-        map(({innerHeight, innerWidth}) => ({
-          totalCol: GridBuilder.calculateAmountOfColumns(innerWidth),
-          totalRow: GridBuilder.calculateAmountOfRows(innerHeight),
-        })),
-        distinctUntilChanged(this.isGridSizeFixed),
-        takeUntil(this.destroy$),
-        tap(({totalCol, totalRow}) => {
-          this.updateGridAfterResize({totalCol, totalRow});
-        })
-      )
+        .pipe(
+            map(({target}) => target as Window),
+            map(({innerHeight, innerWidth}) => ({
+              totalCol: GridBuilder.calculateAmountOfColumns(innerWidth),
+              totalRow: GridBuilder.calculateAmountOfRows(innerHeight),
+            })),
+            distinctUntilChanged(this.isGridSizeFixed),
+            takeUntil(this.destroy$),
+            tap(({totalCol, totalRow}) => {
+              this.updateGridAfterResize({totalCol, totalRow});
+            }),
+        );
   }
 
   private isGridSizeFixed(a: GridSize, b: GridSize): boolean {
@@ -60,7 +60,7 @@ export class GridResizeService {
       this.decreaseGridHeight(totalRow);
     } else if (currentAmountOfRows < totalRow) {
       this.storeService.getGrid().push(
-        ...this.increaseGridHeight({totalRow, currentAmountOfCols, currentAmountOfRows}),
+          ...this.increaseGridHeight({totalRow, currentAmountOfCols, currentAmountOfRows}),
       );
     }
 
@@ -76,16 +76,16 @@ export class GridResizeService {
   }
 
   private decreaseGridLength(newColCount: number): void {
-    this.storeService.getGrid().forEach(row => {
+    this.storeService.getGrid().forEach((row) => {
       row.length = newColCount;
     });
   }
 
   private increaseGridHeight({
-                       totalRow,
-                       currentAmountOfRows,
-                       currentAmountOfCols,
-                     }: {totalRow: number, currentAmountOfRows: number, currentAmountOfCols: number}) {
+    totalRow,
+    currentAmountOfRows,
+    currentAmountOfCols,
+  }: {totalRow: number, currentAmountOfRows: number, currentAmountOfCols: number}) {
     const newGrid = GridBuilder.generateEmptyGrid({totalRow: totalRow - currentAmountOfRows, totalCol: currentAmountOfCols});
 
     for (let rowIdx = 0; rowIdx < newGrid.length; rowIdx++) {
@@ -101,10 +101,10 @@ export class GridResizeService {
     for (let i = 0; i < totalCol - currentAmountOfCols; i++) {
       this.storeService.getGrid().forEach((row, idx) => {
         row.push(
-          GridBuilder.generateGridNode({
-            rowIdx: idx,
-            colIdx: currentAmountOfCols + i,
-          }),
+            GridBuilder.generateGridNode({
+              rowIdx: idx,
+              colIdx: currentAmountOfCols + i,
+            }),
         );
       });
     }

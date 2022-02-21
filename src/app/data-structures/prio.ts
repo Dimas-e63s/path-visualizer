@@ -1,4 +1,4 @@
-//@ts-nocheck
+// @ts-nocheck
 
 import MinHeap from './min-heap';
 import Comparator from './comparator';

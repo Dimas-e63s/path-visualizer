@@ -1,4 +1,4 @@
-import { MazeGeneration } from './maze-generation';
+import {MazeGeneration} from './maze-generation';
 
 xdescribe('MazeGeneration', () => {
   it('should create an instance', () => {

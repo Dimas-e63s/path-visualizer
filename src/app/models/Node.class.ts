@@ -31,15 +31,15 @@ export class Node {
   readonly id: string;
 
   constructor({
-                rowIdx,
-                colIdx,
-                isStartNode = false,
-                isFinishNode = false,
-                distance = Infinity,
-                weight = NodeWeights.EMPTY,
-                previousNode = null,
-                isShortestPath = false,
-              }: NodeInterface) {
+    rowIdx,
+    colIdx,
+    isStartNode = false,
+    isFinishNode = false,
+    distance = Infinity,
+    weight = NodeWeights.EMPTY,
+    previousNode = null,
+    isShortestPath = false,
+  }: NodeInterface) {
     this.validateCoordinates(colIdx, rowIdx);
     this.id = v4();
     this.rowIdx = rowIdx;

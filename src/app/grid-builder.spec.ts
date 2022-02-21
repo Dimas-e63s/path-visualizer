@@ -1,4 +1,4 @@
-import { GridBuilder } from './grid-builder';
+import {GridBuilder} from './grid-builder';
 import {Node} from './models/Node.class';
 
 describe('GridBuilder', () => {
@@ -34,10 +34,10 @@ describe('GridBuilder', () => {
 
     it('should create non-empty 2d array', () => {
       expect(GridBuilder.generateEmptyGrid({totalRow: 2, totalCol: 2})).toEqual(
-        [
-          [null, null],
-          [null, null],
-        ],
+          [
+            [null, null],
+            [null, null],
+          ],
       );
     });
   });

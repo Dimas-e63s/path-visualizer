@@ -81,19 +81,19 @@ describe('Dijkstra Class', () => {
     let grid: Grid;
     const startNode = {colIdx: 2, rowIdx: 5};
     const endNode = {colIdx: 5, rowIdx: 0};
-    const mapNodesToVisited = (grid: GridRow) => grid.map(node => {
+    const mapNodesToVisited = (grid: GridRow) => grid.map((node) => {
       const nodeCopy = node.clone({});
       nodeCopy.setAsVisited();
       return nodeCopy;
     });
 
-    const mapNodeToShortestPath = (grid: GridRow) => grid.map(node => node.clone({isShortestPath: true}));
+    const mapNodeToShortestPath = (grid: GridRow) => grid.map((node) => node.clone({isShortestPath: true}));
 
     beforeEach(() => {
       jasmine.addMatchers(SomeCustomMatchers);
       grid = new Array(6)
-        .fill(null)
-        .map(() => new Array(6).fill(null));
+          .fill(null)
+          .map(() => new Array(6).fill(null));
 
       for (let row = 0; row < 6; row++) {
         for (let col = 0; col < 6; col++) {
@@ -129,7 +129,7 @@ describe('Dijkstra Class', () => {
         endNode: grid[endNode.rowIdx][endNode.colIdx],
       }).traverse();
 
-      let nodesToAnimateStub = [
+      const nodesToAnimateStub = [
         grid[5][2],
         grid[4][2],
         grid[5][1],
@@ -149,7 +149,7 @@ describe('Dijkstra Class', () => {
 
       expect(shortestPath).toReallyEqualVisitedNode([]);
       expect(nodesToAnimate).toReallyEqualVisitedNode(
-        mapNodesToVisited(nodesToAnimateStub),
+          mapNodesToVisited(nodesToAnimateStub),
       );
     });
 
@@ -160,7 +160,7 @@ describe('Dijkstra Class', () => {
         endNode: grid[endNode.rowIdx][endNode.colIdx],
       }).traverse();
 
-      let nodesToAnimateStub = [
+      const nodesToAnimateStub = [
         grid[5][2],
         grid[4][2],
         grid[5][1],
@@ -199,7 +199,7 @@ describe('Dijkstra Class', () => {
         grid[0][5],
       ];
 
-      let shortestPathStub = [
+      const shortestPathStub = [
         grid[4][2],
         grid[3][2],
         grid[2][2],
@@ -211,10 +211,10 @@ describe('Dijkstra Class', () => {
       ];
 
       expect(shortestPath).toReallyEqualAnimationNode(
-        mapNodeToShortestPath(shortestPathStub),
+          mapNodeToShortestPath(shortestPathStub),
       );
       expect(nodesToAnimate).toReallyEqualVisitedNode(
-        mapNodesToVisited(nodesToAnimateStub),
+          mapNodesToVisited(nodesToAnimateStub),
       );
     });
   });

@@ -12,15 +12,15 @@ export class Prim extends MazeGeneration {
     const frontierArr: any = {};
 
     this.mark(
-      `${this.getRandomIdx(0, this.totalRow - 1)}-${this.getRandomIdx(0, this.totalCol - 1)}`,
-      frontierArr
+        `${this.getRandomIdx(0, this.totalRow - 1)}-${this.getRandomIdx(0, this.totalCol - 1)}`,
+        frontierArr,
     );
 
     while (Object.keys(frontierArr).length > 0) {
       const randomKey = this.randomKey(frontierArr);
       delete frontierArr[randomKey];
 
-      this.mark(randomKey, frontierArr)
+      this.mark(randomKey, frontierArr);
 
       const neighbourKey = this.randomKey(this.getNeighbors(randomKey));
       this.gridMap.set(neighbourKey, this.getEmptyNode(neighbourKey));
@@ -28,10 +28,10 @@ export class Prim extends MazeGeneration {
   }
 
   private mark(currNode: string, frontierArr: any) {
-    directions.forEach(direction => {
+    directions.forEach((direction) => {
       const neighborKey = this.getNeighborKey(
-        this.getNeighborKey(currNode, direction),
-        direction,
+          this.getNeighborKey(currNode, direction),
+          direction,
       );
 
       if (this.gridMap.has(neighborKey) && this.gridMap.get(neighborKey)!.isWall()) {
@@ -44,13 +44,13 @@ export class Prim extends MazeGeneration {
 
   private getNeighbors(nodeKey: string) {
     const neighbours: any = {};
-    directions.forEach(direction => {
+    directions.forEach((direction) => {
       const wallKey = this.getNeighborKey(nodeKey, direction);
       const neighborKey = this.getNeighborKey(wallKey, direction);
 
       if (
-        this.gridMap.has(neighborKey)
-        && !this.gridMap.get(neighborKey)!.isWall()
+        this.gridMap.has(neighborKey) &&
+        !this.gridMap.get(neighborKey)!.isWall()
       ) {
         neighbours[wallKey] = wallKey;
       }

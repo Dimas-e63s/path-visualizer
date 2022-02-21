@@ -16,9 +16,9 @@ describe('Backtracking class', () => {
   beforeEach(() => {
     const grid = GridBuilder.generateGrid({totalRow: 10, totalCol: 10});
     backtrackingObj = new BacktrackingStub(
-      grid,
-      grid[0][0],
-      grid[9][9],
+        grid,
+        grid[0][0],
+        grid[9][9],
     );
   });
 
@@ -28,7 +28,7 @@ describe('Backtracking class', () => {
       // @ts-expect-error
       backtrackingObj.transformToWalls();
       // @ts-expect-error
-      backtrackingObj.gridMap.forEach(node => {
+      backtrackingObj.gridMap.forEach((node) => {
         expect(node.isWall()).toBeTrue();
       });
     });
@@ -147,6 +147,6 @@ describe('Backtracking class', () => {
   describe('generateMaze', () => {
     it('should throw error', () => {
       expect(() => backtrackingObj.getMaze()).toThrow();
-    })
+    });
   });
 });

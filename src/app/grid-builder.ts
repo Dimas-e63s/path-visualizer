@@ -13,8 +13,8 @@ export class GridBuilder {
   static generateEmptyGrid({totalRow, totalCol}: GridSize) {
     // TODO: - add validation for passed params
     return Array(totalRow)
-      .fill(0)
-      .map(() => Array(totalCol).fill(null));
+        .fill(0)
+        .map(() => Array(totalCol).fill(null));
   }
 
   static generateGridNode(metaData: NodeInterface) {

@@ -19,15 +19,15 @@ describe('AStar', () => {
 
   describe('getPointsDistance', () => {
     it('should return absolute difference between two points', () => {
-      let stubX = 23;
-      let stubY = 40;
+      const stubX = 23;
+      const stubY = 40;
 
       expect(AStar.getPointsDistance(stubX, stubY)).toEqual(17);
     });
 
     it('should return 0 for stating point', () => {
-      let stubX = 0;
-      let stubY = 0;
+      const stubX = 0;
+      const stubY = 0;
 
       expect(AStar.getPointsDistance(stubX, stubY)).toEqual(0);
     });
@@ -35,8 +35,8 @@ describe('AStar', () => {
 
   describe('calculateHeuristic', () => {
     it('should return heuristic between two Nodes', () => {
-      let stubCurrentNode = createNode({rowIdx: 10, colIdx: 10});
-      let stubEndNode = createNode({rowIdx: 40, colIdx: 38});
+      const stubCurrentNode = createNode({rowIdx: 10, colIdx: 10});
+      const stubEndNode = createNode({rowIdx: 40, colIdx: 38});
       const COMPARE_PRECISION = 6;
 
       expect(AStar.calculateHeuristic({
@@ -46,7 +46,7 @@ describe('AStar', () => {
     });
 
     it('should return heuristic equal to 0', () => {
-      let stubCurrentNode = createNode({rowIdx: 10, colIdx: 10});
+      const stubCurrentNode = createNode({rowIdx: 10, colIdx: 10});
       expect(AStar.calculateHeuristic({
         currentNode: stubCurrentNode,
         endNode: stubCurrentNode,
@@ -204,8 +204,8 @@ describe('AStar', () => {
     // find a shortest path, not find a shortest path
     it('should return closest path', () => {
       const grid: Grid = new Array(6)
-        .fill(null)
-        .map(() => new Array(6).fill(null));
+          .fill(null)
+          .map(() => new Array(6).fill(null));
 
       const startNode = {colIdx: 2, rowIdx: 5};
       const endNode = {colIdx: 5, rowIdx: 0};
@@ -239,7 +239,7 @@ describe('AStar', () => {
         grid[0][5],
       ];
 
-      nodesToAnimateStub = nodesToAnimateStub.map(node => {
+      nodesToAnimateStub = nodesToAnimateStub.map((node) => {
         const nodeCopy = node.clone({});
         nodeCopy.setAsVisited();
         return nodeCopy;
@@ -256,7 +256,7 @@ describe('AStar', () => {
         grid[0][5],
       ];
 
-      shortestPathStub = shortestPathStub.map(node => node.clone({isShortestPath: true}));
+      shortestPathStub = shortestPathStub.map((node) => node.clone({isShortestPath: true}));
 
       expect(nodesToAnimate).toReallyEqualVisitedNode(nodesToAnimateStub);
       expect(shortestPath).toReallyEqualAnimationNode(shortestPathStub);
@@ -264,8 +264,8 @@ describe('AStar', () => {
 
     it('should return empty closest path', () => {
       const grid: Grid = new Array(6)
-        .fill(null)
-        .map(() => new Array(6).fill(null));
+          .fill(null)
+          .map(() => new Array(6).fill(null));
 
       const startNode = {colIdx: 2, rowIdx: 5};
       const endNode = {colIdx: 5, rowIdx: 0};
@@ -320,7 +320,7 @@ describe('AStar', () => {
         grid[5][0],
       ];
 
-      nodesToAnimateStub = nodesToAnimateStub.map(node => {
+      nodesToAnimateStub = nodesToAnimateStub.map((node) => {
         const nodeCopy = node.clone({});
         nodeCopy.setAsVisited();
         return nodeCopy;

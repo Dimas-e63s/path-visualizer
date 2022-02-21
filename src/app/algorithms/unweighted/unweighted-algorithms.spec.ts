@@ -8,21 +8,21 @@ describe('UnweightedAlgorithms', () => {
   let startNode: any;
   const endNode = {colIdx: 5, rowIdx: 0};
 
-  const mapNodesToVisited = (grid: GridRow) => grid.map(node => {
+  const mapNodesToVisited = (grid: GridRow) => grid.map((node) => {
     const nodeCopy = node.clone({});
     nodeCopy.setAsVisited();
     return nodeCopy;
   });
 
-  const mapNodesToShortestPath = (grid: GridRow) => grid.map(node => node.clone({isShortestPath: true}));
+  const mapNodesToShortestPath = (grid: GridRow) => grid.map((node) => node.clone({isShortestPath: true}));
 
   beforeEach(() => {
     jasmine.addMatchers(SomeCustomMatchers);
     startNode = {colIdx: 2, rowIdx: 5};
 
     grid = new Array(6)
-      .fill(null)
-      .map(() => new Array(6).fill(null));
+        .fill(null)
+        .map(() => new Array(6).fill(null));
 
     for (let row = 0; row < 6; row++) {
       for (let col = 0; col < 6; col++) {
@@ -83,7 +83,7 @@ describe('UnweightedAlgorithms', () => {
 
       expect(shortestPath).toReallyEqualVisitedNode([]);
       expect(nodesToAnimate).toReallyEqualVisitedNode(
-        mapNodesToVisited(nodesToAnimateStub),
+          mapNodesToVisited(nodesToAnimateStub),
       );
     });
 
@@ -106,7 +106,7 @@ describe('UnweightedAlgorithms', () => {
         grid[0][5],
       ];
 
-      let shortestPathStub = [
+      const shortestPathStub = [
         grid[4][2],
         grid[3][2],
         grid[2][2],
@@ -118,10 +118,10 @@ describe('UnweightedAlgorithms', () => {
       ];
 
       expect(shortestPath).toReallyEqualAnimationNode(
-        mapNodesToShortestPath(shortestPathStub),
+          mapNodesToShortestPath(shortestPathStub),
       );
       expect(nodesToAnimate).toReallyEqualVisitedNode(
-        mapNodesToVisited(nodesToAnimateStub),
+          mapNodesToVisited(nodesToAnimateStub),
       );
     });
   });
@@ -170,7 +170,7 @@ describe('UnweightedAlgorithms', () => {
 
       expect(shortestPath).toReallyEqualVisitedNode([]);
       expect(nodesToAnimate).toReallyEqualVisitedNode(
-        mapNodesToVisited(nodesToAnimateStub),
+          mapNodesToVisited(nodesToAnimateStub),
       );
     });
 
@@ -217,10 +217,10 @@ describe('UnweightedAlgorithms', () => {
         grid[0][0],
         grid[1][5],
         grid[0][4],
-        grid[0][5]
+        grid[0][5],
       ];
 
-      let shortestPathStub = [
+      const shortestPathStub = [
         grid[5][3],
         grid[5][4],
         grid[5][5],
@@ -232,10 +232,10 @@ describe('UnweightedAlgorithms', () => {
       ];
 
       expect(shortestPath).toReallyEqualAnimationNode(
-        mapNodesToShortestPath(shortestPathStub),
+          mapNodesToShortestPath(shortestPathStub),
       );
       expect(nodesToAnimate).toReallyEqualVisitedNode(
-        mapNodesToVisited(nodesToAnimateStub),
+          mapNodesToVisited(nodesToAnimateStub),
       );
     });
   });

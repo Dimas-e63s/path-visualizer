@@ -7,7 +7,7 @@ import {PathAlgorithmEnum} from '../header/header.component';
   templateUrl: './legend.component.html',
   styleUrls: ['./legend.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LegendComponent {
   @Input() selectedAlgorithm!: PathAlgorithmEnum | null;
@@ -15,43 +15,43 @@ export class LegendComponent {
   legendItems = [
     {
       className: '--path',
-      description: 'Shortest-path Node'
+      description: 'Shortest-path Node',
     },
     {
       className: '--wall',
-      description: 'Wall Node'
+      description: 'Wall Node',
     },
     {
       className: '--visited',
-      description: 'Visited Node'
+      description: 'Visited Node',
     },
     {
       className: '--unvisited',
-      description: 'Unvisited Node'
-    }
-  ]
+      description: 'Unvisited Node',
+    },
+  ];
 
   icons = [
     {
       className: '--start',
       description: 'Start Node',
-      disabled: false
+      disabled: false,
     },
     {
       className: '--target',
       description: 'Target Node',
-      disabled: false
+      disabled: false,
     },
     {
       className: '--weight',
       description: 'Weight Node',
-      disabled: true
+      disabled: true,
     },
     {
       className: '--bomb',
       description: 'Bomb Node',
-      disabled: true
-    }
+      disabled: true,
+    },
   ];
 
   getNotificationDescription(): string {
