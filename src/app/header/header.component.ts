@@ -23,6 +23,7 @@ export enum PathAlgorithmEnum {
 })
 export class HeaderComponent {
   @Input() isButtonsDisabled!: boolean;
+  // TODO: - check angular docs for naming convention
   @Output() onAlgoRunButtonWasClicked = new EventEmitter<void>();
   @Output() onClearPathWasClicked = new EventEmitter<void>();
   @Output() onClearWallsWasClicked = new EventEmitter<void>();
@@ -48,6 +49,7 @@ export class HeaderComponent {
 
   onAlgoClick() {
     this.onAlgoRunButtonWasClicked.emit();
+    // TODO: - think on how to reduce repetition of closeNavbar() call
     this.closeNavbar();
   }
 

@@ -10,7 +10,7 @@ import {GridResizeService} from './services/grid-resize.service';
 import {StoreService} from './services/store.service';
 
 // TODO:
-// - be careful, removed prevNode state
+// - refactor to use pull-based architecture based on observables (eliminate reference change)
 
 @Component({
   selector: 'app-root',
@@ -83,7 +83,9 @@ export class AppComponent implements OnInit {
     this.moveEnd = false;
   }
 
+  // TODO: - move to grid service
   onDraw($event: any) {
+    // TODO: - extract long conditions to query
     if (this.moveHead && (this.storeService.getStartNode().rowIdx !== $event.row || this.storeService.getStartNode().colIdx !== $event.col)) {
       this.gridService.removeHeadNode(this.storeService.getGrid()[this.storeService.getPrevStartNode().row][this.storeService.getPrevStartNode().col]);
       this.gridService.addHeadNode($event);
@@ -118,6 +120,7 @@ export class AppComponent implements OnInit {
     this.activateButtons();
   }
 
+  // TODO: - move to store
   addWall(node: Node): void {
     if (!node.isWall()) {
       const nodeClone = node.clone();
@@ -126,6 +129,7 @@ export class AppComponent implements OnInit {
     }
   }
 
+  // TODO: - move to store
   removeWall(node: Node): void {
     if (node.isWall()) {
       this.storeService.getGrid()[node.getRowIdx()][node.getColumnIdx()] = node.clone({
@@ -135,6 +139,7 @@ export class AppComponent implements OnInit {
     }
   }
 
+  // TODO: - move to store
   clearPath(): void {
     for (const row of this.storeService.getGrid()) {
       for (const node of row) {
@@ -161,9 +166,8 @@ export class AppComponent implements OnInit {
     ).subscribe();
   }
 
-  onAnimSpeedSelected(animSpeed: string) {
-    console.log(animSpeed);
-  }
+  // TODO: - to implement
+  onAnimSpeedSelected(animSpeed: string) {}
 
   disableButtons(): void {
     this.isButtonsDisabled = true;

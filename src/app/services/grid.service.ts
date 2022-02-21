@@ -13,7 +13,8 @@ import {AStar} from '../algorithms/a-star/a-star';
 import {UnweightedAlgorithms} from '../algorithms/unweighted/unweighted-algorithms';
 import {NodeCoordinates, StoreService} from './store.service';
 
-// TODO: - change logic for setting grid height to take elementRef of section as source of height
+// TODO:
+//  - change logic for setting grid height to take elementRef of section as source of height
 
 @Injectable({
   providedIn: 'root',

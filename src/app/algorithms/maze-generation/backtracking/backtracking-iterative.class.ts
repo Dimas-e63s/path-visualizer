@@ -2,6 +2,7 @@ import {Stack} from '@datastructures-js/stack';
 import {Backtracking} from './backtracking';
 
 export class BacktrackingIterative extends Backtracking {
+  // TODO: - add return type
   override generateMaze({nodeKey}: {nodeKey: string}) {
     // 1. Choose the initial cell, mark it as visited and push it to the stack
     // 2. While the stack is not empty

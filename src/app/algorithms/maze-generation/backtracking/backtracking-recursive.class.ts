@@ -3,6 +3,7 @@ import {Node} from '../../../models/Node.class';
 import {Backtracking} from './backtracking';
 
 export class BacktrackingRecursive extends Backtracking {
+  // TODO: - add object instead of params
   constructor(grid: Grid, startNode: Node, endNode: Node) {
     super(grid, startNode, endNode);
   }

@@ -8,6 +8,7 @@ class DisjointSetNode {
   }
 }
 
+// TODO: - migrate to ts
 export class DisjointSet {
   nodes;
 

@@ -1,3 +1,4 @@
+// TODO: - migrate to ts
 //@ts-nocheck
 export default class Comparator {
   /**

@@ -1,6 +1,7 @@
 import {Node} from '../../../models/Node.class';
 import {GridRow} from '../../../models/grid.types';
 
+// TODO: - add return type
 export class NodeValidation {
   static isHasSameId(a: Node, b: Node) {
     return a.id === b.id;

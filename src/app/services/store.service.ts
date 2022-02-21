@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {Grid} from '../models/grid.types';
 import {GridBuilder} from '../grid-builder';
 
+// TODO: -extract interface
 export interface NodeCoordinates {
   rowIdx: number;
   colIdx: number;

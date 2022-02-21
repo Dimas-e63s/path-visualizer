@@ -1,5 +1,6 @@
 import {PathAlgorithmEnum} from '../header/header.component';
 
+// TODO: - extract interface/enums
 interface AlgorithmNotification {
   algoName: PathAlgorithmEnum;
   algoType: AlgorithmTypeEnum;
@@ -35,6 +36,7 @@ class AlgorithmDescription extends Notification {
   }
 
   override getHtmlDescription(): string {
+    // TODO: - add html serialization
     return `${this.algoName} is <strong>${this.algoType}</strong> and <strong>${this.algoEfficiency}</strong> the shortest path!`;
   }
 }

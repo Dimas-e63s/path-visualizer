@@ -1,7 +1,7 @@
 //@ts-nocheck
 
 import Heap from './heap';
-
+// TODO: - migrate to ts
 export default class MinHeap extends Heap {
   /**
    * Checks if pair of heap elements is in correct order.

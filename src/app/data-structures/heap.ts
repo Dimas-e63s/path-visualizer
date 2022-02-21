@@ -4,6 +4,7 @@ import Comparator from './comparator';
 /**
  * Parent class for Min and Max Heaps.
  */
+// TODO: - migrate to ts
 export default class Heap {
   /**
    * @constructs Heap

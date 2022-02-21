@@ -1,5 +1,6 @@
 import {v4} from 'uuid';
 
+// TODO: - extract interface/enum
 export interface NodeInterface {
   rowIdx: number;
   colIdx: number;

@@ -13,6 +13,7 @@ interface NodeOption {
 }
 
 export class Dijkstra extends AlgorithmBase {
+  // TODO: - extract type
   constructor({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}) {
     super({grid, startNode, endNode});
   }
@@ -36,6 +37,9 @@ export class Dijkstra extends AlgorithmBase {
     return node.distance < Infinity;
   }
 
+  // TODO:
+  //  - extract type
+  //  - the function is long -- refactor it
   traverse(): [GridRow, GridRow] {
     const visitedNodesInOrder: GridRow = [];
     this.startNode.distance = 0;
@@ -44,10 +48,9 @@ export class Dijkstra extends AlgorithmBase {
     //@ts-ignore
     const prioQ = new PriorityQueue<NodeOption>({
       compare: (a: NodeOption, b: NodeOption) => {
-        if (a.node.distance < b.node.distance) return -1; // do not swap
-        if (a.node.distance > b.node.distance) return 1; // swap
+        if (a.node.distance < b.node.distance) return -1;
+        if (a.node.distance > b.node.distance) return 1;
 
-        // salaries are the same, compare rank
         return a.timestamp > b.timestamp ? 1 : 0;
       }
     });

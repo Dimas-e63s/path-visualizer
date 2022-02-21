@@ -4,14 +4,18 @@ import {Utils} from '../utils/utils.class';
 import PriorityQueue from '../../data-structures/prio';
 import {AlgorithmBase} from '../algorithm-base/algorithm-base';
 
-export class AStar extends AlgorithmBase{
+export class AStar extends AlgorithmBase {
+  // TODO: - extract type
   constructor({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}) {
     super({grid, startNode, endNode});
   }
 
-  traverse(): any {
+  // TODO:
+  //  - extract type
+  //  - the function is long -- refactor it
+  traverse(): [Node[], Node[]] {
     if (this.startNode === null || this.endNode == null) {
-      return;
+      throw new Error(`No destination node was provided. Given startNode: ${this.startNode}, endNode: ${this.endNode}`);
     }
 
     const {totalRow, totalCol} = Utils.getGridSize(this.grid);
@@ -83,6 +87,7 @@ export class AStar extends AlgorithmBase{
     return [nodesToAnimate, shortestPath];
   }
 
+  // TODO: - extract type
   static setStartNode({
                         startNodeKey,
                         gScore,
@@ -107,6 +112,7 @@ export class AStar extends AlgorithmBase{
     return node.isVisitedNode() || node.isWall();
   }
 
+  // TODO: - extract type
   static populateMapsWithDefaultValues({
                                          gScore,
                                          fScore,
@@ -136,6 +142,7 @@ export class AStar extends AlgorithmBase{
     return (rowAbs + colAbs) * 1.001;
   }
 
+  // TODO: - extract type
   static isNeighborHasCloserPath({
                                    tentative_gScore,
                                    gScore,

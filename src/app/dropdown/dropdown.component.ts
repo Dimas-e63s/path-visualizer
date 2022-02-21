@@ -17,10 +17,10 @@ export class DropdownComponent  {
   @Output() itemSelected = new EventEmitter<any>();
 
 
-  open = false;
+  isOpen = false;
 
   onClick(item: any) {
-    this.open = false;
+    this.isOpen = false;
 
     if (this.component && this.component.nativeFocusableElement) {
       this.component.nativeFocusableElement.focus();

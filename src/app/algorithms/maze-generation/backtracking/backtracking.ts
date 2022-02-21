@@ -6,6 +6,7 @@ import {MazeGeneration} from '../maze-generation';
 export class Backtracking extends MazeGeneration {
   protected readonly visitedNodes = new Set<string>();
 
+  // TODO: - add object instead of params
   constructor(grid: Grid, startNode: Node, endNode: Node) {
     super(grid, startNode, endNode);
   }

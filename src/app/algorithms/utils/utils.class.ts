@@ -41,6 +41,7 @@ export class Utils {
       && currNode.getColumnIdx() === endNode.getColumnIdx();
   }
 
+  // TODO: - extract params type
   static updateUnvisitedNeighbors({
                                     node,
                                     grid,
@@ -97,6 +98,7 @@ export class Utils {
     return grid.get(Utils.getNodeKey(rightNode)) as Node;
   }
 
+  // TODO: - extract params type
   static getUnvisitedNeighbors({
                                  node,
                                  grid,
