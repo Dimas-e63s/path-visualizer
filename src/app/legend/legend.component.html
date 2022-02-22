@@ -1,0 +1,23 @@
+<section class="legend">
+  <div
+    class="legend__item"
+    *ngFor="let icon of icons"
+    [class.legend__item--disabled]="icon.disabled"
+  >
+    <div class="legend__item-icon" [ngClass]="'legend__item-icon' + icon.className"></div>
+    <span class="legend__item-text">{{icon.description}}</span>
+  </div>
+
+  <div class="legend__item" *ngFor="let item of legendItems">
+  <span
+    class="legend__item-node"
+    [ngClass]="'legend__item-node' + item.className"
+  ></span>
+    <span class="legend__item-text">{{item.description}}</span>
+  </div>
+
+</section>
+<tui-notification class="notification" [hasIcon]="false">
+  <p class="notification__text" [innerHTML]="getNotificationDescription()"></p>
+</tui-notification>
+

@@ -1,124 +1,139 @@
 import {Node} from '../../models/Node.class';
-import {Grid, GridMap} from '../../models/grid.types';
+import {Grid, GridMap, GridRow} from '../../models/grid.types';
 import {Utils} from '../utils/utils.class';
 import {Dijkstra} from '../dijkstra/dijkstra';
-import { Stack } from '@datastructures-js/stack';
-import { Queue } from '@datastructures-js/queue';
+import {Stack} from '@datastructures-js/stack';
+import {Queue} from '@datastructures-js/queue';
+import {AlgorithmBase} from '../algorithm-base/algorithm-base';
 
-export class UnweightedAlgorithms {
-  dfs({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}) {
+export class UnweightedAlgorithms extends AlgorithmBase {
+  constructor({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}) {
+    super({grid, startNode, endNode});
+  }
+
+  // TODO: - extract type
+  dfs(): [Node[], Node[]] {
     const stack = new Stack<Node>();
-    const gridMap = Utils.getNodesCopy(grid);
-    const exploredNodes = new Set().add(Utils.getNodeKey(startNode));
-    stack.push(gridMap.get(Utils.getNodeKey(startNode)) as Node);
-    const {totalRow, totalCol} = Utils.getGridSize(grid);
-    const visitedNodes = [];
+    const gridMap = Utils.getNodesCopy(this.grid);
+
+    stack.push(gridMap.get(Utils.getNodeKey(this.startNode)) as Node);
+
+    const {totalRow, totalCol} = Utils.getGridSize(this.grid);
+    const visitedNodes: GridRow = [];
 
     while (!stack.isEmpty()) {
       const currentNode = stack.pop();
-      visitedNodes.push(currentNode);
 
-      exploredNodes.add(Utils.getNodeKey(currentNode));
-
-      if (Utils.isEndNode(currentNode, endNode)) {
-        break;
+      if (currentNode.isVisitedNode() || currentNode.isWall()) {
+        continue;
       }
 
-      if (currentNode.isWall()) {
-        continue;
+      currentNode.setAsVisited();
+      visitedNodes.push(currentNode);
+
+      if (Utils.isEndNode(currentNode, this.endNode)) {
+        break;
       }
 
       const neighbors = UnweightedAlgorithms.getNeighbors({
         currentNode,
         grid: gridMap,
         totalRow,
-        totalCol
-      })
+        totalCol,
+      });
 
-      neighbors.forEach(neighbor => {
-        if (!exploredNodes.has(Utils.getNodeKey(neighbor))) {
+      neighbors.forEach((neighbor) => {
+        if (!neighbor.isVisitedNode()) {
           neighbor.previousNode = currentNode;
           stack.push(neighbor);
         }
-      })
+      });
     }
 
-    const shortestpath = Utils.getNodesInShortestPathOrder(
-      gridMap.get(Utils.getNodeKey(endNode)) as Node
-    )
+    const shortestPath = Utils.getNodesInShortestPathOrder(
+      gridMap.get(Utils.getNodeKey(this.endNode)) as Node,
+    );
 
-    return [visitedNodes, shortestpath]
+    return [visitedNodes, shortestPath];
   }
 
-  bfs({grid, startNode, endNode}: {grid: Grid, startNode: Node, endNode: Node}) {
+  // TODO: - extract type
+  bfs(): [Node[], Node[]] {
     const queue = new Queue<Node>();
-    const gridMap = Utils.getNodesCopy(grid);
-    const exploredNodes = new Set().add(Utils.getNodeKey(startNode));
-    queue.enqueue(gridMap.get(Utils.getNodeKey(startNode)) as Node);
-    const {totalRow, totalCol} = Utils.getGridSize(grid);
+    const gridMap = Utils.getNodesCopy(this.grid);
+    const exploredNodes = new Set().add(Utils.getNodeKey(this.startNode));
+    queue.enqueue(gridMap.get(Utils.getNodeKey(this.startNode)) as Node);
+    const {totalRow, totalCol} = Utils.getGridSize(this.grid);
     const visitedNodes = [];
 
     while (!queue.isEmpty()) {
       const currentNode = queue.dequeue();
+      if (currentNode.isWall()) {
+        continue;
+      }
+
       currentNode.setAsVisited();
       visitedNodes.push(currentNode);
 
-      if (Utils.isEndNode(currentNode, endNode)) {
+      if (Utils.isEndNode(currentNode, this.endNode)) {
         break;
-      }
-
-      if (currentNode.isWall()) {
-        continue;
       }
 
       const neighbors = UnweightedAlgorithms.getNeighbors({
         currentNode,
         grid: gridMap,
         totalRow,
-        totalCol
+        totalCol,
       });
 
-      neighbors.forEach(neighbor => {
+      neighbors.forEach((neighbor) => {
         if (!exploredNodes.has(Utils.getNodeKey(neighbor))) {
           exploredNodes.add(Utils.getNodeKey(neighbor));
           neighbor.previousNode = currentNode;
           queue.enqueue(neighbor);
         }
-      })
+      });
     }
 
     const shortestPath = Utils.getNodesInShortestPathOrder(
-      gridMap.get(Utils.getNodeKey(endNode)) as Node
-    )
+      gridMap.get(Utils.getNodeKey(this.endNode)) as Node,
+    );
 
-    return [visitedNodes, shortestPath]
+    return [visitedNodes, shortestPath];
   }
 
+  // TODO:
+  //  - extract type
+  //  - add return type
   static getNeighbors({
-                        currentNode, grid, totalCol,
-                        totalRow
-                      }: {currentNode: Node, grid: GridMap, totalCol: number, totalRow: number}) {
+    currentNode, grid, totalCol,
+    totalRow,
+  }: {currentNode: Node, grid: GridMap, totalCol: number, totalRow: number}) {
     const neighbors = [];
     const {rowIdx, colIdx} = Utils.getNodeCoordinates(currentNode);
 
     if (!Dijkstra.isFirstColumn(colIdx)) {
-      const neighbor = Utils.getLeftNode(currentNode, grid);
-      neighbors.push(neighbor)
+      neighbors.push(
+          Utils.getLeftNode(currentNode, grid),
+      );
     }
 
     if (!Dijkstra.isLastRow(rowIdx, totalRow - 1)) {
-      const neighbor = Utils.getBelowNode(currentNode, grid);
-      neighbors.push(neighbor)
+      neighbors.push(
+          Utils.getBelowNode(currentNode, grid),
+      );
     }
 
     if (!Dijkstra.isLastColumn(colIdx, totalCol - 1)) {
-      const neighbor = Utils.getRightNode(currentNode, grid);
-      neighbors.push(neighbor);
+      neighbors.push(
+          Utils.getRightNode(currentNode, grid),
+      );
     }
 
     if (!Dijkstra.isFirstRow(rowIdx)) {
-      const neighbor = Utils.getUpNode(currentNode, grid);
-      neighbors.push(neighbor);
+      neighbors.push(
+          Utils.getUpNode(currentNode, grid),
+      );
     }
 
     return neighbors;

@@ -1,29 +1,32 @@
 <tui-root>
-<app-header
-  (onAlgoRunButtonWasClicked)="runAlgo()"
-  (onClearPathWasClicked)="clearPath()"
-  (onClearWallsWasClicked)="clearWalls()"
-></app-header>
-  <div style="height: 120px">
-    Lorem ipsum dolor sit amet.
-  </div>
-<section
-  (mousedown)="startEditing()"
-  (mouseup)="breakEdit()"
-  (mouseleave)="breakEdit()"
-  style="margin-top: 2px"
->
-  <div
-    class="row"
-    *ngFor="let row of nodes; let rowIdx = index; trackBy: trackByRow"
-  >
-    <app-grid-node
-      *ngFor="let column of nodes[rowIdx]; trackBy: trackByNode"
-      [vm]="column"
-      (addedWall)="onAddedWall($event)"
-      (mouseEnter)="onDraw($event)"
-    ></app-grid-node>
-  </div>
-</section>
-
+  <app-header
+    [isButtonsDisabled]="isButtonsDisabled"
+    (onAlgoRunButtonWasClicked)="runAlgo()"
+    (onClearPathWasClicked)="clearPath()"
+    (onClearWallsWasClicked)="clearWalls()"
+    (onClearBoardWasClicked)="clearBoard()"
+    (onAlgorithmSelectedWasClicked)="onAlgorithmSelected($event)"
+    (onMazeAlgorithmWasClicked)="onMazeAlgoSelected($event)"
+    (onAnimSpeedWasClicked)="onAnimSpeedSelected($event)"
+  ></app-header>
+  <main>
+    <app-legend [selectedAlgorithm]="this.selectedPathAlgo"></app-legend>
+    <section
+      (mousedown)="startEditing()"
+      (mouseup)="stopEdit()"
+      (mouseleave)="stopEdit()"
+    >
+      <div
+        class="row"
+        *ngFor="let row of getNodes(); trackBy: trackByRow"
+      >
+        <app-grid-node
+          *ngFor="let column of row; trackBy: trackByNode"
+          [vm]="column"
+          (addedWall)="onAddedWall($event)"
+          (mouseEnter)="onDraw($event)"
+        ></app-grid-node>
+      </div>
+    </section>
+  </main>
 </tui-root>

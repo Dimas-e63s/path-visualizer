@@ -1,6 +1,7 @@
 import {Utils} from './utils.class';
 import {Node, NodeInterface} from '../../models/Node.class';
 import {Grid, GridMap, GridRow} from '../../models/grid.types';
+import {SomeCustomMatchers} from './node-matcher';
 
 // TODO: - empty GridMap, no node in GridMap (getNodeBelow etc.)
 
@@ -9,16 +10,20 @@ describe('Utils Class', () => {
   let createNode: (metaData: NodeInterface) => Node;
 
   beforeEach(() => {
+    jasmine.addMatchers(SomeCustomMatchers);
+  });
+
+  beforeEach(() => {
     emptyGrid = [];
 
     createNode = (metaData) => new Node({
-      ...metaData
+      ...metaData,
     });
   });
 
   describe('getNodeKey', () => {
     it('should return true for columnIdx 7 and 7 lastColumnIdx', () => {
-      let stubNode: Node = new Node({
+      const stubNode: Node = new Node({
         rowIdx: 2,
         colIdx: 10,
       });
@@ -41,20 +46,20 @@ describe('Utils Class', () => {
       expect(Utils.getGridColumnSize(emptyGrid)).toEqual(0);
 
       let stubGrid: Grid = Array(50)
-        .fill(null)
-        .map(() => []);
+          .fill(null)
+          .map(() => []);
       expect(Utils.getGridColumnSize(stubGrid)).toEqual(0);
 
       // @ts-ignore
       stubGrid = Array(50)
-        .fill(null)
-        .map((_, idx) => [
+          .fill(null)
+          .map((_, idx) => [
             new Node({
               colIdx: idx,
               rowIdx: idx,
             }),
           ],
-        );
+          );
 
       expect(Utils.getGridColumnSize(stubGrid)).toEqual(1);
     });
@@ -63,20 +68,20 @@ describe('Utils Class', () => {
   describe('getNodesCopy', () => {
     beforeEach(() => {
       const nodeClassMatcher = (a: Node, b: Node) => {
-        return a.id !== b.id
-          && a.getColumnIdx() === b.getColumnIdx()
-          && a.getRowIdx() === b.getRowIdx()
-          && a.getIsFinishNode() === b.getIsFinishNode()
-          && a.getIsStartNode() === b.getIsStartNode()
-          && a.distance === b.distance
-          && a.previousNode === b.previousNode
-          && a.weight === b.weight;
-      }
+        return a.id !== b.id &&
+          a.getColumnIdx() === b.getColumnIdx() &&
+          a.getRowIdx() === b.getRowIdx() &&
+          a.getIsFinishNode() === b.getIsFinishNode() &&
+          a.getIsStartNode() === b.getIsStartNode() &&
+          a.distance === b.distance &&
+          a.previousNode === b.previousNode &&
+          a.weight === b.weight;
+      };
 
       jasmine.addCustomEqualityTester(nodeClassMatcher);
-    })
+    });
     it('should return empty hash-map', () => {
-      let stubVal: Grid = [];
+      const stubVal: Grid = [];
 
       expect(Utils.getNodesCopy(stubVal)).toHaveSize(0);
     });
@@ -87,7 +92,7 @@ describe('Utils Class', () => {
         rowIdx: idx,
         isFinishNode: false,
         isStartNode: false,
-        distance: 1
+        distance: 1,
       }));
 
       const [stubNode1, stubNode2, stubNode3] = gridRow;
@@ -98,7 +103,7 @@ describe('Utils Class', () => {
       expect(clonedNode1).toEqual(stubNode1);
       expect(clonedNode2).toEqual(stubNode2);
       expect(clonedNode3).toEqual(stubNode3);
-    })
+    });
   });
 
   describe('isEndNode', () => {
@@ -115,7 +120,7 @@ describe('Utils Class', () => {
       endNode = createNode(nodeMetadata);
 
       expect(Utils.isEndNode(currNode, endNode)).toBeTrue();
-    })
+    });
 
     it('should return false', () => {
       let nodeMetadata = {rowIdx: 10, colIdx: 0};
@@ -133,7 +138,7 @@ describe('Utils Class', () => {
       endNode = createNode(endNodeMetadata);
 
       expect(Utils.isEndNode(currNode, endNode)).toBeFalse();
-    })
+    });
   });
 
   describe('isPreviousNodeExist', () => {
@@ -142,9 +147,9 @@ describe('Utils Class', () => {
     beforeEach(() => {
       stubPrevNode = createNode({
         colIdx: 2,
-        rowIdx: 10
+        rowIdx: 10,
       });
-    })
+    });
 
     it('should return false', () => {
       expect(Utils.isPreviousNodeExist(stubPrevNode)).toBeFalse();
@@ -154,25 +159,26 @@ describe('Utils Class', () => {
       const stubNode = new Node({
         colIdx: 34,
         rowIdx: 34,
-        previousNode: stubPrevNode
-      })
+        previousNode: stubPrevNode,
+      });
 
       expect(Utils.isPreviousNodeExist(stubNode)).toBeTrue();
-    })
+    });
   });
 
   describe('getNodesInShortestPathOrder', () => {
     it('should return empty array', () => {
-      let endNode = createNode({rowIdx: 12, colIdx: 12});
+      const endNode = createNode({rowIdx: 12, colIdx: 12});
 
       expect(Utils.getNodesInShortestPathOrder(endNode)).toEqual([]);
-    })
+    });
 
     it('should return shortest path array', () => {
-      let startNode = createNode({rowIdx: 22, colIdx: 12});
-      let endNode = createNode({rowIdx: 12, colIdx: 12, previousNode: startNode});
-      expect(Utils.getNodesInShortestPathOrder( endNode)).toEqual([endNode]);
-    })
+      const startNode = createNode({rowIdx: 22, colIdx: 12});
+      const endNode = createNode({rowIdx: 12, colIdx: 12, previousNode: startNode});
+      expect(
+          Utils.getNodesInShortestPathOrder(endNode)).toReallyEqualAnimationNode([endNode.clone({isShortestPath: true})]);
+    });
   });
 
   describe('getNodeCoordinates', () => {
@@ -180,20 +186,20 @@ describe('Utils Class', () => {
       const nodeMetaData = {colIdx: 10, rowIdx: 10};
       const stubNode = createNode(nodeMetaData);
       expect(Utils.getNodeCoordinates(stubNode)).toEqual(nodeMetaData);
-    })
+    });
   });
 
   describe('getBelowNode', () => {
     it('should return node one row below current node', () => {
       const currentRow = 10;
       const currentNode = createNode({rowIdx: currentRow, colIdx: 9});
-      const nodeBelow = createNode({rowIdx: currentRow - 1, colIdx: 9});
+      const nodeBelow = createNode({rowIdx: currentRow + 1, colIdx: 9});
       const grid: GridMap = new Map([
-        [Utils.getNodeKey(nodeBelow), nodeBelow]
+        [Utils.getNodeKey(nodeBelow), nodeBelow],
       ]);
 
       expect(Utils.getBelowNode(currentNode, grid)).toEqual(nodeBelow);
-    })
+    });
   });
 
   describe('getLeftNode', () => {
@@ -202,36 +208,54 @@ describe('Utils Class', () => {
       const currentNode = createNode({rowIdx: 10, colIdx: currentColumn});
       const leftNode = createNode({rowIdx: 10, colIdx: currentColumn - 1});
       const grid: GridMap = new Map([
-        [Utils.getNodeKey(leftNode), leftNode]
+        [Utils.getNodeKey(leftNode), leftNode],
       ]);
 
       expect(Utils.getLeftNode(currentNode, grid)).toEqual(leftNode);
-    })
+    });
   });
 
   describe('getUpNode', () => {
     it('should return node one level above of current node', () => {
-      const currentColumn = 10;
-      const currentNode = createNode({rowIdx: 10, colIdx: currentColumn});
-      const upNode = createNode({rowIdx: 10, colIdx: currentColumn + 1});
+      const currentRow = 10;
+      const currentNode = createNode({rowIdx: currentRow, colIdx: 10});
+      const upNode = createNode({rowIdx: currentRow - 1, colIdx: 10});
       const grid: GridMap = new Map([
-        [Utils.getNodeKey(upNode), upNode]
+        [Utils.getNodeKey(upNode), upNode],
       ]);
 
       expect(Utils.getUpNode(currentNode, grid)).toEqual(upNode);
-    })
+    });
   });
 
   describe('getRightNode', () => {
     it('should return right node of current node', () => {
-      const currentRow = 10;
-      const currentNode = createNode({rowIdx: currentRow, colIdx: 9});
-      const rightNode = createNode({rowIdx: currentRow + 1, colIdx: 9});
+      const currentCol = 10;
+      const currentNode = createNode({rowIdx: 10, colIdx: currentCol});
+      const rightNode = createNode({rowIdx: 10, colIdx: currentCol + 1});
       const grid: GridMap = new Map([
-        [Utils.getNodeKey(rightNode), rightNode]
+        [Utils.getNodeKey(rightNode), rightNode],
       ]);
 
       expect(Utils.getRightNode(currentNode, grid)).toEqual(rightNode);
-    })
+    });
+  });
+
+  describe('getGridSize', () => {
+    it('should return {0, 0} for empty grid', () => {
+      const stubEmptyGrid: Grid = [];
+
+      expect(Utils.getGridSize(stubEmptyGrid)).toEqual({totalRow: 0, totalCol: 0});
+    });
+
+    it('should return size of the grid', () => {
+      const rows = 2;
+      const cols = 2;
+      const stubEmptyGrid: Grid = Array(rows)
+          .fill(0)
+          .map(() => Array(cols).fill(null));
+
+      expect(Utils.getGridSize(stubEmptyGrid)).toEqual({totalRow: rows, totalCol: cols});
+    });
   });
 });

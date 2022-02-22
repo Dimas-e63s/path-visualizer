@@ -1,0 +1,114 @@
+@use '../_variables.scss' as *;
+
+.legend {
+  padding: 110px 0 20px;
+  display: grid;
+  column-gap: 10px;
+  grid-template-columns: repeat(2, auto);
+
+  @media (min-width: 700px) {
+    grid-template-columns: repeat(3, auto);
+  }
+
+  @media (min-width: 1000px) {
+    grid-template-columns: repeat(4, auto);
+  }
+
+  @media (min-width: 1280px) {
+    padding: 32px 0 20px;
+  }
+
+  @media (min-width: 1310px) {
+    grid-template-rows: 1fr;
+    grid-template-columns: repeat(8, auto);
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+
+    &:nth-child(n+5) {
+      grid-column: 1/3;
+    }
+
+    @media (min-width: 500px) {
+      &:nth-child(n) {
+        grid-column: initial;
+      }
+    }
+
+    &-text {
+      font: 500 18px/56px 'Manrope', sans-serif;
+      color: #181F48;
+    }
+
+    &--disabled {
+      filter: opacity(.2);
+    }
+
+
+    &-icon,
+    &-node {
+      display: inline-block;
+      margin-right: 9px;
+    }
+
+    &-icon {
+      &--start {
+        width: 28px;
+        height: 28px;
+        background-image: url('../../assets/start.svg');
+      }
+
+      &--target {
+        width: 28px;
+        height: 28px;
+        background-image: url('../../assets/target.svg');
+      }
+
+      &--bomb {
+        width: 26px;
+        height: 26px;
+        background-image: url('../../assets/bomb.svg');
+      }
+
+      &--weight {
+        width: 28px;
+        height: 20px;
+        background-image: url('../../assets/weight.svg');
+      }
+    }
+
+    &-node {
+      width: 32px;
+      height: 32px;
+
+      &--wall {
+        background-color: $primary-color;
+      }
+
+      &--path {
+        background-color: $gold-color;
+      }
+
+      &--visited {
+        background-color: $secondary-color;
+      }
+
+      &--unvisited {
+        border: 0.8px solid #95AAF8;
+      }
+    }
+  }
+}
+
+tui-notification[data-tui-host-status=info] {
+  display: inline-block;
+  margin-bottom: 24px;
+}
+
+.notification__text {
+  font: 400 18px/24px 'Manrope', sans-serif;
+  color: #181F48;
+  margin: 0;
+}

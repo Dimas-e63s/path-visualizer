@@ -1,211 +1,105 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Node, NodeWeights} from './models/Node.class';
-import {Dijkstra} from './algorithms/dijkstra/dijkstra';
 import {Grid, GridRow} from './models/grid.types';
-import {distinctUntilChanged, fromEvent, map, Subject, takeUntil} from 'rxjs';
-import {Backtracking} from './algorithms/maze-generation/backtracking/backtracking';
+import {
+  finalize,
+} from 'rxjs';
+import {MazeGenerationEnum, PathAlgorithmEnum} from './header/header.component';
+import {GridService} from './services/grid.service';
+import {GridResizeService} from './services/grid-resize.service';
+import {StoreService} from './services/store.service';
+
+// TODO:
+// - refactor to use pull-based architecture based on observables (eliminate reference change)
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit, OnDestroy {
-  private startNode = {colIdx: 2, rowIdx: 20};
-  private finishNode = {colIdx: 11, rowIdx: 0};
-  private destroy$ = new Subject<void>();
-  nodes = this.generateGrid();
+export class AppComponent implements OnInit {
+  selectedPathAlgo: PathAlgorithmEnum | null = null;
   buildWalls = false;
-  prevNode = {col: null, row: null};
-  prevHead = {col: null, row: null};
-  prevEnd = {col: null, row: null};
   moveHead = false;
   moveEnd = false;
+  isButtonsDisabled = false;
+
+  constructor(
+    private gridService: GridService,
+    private gridResizeService: GridResizeService,
+    private storeService: StoreService,
+  ) {
+  }
 
   ngOnInit(): void {
-    fromEvent(window, 'resize')
-      .pipe(
-        map(({target}) => target as Window),
-        map(target => ({cols: this.calculateAmountOfColumns(target), rows: this.calculateAmountOfRows(target)})),
-        distinctUntilChanged((a, b) => {
-          return a.cols === b.cols && a.rows === b.rows
-        }),
-        takeUntil(this.destroy$)
-      )
-      .subscribe(val => {
-        const currentAmountOfRows = this.nodes.length
-        const currentAmountOfCols = this.nodes[0].length
-        const newStartNode = this.getStartNode().clone({
-          rowIdx: this.startNode.rowIdx > val.rows - 1 ? val.rows - 1 : this.startNode.rowIdx,
-          colIdx: this.startNode.colIdx > val.cols - 1 ? val.cols - 1 : this.startNode.colIdx
-        });
-
-        const newEndNode = this.getEndNode().clone({
-          rowIdx: this.finishNode.rowIdx > val.rows - 1 ? val.rows - 1 : this.finishNode.rowIdx,
-          colIdx: this.finishNode.colIdx > val.cols - 1 ? val.cols - 1 : this.finishNode.colIdx
-        });
-
-
-        // adopt rows
-        if (currentAmountOfRows > val.rows) {
-          this.nodes.length = val.rows;
-        } else if (currentAmountOfRows < val.rows) {
-          const newGrid = this.generateEmptyGrid({row: val.rows - currentAmountOfRows, col: currentAmountOfCols});
-          for (let rowIdx = 0; rowIdx < newGrid.length; rowIdx++) {
-            for (let colIdx = 0; colIdx < newGrid[0].length; colIdx++) {
-              newGrid[rowIdx][colIdx] = this.generateGridNode({row: currentAmountOfRows + rowIdx, col: colIdx})
-            }
-          }
-          this.nodes.push(...newGrid);
-        }
-
-        // adopt columns
-        if (currentAmountOfCols < val.cols) {
-          for(let i = 0; i < val.cols - currentAmountOfCols; i++) {
-            this.nodes.forEach((row, idx) => {
-              row.push(
-                this.generateGridNode({
-                  row: idx,
-                  col: currentAmountOfCols + i
-                })
-              )
-            });
-          }
-        } else if (currentAmountOfCols > val.cols) {
-          this.nodes.forEach(row => {
-            row.length = val.cols
-          })
-        }
-
-        if (this.finishNode.rowIdx > val.rows - 1 || this.finishNode.colIdx > val.cols - 1) {
-          this.nodes[newEndNode.getRowIdx()][newEndNode.getColumnIdx()] = newEndNode;
-          this.finishNode = {colIdx: newEndNode.getColumnIdx(), rowIdx: newEndNode.getRowIdx()};
-        }
-
-        if (this.startNode.rowIdx > val.rows - 1 || this.startNode.colIdx > val.cols - 1) {
-          this.nodes[newStartNode.getRowIdx()][newStartNode.getColumnIdx()] = newStartNode;
-          this.startNode = {colIdx: newStartNode.getColumnIdx(), rowIdx: newStartNode.getRowIdx()};
-        }
-      })
+    this.gridService.initGrid();
+    this.gridResizeService.getResizeObservable().subscribe();
   }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete()
-  }
-
-  generateGrid(): Grid {
-    const {row, col} = this.getGridSize();
-    const nodes = this.generateEmptyGrid({row, col});
-
-    for (let rowIdx = 0; rowIdx < row; rowIdx++) {
-      for (let colIdx = 0; colIdx < col; colIdx++) {
-        nodes[rowIdx][colIdx] = this.generateGridNode({row: rowIdx, col: colIdx})
-      }
-    }
-
-    return nodes;
+  getNodes(): Grid {
+    return this.storeService.getGrid();
   }
 
   runAlgo() {
-    const startNode = this.getStartNode();
-    const endNode = this.getEndNode();
-    const [visitedNodesInOrder, shortestPath] = new Dijkstra({
-      grid: this.nodes,
-      startNode,
-      endNode,
-    }).traverse();
+    if (this.selectedPathAlgo) {
+      this.disableButtons();
 
-    const timeout = (index: number) =>
-      setTimeout(() =>  {
-        if (index === visitedNodesInOrder.length){
-          if (shortestPath.length > 0) {
-            timeout2(0)
-          }
-          return;
-        }
-        const node = visitedNodesInOrder[index] as Node;
-        const copy = this.nodes[node.getRowIdx()][node.getColumnIdx()].clone();
-        copy.setAsVisited();
-        this.nodes[node.getRowIdx()][node.getColumnIdx()] = copy;
-        timeout(index + 1);
-      }, 15);
-
-    timeout(0);
-
-    const timeout2 = (index: number) =>
-      setTimeout(() =>  {
-        if (index === shortestPath.length){
-          return;
-        }
-        const node = (shortestPath[index] as Node).clone({isShortestPath: true});
-        this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
-        timeout2(index + 1);
-      }, 40);
+      this.gridService.animatePathfindingAlgo(this.selectedPathAlgo).pipe(
+          finalize(() => {
+            this.activateButtons();
+          }),
+      ).subscribe();
+    }
   }
 
+  // TODO: - refactor this function
   onAddedWall({col, row}: {col: number, row: number}) {
-    const selectedNode = this.nodes[row][col];
+    if (this.isButtonsDisabled) {
+      return;
+    }
+
+    const selectedNode = this.storeService.getGrid()[row][col];
     if (selectedNode.getIsStartNode()) {
       this.moveHead = true;
-      // @ts-ignore
-      this.prevHead = {col, row};
+      // TODO: - refactor function API
+      this.storeService.updatePrevHead({col, row});
     } else if (selectedNode.getIsFinishNode()) {
       this.moveEnd = true;
-      // @ts-ignore
-      this.prevEnd = {col, row};
+      this.storeService.updatePrevEnd({col, row});
     } else {
-      const copy = selectedNode.clone();
-      copy.setAsWall();
-      this.nodes[row][col] = copy;
+      this.addWall(this.storeService.getGrid()[row][col]);
     }
   }
 
   startEditing(): void {
-    if (!this.moveHead && !this.moveEnd) {
+    if (!this.moveHead && !this.moveEnd && !this.isButtonsDisabled) {
       this.buildWalls = !this.buildWalls;
     }
   }
 
-  breakEdit(): void {
+  stopEdit(): void {
     this.buildWalls = false;
     this.moveHead = false;
     this.moveEnd = false;
   }
 
+  // TODO: - move to grid service
   onDraw($event: any) {
-    if (this.moveHead && (this.prevHead.row !== $event.row || this.prevHead.col !== $event.col)) {
-      //@ts-ignore
-      let oldHead = this.nodes[this.prevHead.row][this.prevHead.col];
-      oldHead = oldHead.clone({isStartNode: false});
-      // debugger
-      this.prevHead = $event;
-      const selectedNode = this.nodes[$event.row][$event.col];
-      const copy = selectedNode.clone({isStartNode: true});
-      this.nodes[oldHead.getRowIdx()][oldHead.getColumnIdx()] = oldHead;
-      this.nodes[$event.row][$event.col] = copy;
-      this.startNode = {colIdx: $event.col, rowIdx: $event.row};
-    } else if (this.moveEnd && (this.prevEnd.row !== $event.row || this.prevEnd.col !== $event.col)) {
-      //@ts-ignore
-      let oldEnd = this.nodes[this.prevEnd.row][this.prevEnd.col];
-      oldEnd = oldEnd.clone({isFinishNode: false});
-      this.prevEnd = $event;
-      const selectedNode = this.nodes[$event.row][$event.col];
-      const copy = selectedNode.clone({isFinishNode: true});
-      this.nodes[oldEnd.getRowIdx()][oldEnd.getColumnIdx()] = oldEnd;
-      this.nodes[$event.row][$event.col] = copy;
-      this.finishNode = {colIdx: $event.col, rowIdx: $event.row};
+    // TODO: - extract long conditions to query
+    if (this.moveHead && (this.storeService.getStartNode().rowIdx !== $event.row || this.storeService.getStartNode().colIdx !== $event.col)) {
+      this.gridService.removeHeadNode(this.storeService.getGrid()[this.storeService.getPrevStartNode().row][this.storeService.getPrevStartNode().col]);
+      this.gridService.addHeadNode($event);
+    } else if (this.moveEnd && (this.storeService.getEndNode().rowIdx !== $event.row || this.storeService.getEndNode().colIdx !== $event.col)) {
+      this.gridService.removeEndNode(this.storeService.getGrid()[this.storeService.getPrevEndNode().row][this.storeService.getPrevEndNode().col]);
+      this.gridService.addEndNode($event);
     } else if (this.isSameNode($event) && this.buildWalls) {
-      this.prevNode = $event;
-      const selectedNode = this.nodes[$event.row][$event.col];
-      const copy = selectedNode.clone();
-      copy.setAsWall();
-      this.nodes[$event.row][$event.col] = copy;
+      this.storeService.updatePrevNode($event);
+      this.addWall(this.storeService.getGrid()[$event.row][$event.col]);
     }
   }
 
   clearBoard() {
-    this.nodes = this.generateGrid();
+    this.gridService.initGrid();
   }
 
   trackByRow(index: number, row: GridRow) {
@@ -216,76 +110,76 @@ export class AppComponent implements OnInit, OnDestroy {
     return node.id;
   }
 
-  private calculateAmountOfColumns(element: Window) {
-    return Math.floor(element.innerWidth / 30);
+  clearWalls() {
+    this.disableButtons();
+    for (const row of this.storeService.getGrid()) {
+      for (const column of row) {
+        this.removeWall(column);
+      }
+    }
+    this.activateButtons();
   }
 
-  private calculateAmountOfRows(element: Window) {
-    return Math.floor((element.innerHeight * .8) / 30);
-  }
-
-  private getGridSize(): {row: number, col: number} {
-    return {
-      row: this.calculateAmountOfRows(window),
-      col: this.calculateAmountOfColumns(window)
+  // TODO: - move to store
+  addWall(node: Node): void {
+    if (!node.isWall()) {
+      const nodeClone = node.clone();
+      nodeClone.setAsWall();
+      this.storeService.getGrid()[node.getRowIdx()][node.getColumnIdx()] = nodeClone;
     }
   }
 
-  private generateGridNode({row, col}: {row: number, col: number}): Node {
-    return new Node({
-      rowIdx: row,
-      colIdx: col,
-      isStartNode: row === this.startNode.rowIdx && col === this.startNode.colIdx,
-      isFinishNode: row === this.finishNode.rowIdx && col === this.finishNode.colIdx,
-    });
+  // TODO: - move to store
+  removeWall(node: Node): void {
+    if (node.isWall()) {
+      this.storeService.getGrid()[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+        weight: NodeWeights.EMPTY,
+        previousNode: null,
+      });
+    }
   }
 
-  private generateEmptyGrid({row, col}: {row: number, col: number}) {
-    return Array(row)
-      .fill(0)
-      .map(() => Array(col).fill(null));
-  }
-
-  private getStartNode(): Node {
-    return this.nodes[this.startNode.rowIdx][this.startNode.colIdx];
-  }
-
-  private getEndNode(): Node {
-    return this.nodes[this.finishNode.rowIdx][this.finishNode.colIdx];
-  }
-
-  private isSameNode(node: any): boolean {
-    return this.prevNode.row !== node.row || this.prevNode.col !== node.col;
-  }
-
-  clearWalls() {
-    for(const row of this.nodes) {
-      for (const column of row) {
-        if (column.isWall()) {
-          this.nodes[column.getRowIdx()][column.getColumnIdx()] = column.clone({weight: NodeWeights.EMPTY, previousNode: null})
+  // TODO: - move to store
+  clearPath(): void {
+    for (const row of this.storeService.getGrid()) {
+      for (const node of row) {
+        if (!node.isWall() || node.isVisitedNode() || node.isShortestPath) {
+          this.storeService.getGrid()[node.getRowIdx()][node.getColumnIdx()] = node.clone({
+            isShortestPath: false,
+            previousNode: null,
+            isVisitedNode: false,
+            distance: Infinity,
+          });
         }
       }
     }
   }
 
-  clearPath() {
-    this.clearBoard();
-    const maze = new Backtracking(this.nodes, this.getStartNode(), this.getEndNode()).getMaze();
-    const nodesToAnimate: GridRow = [];
-    for (const node of maze.values()) {
-      nodesToAnimate.push(node);
-    }
+  onAlgorithmSelected(algo: PathAlgorithmEnum): void {
+    this.selectedPathAlgo = algo;
+  }
 
-    const timeout = (index: number) =>
-      setTimeout(() =>  {
-        if (index === nodesToAnimate.length){
-          return;
-        }
-        const node = nodesToAnimate[index] as Node;
-        this.nodes[node.getRowIdx()][node.getColumnIdx()] = node;
-        timeout(index + 1);
-      }, 0);
+  onMazeAlgoSelected(mazeAlgo: MazeGenerationEnum): void {
+    this.disableButtons();
+    this.gridService.animateMazeBuilding(mazeAlgo).pipe(
+        finalize(() => {
+          this.activateButtons();
+        }),
+    ).subscribe();
+  }
 
-    timeout(0);
+  // TODO: - to implement
+  onAnimSpeedSelected(animSpeed: string) {}
+
+  disableButtons(): void {
+    this.isButtonsDisabled = true;
+  }
+
+  activateButtons(): void {
+    this.isButtonsDisabled = false;
+  }
+
+  private isSameNode(node: any): boolean {
+    return this.storeService.getPrevNode().row !== node.row || this.storeService.getPrevNode().col !== node.col;
   }
 }

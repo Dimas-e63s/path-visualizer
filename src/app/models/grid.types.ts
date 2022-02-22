@@ -15,4 +15,4 @@ interface GridNodeCoordinates {
 
 type GridMap = Map<string, Node>;
 
-export { GridMap, GridNodeCoordinates, GridSize, GridRow, Grid}
+export {GridMap, GridNodeCoordinates, GridSize, GridRow, Grid};

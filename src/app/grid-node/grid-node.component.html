@@ -1,1 +1,6 @@
-<div class="node" [ngClass]="classNames()"></div>
+<div class="node" [ngClass]="classNames()">
+  <div
+    *ngIf="vm.getIsStartNode() || vm.getIsFinishNode()"
+    [ngClass]="vm.getIsStartNode() ? 'node--start' : 'node--finish'">
+  </div>
+</div>

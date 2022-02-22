@@ -1,7 +1,8 @@
 <tui-hosted-dropdown
   tuiDropdownAlign="left"
   [content]="dropdown"
-  [(open)]="open"
+  [(open)]="isOpen"
+  [canOpen]="canOpen"
 >
   <button tuiButton size="m" type="button" appearance="secondary" [iconRight]="icon">
     {{buttonText}}
@@ -11,12 +12,12 @@
   <tui-svg
     class="icon"
     src="tuiIconChevronDown"
-    [class.icon_rotated]="open"
+    [class.icon_rotated]="isOpen"
   ></tui-svg>
 </ng-template>
 <ng-template #dropdown>
   <tui-data-list>
-    <button *ngFor="let item of items" tuiOption (click)="onClick()">
+    <button *ngFor="let item of items" tuiOption (click)="onClick(item)">
       {{item}}
     </button>
   </tui-data-list>

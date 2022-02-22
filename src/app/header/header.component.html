@@ -1,32 +1,71 @@
-<header class="header">
+<header class="header" [ngClass]="{'header--active': active}">
   <h1 class="header__title">Pathfinding Visualizer</h1>
-  <app-dropdown [items]="algorithmsOptions" buttonText="Algorithms"></app-dropdown>
-  <app-dropdown [items]="mazesOptions" buttonText="Mazes"></app-dropdown>
-  <button
-    tuiButton
-    size="m"
-    type="button"
-    (click)="onAlgoClick()"
-  >
-    Run Algo
-  </button>
-  <button
-    tuiButton
-    size="m"
-    type="button"
-    appearance="secondary"
-    (click)="onClearPath()"
-  >
-    Clear Path
-  </button>
-  <button
-    tuiButton
-    size="m"
-    type="button"
-    appearance="secondary"
-    (click)="onClearWalls()"
-  >
-    Clear Walls
-  </button>
-  <app-dropdown [items]="speedOptions" buttonText="Speed"></app-dropdown>
+  <div class="header__toggle" [ngClass]="{'header__toggle--active': active}" (click)="active = !active">
+    <span class="header__toggle-line"></span>
+    <span class="header__toggle-line"></span>
+    <span class="header__toggle-line"></span>
+  </div>
+  <section class="header__nav">
+    <app-dropdown
+      buttonText="Algorithms"
+      [items]="algorithmsOptions"
+      [canOpen]="!isButtonsDisabled"
+      (itemSelected)="onAlgorithmSelected($event)"
+    ></app-dropdown>
+    <app-dropdown
+      buttonText="Mazes"
+      [items]="mazesOptions"
+      [canOpen]="!isButtonsDisabled"
+      (itemSelected)="onMazeAlgorithmSelected($event)"
+    ></app-dropdown>
+    <button
+      tuiButton
+      [disabled]="isButtonsDisabled"
+      size="l"
+      type="button"
+      appearance="primary"
+      (click)="onAlgoClick()"
+    >
+      Run Algo
+    </button>
+    <button
+      tuiButton
+      [disabled]="isButtonsDisabled"
+      size="m"
+      type="button"
+      class="button--error"
+      appearance="secondary"
+      (click)="onClearPath()"
+    >
+      Clear Path
+    </button>
+    <button
+      tuiButton
+      [disabled]="isButtonsDisabled"
+      size="m"
+      type="button"
+      class="button--error"
+      appearance="secondary"
+      (click)="onClearWalls()"
+    >
+      Clear Walls
+    </button>
+    <button
+      tuiButton
+      [disabled]="isButtonsDisabled"
+      size="m"
+      type="button"
+      class="button--error"
+      appearance="secondary"
+      (click)="onClearBoard()"
+    >
+      Clear Board
+    </button>
+    <app-dropdown
+      buttonText="Speed"
+      [items]="animationSpeedOptions"
+      [canOpen]="!isButtonsDisabled"
+      (itemSelected)="onAnimationSpeedSelected($event)"
+    ></app-dropdown>
+  </section>
 </header>

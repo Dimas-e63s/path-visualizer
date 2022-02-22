@@ -1,13 +1,16 @@
 import {v4} from 'uuid';
+
+// TODO: - extract interface/enum
 export interface NodeInterface {
   rowIdx: number;
   colIdx: number;
   isStartNode?: boolean;
   isFinishNode?: boolean;
   distance?: number;
-  weight?: number
-  previousNode?: Node | null
-  isShortestPath?: boolean
+  weight?: NodeWeights;
+  previousNode?: Node | null;
+  isShortestPath?: boolean;
+  isVisitedNode?: boolean;
 }
 
 export enum NodeWeights {
@@ -18,8 +21,8 @@ export enum NodeWeights {
 export class Node {
   private readonly rowIdx: number;
   private readonly columnIdx: number;
-  private isStartNode: boolean;
-  private isFinishNode: boolean;
+  private readonly isStartNode: boolean;
+  private readonly isFinishNode: boolean;
   private isVisited: boolean;
   isShortestPath;
   previousNode: any;
@@ -27,8 +30,17 @@ export class Node {
   weight: number;
   readonly id: string;
 
-  // @ts-ignore
-  constructor({rowIdx, colIdx, isStartNode = false, isFinishNode = false, distance = Infinity, weight = NodeWeights.EMPTY, previousNode = null, isShortestPath = false}: NodeInterface) {
+  constructor({
+    rowIdx,
+    colIdx,
+    isStartNode = false,
+    isFinishNode = false,
+    distance = Infinity,
+    weight = NodeWeights.EMPTY,
+    previousNode = null,
+    isShortestPath = false,
+  }: NodeInterface) {
+    this.validateCoordinates(colIdx, rowIdx);
     this.id = v4();
     this.rowIdx = rowIdx;
     this.columnIdx = colIdx;
@@ -41,6 +53,26 @@ export class Node {
     this.previousNode = previousNode;
   }
 
+  private validateCoordinates(colIdx: number, rowIdx: number): void {
+    if (Number.isNaN(colIdx) || Number.isNaN(rowIdx)) {
+      throw new Error(`Coordinates can't be NaN provided colIdx: ${colIdx}, rowIdx: ${rowIdx}`);
+    }
+
+    if (colIdx < 0 || rowIdx < 0) {
+      throw new Error(`Coordinates can't be negative numbers provided colIdx: ${colIdx}, rowIdx: ${rowIdx}`);
+    }
+
+    if (!(Number.isFinite(colIdx) && Number.isFinite(rowIdx))) {
+      throw new Error(`Coordinates can't be equal to Infinity. Provided colIdx: ${colIdx}, rowIdx: ${rowIdx}`);
+    }
+  }
+
+  private validateDestinationInput({isStartNode, isFinishNode}: {isStartNode: boolean, isFinishNode: boolean}) {
+    if (isStartNode && isFinishNode) {
+      throw new Error(`Node can't be startNode and endNode at the same time`);
+    }
+  }
+
   clone(args: Partial<NodeInterface> = {}): Node {
     return new Node({
       rowIdx: this.rowIdx,
@@ -51,16 +83,8 @@ export class Node {
       weight: this.weight,
       previousNode: this.previousNode,
       isShortestPath: this.isShortestPath,
-      ...args
+      ...args,
     });
-  }
-
-  setFinishNode(): void {
-    this.isFinishNode = true;
-  }
-
-  setStartNode(): void {
-    this.isStartNode = true;
   }
 
   getColumnIdx(): number {
@@ -84,7 +108,7 @@ export class Node {
   }
 
   setAsWall(): void {
-    if (!this.isStartNode && !this.isFinishNode) {
+    if (this.isEmptyNode()) {
       this.weight = NodeWeights.WALL;
     }
   }
@@ -99,5 +123,9 @@ export class Node {
 
   getIsShortestPath() {
     return !this.isStartNode && !this.isFinishNode && this.isShortestPath;
+  }
+
+  private isEmptyNode(): boolean {
+    return !this.getIsStartNode() && !this.getIsFinishNode();
   }
 }

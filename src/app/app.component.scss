@@ -1,20 +1,19 @@
+@use '_variables.scss' as *;
+
+main {
+  padding: 0 23px 23px;
+}
+
 .row {
-  // GRID
-
-  //display: grid;
-  //justify-content: center;
-  //grid-template-columns: repeat(auto-fill, 30px);
-  //grid-template-rows: repeat(auto-fill, 30px);
-
   display: flex;
   flex-grow: 1;
   height: 30px;
-  border-bottom: 1px solid black;
+  border-left: 1px solid $node-border-color;
   flex-direction: row;
   pointer-events: none;
 
   &:first-of-type {
-    border-top: 1px solid black;
+    border-top: 1px solid $node-border-color;
   }
 
   .node {

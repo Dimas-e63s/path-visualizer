@@ -36,29 +36,30 @@ export class Utils {
     return nodes;
   }
 
-  static traverseGrid({
-                        visitedNode,
-                        endNode,
-                        gridSize,
-                      }: {visitedNode: GridRow, endNode: Node, gridSize: GridSize}) {
-
-  }
-
   static isEndNode(currNode: Node, endNode: Node): boolean {
-    return currNode.getRowIdx() === endNode.getRowIdx()
-      && currNode.getColumnIdx() === endNode.getColumnIdx();
+    return currNode.getRowIdx() === endNode.getRowIdx() &&
+      currNode.getColumnIdx() === endNode.getColumnIdx();
   }
 
+  // TODO: - extract params type
   static updateUnvisitedNeighbors({
-                                    node,
-                                    grid,
-                                    totalCol,
-                                    totalRow,
-                                  }: {node: Node, grid: any, totalCol: number, totalRow: number}): void {
+    node,
+    grid,
+    totalCol,
+    totalRow,
+    prioQ,
+    counter,
+  }: {node: Node, grid: any, totalCol: number, totalRow: number, prioQ: any, counter: {counter: number}}): void {
     const unvisitedNeighbors = Utils.getUnvisitedNeighbors({node, grid, totalCol, totalRow});
     for (const neighbor of unvisitedNeighbors) {
-      neighbor.distance = node.distance + neighbor.weight;
-      neighbor.previousNode = node;
+      const distance = node.distance + neighbor.weight;
+
+      if (distance < grid.get(Utils.getNodeKey(neighbor)).distance) {
+        neighbor.distance = node.distance + neighbor.weight;
+        prioQ.enqueue({node: neighbor, timestamp: Date.now() + counter.counter});
+        neighbor.previousNode = node;
+      }
+      counter.counter += 1;
     }
   }
 
@@ -97,14 +98,15 @@ export class Utils {
     return grid.get(Utils.getNodeKey(rightNode)) as Node;
   }
 
+  // TODO: - extract params type
   static getUnvisitedNeighbors({
-                                 node,
-                                 grid,
-                                 totalCol,
-                                 totalRow,
-                               }: {node: any, grid: GridMap, totalCol: number, totalRow: number}): GridRow {
+    node,
+    grid,
+    totalCol,
+    totalRow,
+  }: {node: Node, grid: GridMap, totalCol: number, totalRow: number}): GridRow {
     const neighbors: GridRow = [];
-    const {columnIdx: col, rowIdx: row} = node;
+    const {colIdx: col, rowIdx: row} = Utils.getNodeCoordinates(node);
     if (!Dijkstra.isFirstRow(row)) {
       neighbors.push(Utils.getUpNode(node, grid));
     }
@@ -118,7 +120,7 @@ export class Utils {
       neighbors.push(Utils.getRightNode(node, grid));
     }
 
-    return neighbors.filter(neighbor => !neighbor.isVisitedNode());
+    return neighbors.filter((neighbor) => !neighbor.isVisitedNode());
   }
 
   static isPreviousNodeExist({previousNode}: Node): boolean {
@@ -130,7 +132,7 @@ export class Utils {
 
     let currentNode = endNode;
     while (Utils.isPreviousNodeExist(currentNode)) {
-      shortestPath.unshift(currentNode);
+      shortestPath.unshift(currentNode.clone({isShortestPath: true}));
       currentNode = currentNode.previousNode;
     }
 

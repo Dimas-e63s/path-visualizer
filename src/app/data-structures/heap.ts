@@ -1,9 +1,10 @@
-//@ts-nocheck
+// @ts-nocheck
 import Comparator from './comparator';
 
 /**
  * Parent class for Min and Max Heaps.
  */
+// TODO: - migrate to ts
 export default class Heap {
   /**
    * @constructs Heap
@@ -171,10 +172,10 @@ export default class Heap {
         // If there is no parent or parent is in correct order with the node
         // we're going to delete then heapify down. Otherwise heapify up.
         if (
-          this.hasLeftChild(indexToRemove)
-          && (
-            !parentItem
-            || this.pairIsInCorrectOrder(parentItem, this.heapContainer[indexToRemove])
+          this.hasLeftChild(indexToRemove) &&
+          (
+            !parentItem ||
+            this.pairIsInCorrectOrder(parentItem, this.heapContainer[indexToRemove])
           )
         ) {
           this.heapifyDown(indexToRemove);
@@ -228,9 +229,9 @@ export default class Heap {
     let currentIndex = customStartIndex || this.heapContainer.length - 1;
 
     while (
-      this.hasParent(currentIndex)
-      && !this.pairIsInCorrectOrder(this.parent(currentIndex), this.heapContainer[currentIndex])
-      ) {
+      this.hasParent(currentIndex) &&
+      !this.pairIsInCorrectOrder(this.parent(currentIndex), this.heapContainer[currentIndex])
+    ) {
       this.swap(currentIndex, this.getParentIndex(currentIndex));
       currentIndex = this.getParentIndex(currentIndex);
     }
@@ -248,8 +249,8 @@ export default class Heap {
 
     while (this.hasLeftChild(currentIndex)) {
       if (
-        this.hasRightChild(currentIndex)
-        && this.pairIsInCorrectOrder(this.rightChild(currentIndex), this.leftChild(currentIndex))
+        this.hasRightChild(currentIndex) &&
+        this.pairIsInCorrectOrder(this.rightChild(currentIndex), this.leftChild(currentIndex))
       ) {
         nextIndex = this.getRightChildIndex(currentIndex);
       } else {
@@ -257,8 +258,8 @@ export default class Heap {
       }
 
       if (this.pairIsInCorrectOrder(
-        this.heapContainer[currentIndex],
-        this.heapContainer[nextIndex],
+          this.heapContainer[currentIndex],
+          this.heapContainer[nextIndex],
       )) {
         break;
       }
