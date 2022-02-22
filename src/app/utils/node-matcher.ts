@@ -4,8 +4,8 @@ import CustomMatcher = jasmine.CustomMatcher;
 import CustomMatcherResult = jasmine.CustomMatcherResult;
 import CustomEqualityTester = jasmine.CustomEqualityTester;
 import {NodeValidation} from './node-validation/node-validation';
-import {GridRow} from '../../models/grid.types';
-import {Node} from '../../models/Node.class';
+import {GridRow} from '../models/grid.types';
+import {Node} from '../models/Node.class';
 
 type comparatorFn = (a: Node, b: Node) => boolean;
 

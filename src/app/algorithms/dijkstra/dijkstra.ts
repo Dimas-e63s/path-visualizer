@@ -1,6 +1,6 @@
 import {Node} from '../../models/Node.class';
 import {GridRow, Grid} from '../../models/grid.types';
-import {Utils} from '../utils/utils.class';
+import {Utils} from '../../utils/utils.class';
 import {PriorityQueue} from '@datastructures-js/priority-queue';
 import {AlgorithmBase} from '../algorithm-base/algorithm-base';
 

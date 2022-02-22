@@ -1,9 +1,9 @@
 import {AStar} from './a-star';
 import {Grid} from '../../models/grid.types';
 import {Node, NodeInterface, NodeWeights} from '../../models/Node.class';
-import {Utils} from '../utils/utils.class';
+import {Utils} from '../../utils/utils.class';
 import PriorityQueue from '../../data-structures/prio';
-import {SomeCustomMatchers} from '../utils/node-matcher';
+import {SomeCustomMatchers} from '../../utils/node-matcher';
 
 describe('AStar', () => {
   let emptyGrid: Grid;

@@ -1,5 +1,5 @@
 import {Grid, GridRow} from '../../models/grid.types';
-import {SomeCustomMatchers} from '../utils/node-matcher';
+import {SomeCustomMatchers} from '../../utils/node-matcher';
 import {Node} from '../../models/Node.class';
 import {UnweightedAlgorithms} from './unweighted-algorithms';
 

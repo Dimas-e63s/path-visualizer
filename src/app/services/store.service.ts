@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Grid} from '../models/grid.types';
-import {GridBuilder} from '../grid-builder';
+import {GridBuilder} from '../models/grid-builder';
 
 // TODO: -extract interface
 export interface NodeCoordinates {

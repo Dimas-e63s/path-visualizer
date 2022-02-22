@@ -1,6 +1,6 @@
 import {Node} from '../../models/Node.class';
 import {Grid, GridMap, GridRow} from '../../models/grid.types';
-import {Utils} from '../utils/utils.class';
+import {Utils} from '../../utils/utils.class';
 import {Dijkstra} from '../dijkstra/dijkstra';
 import {Stack} from '@datastructures-js/stack';
 import {Queue} from '@datastructures-js/queue';

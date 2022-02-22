@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {AppComponent} from './app.component';
-import {GridBuilder} from './grid-builder';
+import {GridBuilder} from './models/grid-builder';
 import {Component} from '@angular/core';
 
 @Component({selector: 'tui-root', template: ''})

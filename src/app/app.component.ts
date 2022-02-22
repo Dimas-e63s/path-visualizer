@@ -4,7 +4,7 @@ import {Grid, GridRow} from './models/grid.types';
 import {
   finalize,
 } from 'rxjs';
-import {MazeGenerationEnum, PathAlgorithmEnum} from './header/header.component';
+import {MazeGenerationEnum, PathAlgorithmEnum} from './components/header/header.component';
 import {GridService} from './services/grid.service';
 import {GridResizeService} from './services/grid-resize.service';
 import {StoreService} from './services/store.service';

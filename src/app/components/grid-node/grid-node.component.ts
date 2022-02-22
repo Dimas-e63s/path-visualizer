@@ -9,7 +9,7 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import {Node} from '../models/Node.class';
+import {Node} from '../../models/Node.class';
 
 @Component({
   selector: 'app-grid-node',

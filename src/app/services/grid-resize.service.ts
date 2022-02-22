@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {GridSize} from '../models/grid.types';
 import {distinctUntilChanged, fromEvent, map, Observable, Subject, takeUntil, tap} from 'rxjs';
-import {GridBuilder} from '../grid-builder';
-import {Utils} from '../algorithms/utils/utils.class';
+import {GridBuilder} from '../models/grid-builder';
+import {Utils} from '../utils/utils.class';
 import {GridService} from './grid.service';
 import {StoreService} from './store.service';
 

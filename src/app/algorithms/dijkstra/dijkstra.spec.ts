@@ -1,7 +1,7 @@
 import {Dijkstra} from './dijkstra';
 import {Node} from '../../models/Node.class';
 import {Grid, GridRow} from '../../models/grid.types';
-import {SomeCustomMatchers} from '../utils/node-matcher';
+import {SomeCustomMatchers} from '../../utils/node-matcher';
 
 // TODO :
 //  - cover constructor

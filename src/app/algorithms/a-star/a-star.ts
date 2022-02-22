@@ -1,6 +1,6 @@
 import {Grid, GridMap, GridRow} from '../../models/grid.types';
 import {Node} from '../../models/Node.class';
-import {Utils} from '../utils/utils.class';
+import {Utils} from '../../utils/utils.class';
 import PriorityQueue from '../../data-structures/prio';
 import {AlgorithmBase} from '../algorithm-base/algorithm-base';
 
