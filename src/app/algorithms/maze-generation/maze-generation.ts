@@ -1,4 +1,4 @@
-import {Utils} from '../utils/utils.class';
+import {Utils} from '../../utils/utils.class';
 import {Grid, GridMap} from '../../models/grid.types';
 import {Node, NodeWeights} from '../../models/Node.class';
 import {AlgorithmBase} from '../algorithm-base/algorithm-base';

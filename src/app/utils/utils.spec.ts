@@ -1,6 +1,6 @@
 import {Utils} from './utils.class';
-import {Node, NodeInterface} from '../../models/Node.class';
-import {Grid, GridMap, GridRow} from '../../models/grid.types';
+import {Node, NodeInterface} from '../models/Node.class';
+import {Grid, GridMap, GridRow} from '../models/grid.types';
 import {SomeCustomMatchers} from './node-matcher';
 
 // TODO: - empty GridMap, no node in GridMap (getNodeBelow etc.)

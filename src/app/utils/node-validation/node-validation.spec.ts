@@ -1,4 +1,4 @@
-import {Node, NodeWeights} from '../../../models/Node.class';
+import {Node, NodeWeights} from '../../models/Node.class';
 import {NodeValidation} from './node-validation';
 
 describe('NodeValidation', () => {

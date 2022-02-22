@@ -1,5 +1,5 @@
 import {Backtracking} from './backtracking';
-import {GridBuilder} from '../../../grid-builder';
+import {GridBuilder} from '../../../models/grid-builder';
 import {DirectionsEnum} from '../../../models/maze-generation.enum';
 import {Grid} from '../../../models/grid.types';
 import {Node} from '../../../models/Node.class';

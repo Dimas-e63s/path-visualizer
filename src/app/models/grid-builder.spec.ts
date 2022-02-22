@@ -1,5 +1,5 @@
 import {GridBuilder} from './grid-builder';
-import {Node} from './models/Node.class';
+import {Node} from './Node.class';
 
 describe('GridBuilder', () => {
   it('should create an instance', () => {

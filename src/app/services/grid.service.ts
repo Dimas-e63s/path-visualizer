@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {concat, concatMap, delay, filter, from, Observable, of, Subject, tap} from 'rxjs';
-import {MazeGenerationEnum, PathAlgorithmEnum} from '../header/header.component';
+import {MazeGenerationEnum, PathAlgorithmEnum} from '../components/header/header.component';
 import {GridMap, GridSize} from '../models/grid.types';
-import {GridBuilder} from '../grid-builder';
+import {GridBuilder} from '../models/grid-builder';
 import {BacktrackingIterative} from '../algorithms/maze-generation/backtracking/backtracking-iterative.class';
 import {BacktrackingRecursive} from '../algorithms/maze-generation/backtracking/backtracking-recursive.class';
 import {Kruskal} from '../algorithms/maze-generation/kruskal/kruskal';

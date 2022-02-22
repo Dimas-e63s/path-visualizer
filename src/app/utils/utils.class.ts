@@ -1,6 +1,6 @@
-import {Grid, GridMap, GridNodeCoordinates, GridRow, GridSize} from '../../models/grid.types';
-import {Node} from '../../models/Node.class';
-import {Dijkstra} from '../dijkstra/dijkstra';
+import {Grid, GridMap, GridNodeCoordinates, GridRow, GridSize} from '../models/grid.types';
+import {Node} from '../models/Node.class';
+import {Dijkstra} from '../algorithms/dijkstra/dijkstra';
 
 export interface UnvisitedNodes {
   [key: string]: Node;

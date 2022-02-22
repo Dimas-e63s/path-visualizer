@@ -1,5 +1,5 @@
-import {Node, NodeInterface} from './models/Node.class';
-import {Grid, GridSize} from './models/grid.types';
+import {Node, NodeInterface} from './Node.class';
+import {Grid, GridSize} from './grid.types';
 
 export class GridBuilder {
   static calculateAmountOfRows(height: number) {
