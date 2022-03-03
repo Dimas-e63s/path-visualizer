@@ -16,7 +16,7 @@
   row-gap: 24px;
   z-index: 1;
 
-  @media (min-width: 1280px) {
+  @media (min-width: $desktop-breakpoint) {
     position: static;
   }
 
@@ -79,7 +79,7 @@
       }
     }
 
-    @media (min-width: 1280px) {
+    @media (min-width: $desktop-breakpoint) {
       display: none;
     }
   }
@@ -93,7 +93,7 @@
     max-width: 1370px;
 
 
-    @media (min-width: 1280px) {
+    @media (min-width: $desktop-breakpoint) {
       flex: 1;
       align-items: center;
       justify-content: space-between;
